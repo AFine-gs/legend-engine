@@ -20,11 +20,16 @@ import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.forms.MultiPartBundle;
+import io.dropwizard.http2.Http2CConnectorFactory;
+import io.dropwizard.server.DefaultServerFactory;
+import io.dropwizard.server.ServerFactory;
+import io.dropwizard.server.SimpleServerFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.federecio.dropwizard.swagger.SwaggerBundle;
 import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
 import io.prometheus.client.CollectorRegistry;
+import java.util.Arrays;
 import org.eclipse.collections.api.RichIterable;
 import org.eclipse.collections.api.block.function.Function;
 import org.eclipse.collections.api.factory.Lists;
@@ -103,7 +108,9 @@ import org.finos.legend.engine.server.core.api.Memory;
 import org.finos.legend.engine.server.core.bundles.ErrorHandlingBundle;
 import org.finos.legend.engine.server.core.exceptionMappers.CatchAllExceptionMapper;
 import org.finos.legend.engine.server.core.exceptionMappers.JsonInformationExceptionMapper;
+import org.finos.legend.engine.server.core.session.Http2ConnectorFactoryWithListener;
 import org.finos.legend.engine.server.core.session.SessionAttributeBundle;
+import org.finos.legend.engine.server.core.session.SessionListenerWithCancel;
 import org.finos.legend.engine.server.core.session.SessionTracker;
 import org.finos.legend.engine.server.core.session.StoreExecutableManagerSessionListener;
 import org.finos.legend.engine.server.core.session.api.SessionInfo;
@@ -228,7 +235,6 @@ public class Server<T extends ServerConfiguration> extends Application<T>
     public void run(T serverConfiguration, Environment environment)
     {
         loadVaults(serverConfiguration.vaults);
-
         this.environment = environment;
         DeploymentStateAndVersions.DEPLOYMENT_MODE = serverConfiguration.deployment.mode;
 
@@ -343,6 +349,17 @@ public class Server<T extends ServerConfiguration> extends Application<T>
         environment.jersey().register(new Testable(modelManager));
 
         enableCors(environment);
+
+       ServerFactory serverFactory = serverConfiguration.getServerFactory();
+//        if (serverFactory instanceof SimpleServerFactory)
+//        {
+//            ((DefaultServerFactory) serverFactory).setApplicationConnectors(Arrays.asList(new Http2ConnectorFactoryWithListener(new SessionListenerWithCancel())));
+//        }
+         if (serverFactory instanceof SimpleServerFactory)
+        {
+            ((SimpleServerFactory) serverFactory).setConnector(new Http2ConnectorFactoryWithListener(new SessionListenerWithCancel()));
+        }
+
     }
 
     private void loadVaults(List<VaultConfiguration> vaultConfigurations)

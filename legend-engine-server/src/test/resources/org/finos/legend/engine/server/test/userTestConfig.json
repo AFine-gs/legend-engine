@@ -46,8 +46,9 @@
     "adminContextPath": "/admin",
     "connector": {
       "maxRequestHeaderSize": "32KiB",
-      "type": "http",
-      "port": 6300
+      "type": "h2c",
+      "port": 6300,
+      "initialStreamRecvWindow": "65535"
     },
     "requestLog": {
       "appenders": [
