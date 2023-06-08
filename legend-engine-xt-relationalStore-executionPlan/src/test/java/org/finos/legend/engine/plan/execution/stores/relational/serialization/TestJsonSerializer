@@ -1,0 +1,100 @@
+import org.junit.Assert;
+import org.junit.Test;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import org.finos.legend.engine.plan.execution.stores.relational.result.RelationalResult;
+import org.finos.legend.engine.plan.execution.stores.relational.serialization.RelationalResultToJsonDefaultSerializer;
+
+public class RelationalResultToJsonDefaultSerializerTest {
+
+    @Test
+    public void testStream() throws SQLException {
+        // Set up the test data
+        List<List<Object>> testData = new ArrayList<>();
+        testData.add(List.of("John Doe", 30, "john.doe@example.com"));
+        testData.add(List.of("Jane Smith", 25, "jane.smith@example.com"));
+
+        // Create a mock ResultSet with the test data
+        ResultSet resultSet = createMockResultSet(testData);
+
+        // Create a RelationalResult object using the mock ResultSet
+        RelationalResult relationalResult = new RelationalResult(resultSet);
+
+        // Serialize the RelationalResult to JSON
+        RelationalResultToJsonDefaultSerializer serializer = new RelationalResultToJsonDefaultSerializer(relationalResult);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        serializer.stream(outputStream);
+        String json = outputStream.toString();
+
+        // Assert the expected JSON output
+        String expectedJson = "{\"builder\":null,\"generationInfo\":null,\"activities\":[],\"result\":{\"columns\":[\"name\",\"age\",\"email\"],\"rows\":[{\"values\":[\"John Doe\",30,\"john.doe@example.com\"]},{\"values\":[\"Jane Smith\",25,\"jane.smith@example.com\"]}]}}";
+        Assert.assertEquals(expectedJson, json);
+    }
+
+    private ResultSet createMockResultSet(List<List<Object>> testData) throws SQLException {
+        ResultSet resultSet = new MockResultSet();
+
+        // Set up the ResultSet metadata
+        ResultSetMetaData metaData = new MockResultSetMetaData(testData.get(0).size());
+        ((MockResultSet) resultSet).setMetaData(metaData);
+
+        // Add the rows to the ResultSet
+        for (List<Object> rowData : testData) {
+            ((MockResultSet) resultSet).addRow(rowData);
+        }
+
+        return resultSet;
+    }
+
+    // Mock ResultSet implementation for testing
+    private static class MockResultSet implements ResultSet {
+        private final List<List<Object>> rows = new ArrayList<>();
+        private int currentRow = -1;
+        private ResultSetMetaData metaData;
+
+        public void setMetaData(ResultSetMetaData metaData) {
+            this.metaData = metaData;
+        }
+
+        public void addRow(List<Object> rowData) {
+            rows.add(rowData);
+        }
+
+        @Override
+        public boolean next() throws SQLException {
+            currentRow++;
+            return currentRow < rows.size();
+        }
+
+        @Override
+        public Object getObject(int columnIndex) throws SQLException {
+            return rows.get(currentRow).get(columnIndex - 1);
+        }
+
+        // Implement other ResultSet methods as needed for testing
+        // ...
+
+    }
+
+    // Mock ResultSetMetaData implementation for testing
+    private static class MockResultSetMetaData implements ResultSetMetaData {
+        private final int columnCount;
+
+        public MockResultSetMetaData(int columnCount) {
+            this.columnCount = columnCount;
+        }
+
+        @Override
+        public int getColumnCount() throws SQLException {
+            return columnCount;
+        }
+
+        // Implement other ResultSetMetaData methods as needed for testing
+        // ...
+    }
+}
