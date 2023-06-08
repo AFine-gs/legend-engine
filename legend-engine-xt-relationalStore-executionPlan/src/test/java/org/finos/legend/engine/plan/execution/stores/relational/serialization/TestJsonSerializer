@@ -1,5 +1,6 @@
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.sql.ResultSet;
@@ -37,64 +38,25 @@ public class RelationalResultToJsonDefaultSerializerTest {
     }
 
     private ResultSet createMockResultSet(List<List<Object>> testData) throws SQLException {
-        ResultSet resultSet = new MockResultSet();
+        ResultSet resultSet = Mockito.mock(ResultSet.class);
+        ResultSetMetaData metaData = Mockito.mock(ResultSetMetaData.class);
+        
+        // Set up the column count
+        int columnCount = testData.get(0).size();
+        Mockito.when(metaData.getColumnCount()).thenReturn(columnCount);
 
         // Set up the ResultSet metadata
-        ResultSetMetaData metaData = new MockResultSetMetaData(testData.get(0).size());
-        ((MockResultSet) resultSet).setMetaData(metaData);
+        Mockito.when(resultSet.getMetaData()).thenReturn(metaData);
 
-        // Add the rows to the ResultSet
+        // Set up the row data
         for (List<Object> rowData : testData) {
-            ((MockResultSet) resultSet).addRow(rowData);
+            Mockito.when(resultSet.next()).thenReturn(true);
+            for (int i = 1; i <= columnCount; i++) {
+                Mockito.when(resultSet.getObject(i)).thenReturn(rowData.get(i - 1));
+            }
         }
+        Mockito.when(resultSet.next()).thenReturn(false);
 
         return resultSet;
-    }
-
-    // Mock ResultSet implementation for testing
-    private static class MockResultSet implements ResultSet {
-        private final List<List<Object>> rows = new ArrayList<>();
-        private int currentRow = -1;
-        private ResultSetMetaData metaData;
-
-        public void setMetaData(ResultSetMetaData metaData) {
-            this.metaData = metaData;
-        }
-
-        public void addRow(List<Object> rowData) {
-            rows.add(rowData);
-        }
-
-        @Override
-        public boolean next() throws SQLException {
-            currentRow++;
-            return currentRow < rows.size();
-        }
-
-        @Override
-        public Object getObject(int columnIndex) throws SQLException {
-            return rows.get(currentRow).get(columnIndex - 1);
-        }
-
-        // Implement other ResultSet methods as needed for testing
-        // ...
-
-    }
-
-    // Mock ResultSetMetaData implementation for testing
-    private static class MockResultSetMetaData implements ResultSetMetaData {
-        private final int columnCount;
-
-        public MockResultSetMetaData(int columnCount) {
-            this.columnCount = columnCount;
-        }
-
-        @Override
-        public int getColumnCount() throws SQLException {
-            return columnCount;
-        }
-
-        // Implement other ResultSetMetaData methods as needed for testing
-        // ...
     }
 }
