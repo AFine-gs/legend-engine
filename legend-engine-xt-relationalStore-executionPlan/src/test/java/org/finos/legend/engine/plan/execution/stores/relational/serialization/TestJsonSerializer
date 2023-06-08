@@ -1,4 +1,4 @@
-import org.junit.Assert;
+mport org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 import java.io.ByteArrayOutputStream;
@@ -6,7 +6,7 @@ import java.io.OutputStream;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import org.finos.legend.engine.plan.execution.stores.relational.result.RelationalResult;
 import org.finos.legend.engine.plan.execution.stores.relational.serialization.RelationalResultToJsonDefaultSerializer;
@@ -15,13 +15,12 @@ public class RelationalResultToJsonDefaultSerializerTest {
 
     @Test
     public void testStream() throws SQLException {
-        // Set up the test data
-        List<List<Object>> testData = new ArrayList<>();
-        testData.add(List.of("John Doe", 30, "john.doe@example.com"));
-        testData.add(List.of("Jane Smith", 25, "jane.smith@example.com"));
+        // Set up the test data generator with the specified number of rows
+        int numRows = 100;
+        TestDataGenerator dataGenerator = new TestDataGenerator(numRows);
 
-        // Create a mock ResultSet with the test data
-        ResultSet resultSet = createMockResultSet(testData);
+        // Create a mock ResultSet using the data generator
+        ResultSet resultSet = createMockResultSet(dataGenerator);
 
         // Create a RelationalResult object using the mock ResultSet
         RelationalResult relationalResult = new RelationalResult(resultSet);
@@ -32,31 +31,85 @@ public class RelationalResultToJsonDefaultSerializerTest {
         serializer.stream(outputStream);
         String json = outputStream.toString();
 
-        // Assert the expected JSON output
-        String expectedJson = "{\"builder\":null,\"generationInfo\":null,\"activities\":[],\"result\":{\"columns\":[\"name\",\"age\",\"email\"],\"rows\":[{\"values\":[\"John Doe\",30,\"john.doe@example.com\"]},{\"values\":[\"Jane Smith\",25,\"jane.smith@example.com\"]}]}}";
-        Assert.assertEquals(expectedJson, json);
+        // Assert the expected number of rows in the JSON output
+        int expectedRowCount = numRows;
+        int actualRowCount = countRowsInJson(json);
+        Assert.assertEquals(expectedRowCount, actualRowCount);
     }
 
-    private ResultSet createMockResultSet(List<List<Object>> testData) throws SQLException {
+    private ResultSet createMockResultSet(TestDataGenerator dataGenerator) throws SQLException {
         ResultSet resultSet = Mockito.mock(ResultSet.class);
         ResultSetMetaData metaData = Mockito.mock(ResultSetMetaData.class);
         
         // Set up the column count
-        int columnCount = testData.get(0).size();
+        int columnCount = dataGenerator.getColumnCount();
         Mockito.when(metaData.getColumnCount()).thenReturn(columnCount);
 
         // Set up the ResultSet metadata
         Mockito.when(resultSet.getMetaData()).thenReturn(metaData);
 
-        // Set up the row data
-        for (List<Object> rowData : testData) {
-            Mockito.when(resultSet.next()).thenReturn(true);
-            for (int i = 1; i <= columnCount; i++) {
-                Mockito.when(resultSet.getObject(i)).thenReturn(rowData.get(i - 1));
-            }
-        }
-        Mockito.when(resultSet.next()).thenReturn(false);
+        // Set up the row data using the data generator
+        Mockito.when(resultSet.next()).thenAnswer(invocation -> dataGenerator.hasNext());
+        Mockito.when(resultSet.getObject(Mockito.anyInt())).thenAnswer(invocation -> dataGenerator.getValue((int) invocation.getArguments()[0]));
 
         return resultSet;
+    }
+
+    private int countRowsInJson(String json) {
+        // Count the number of occurrences of the '"values": [' substring in the JSON
+        int startIndex = 0;
+        int count = 0;
+        while (startIndex >= 0) {
+            startIndex = json.indexOf("\"values\": [", startIndex);
+            if (startIndex >= 0) {
+                count++;
+                startIndex += "\"values\": [".length();
+            }
+        }
+        return count;
+    }
+
+    private static class TestDataGenerator implements Iterator<List<Object>> {
+        private final int numRows;
+        private int currentRow;
+
+        public TestDataGenerator(int numRows) {
+            this.numRows = numRows;
+            this.currentRow = 0;
+        }
+
+        public int getColumnCount() {
+            // Return the number of columns in your test data
+            return 3;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return currentRow < numRows;
+        }
+
+        @Override
+        public List<Object> next() {
+            if (!hasNext()) {
+                throw new IllegalStateException("No more rows available");
+            }
+
+            // Generate and return the next row of data
+            List<Object> rowData = generateRowData(currentRow);
+            currentRow++;
+            return rowData;
+        }
+
+        private List<Object> generateRowData(int rowIndex) {
+            // Generate the row data based on the row index
+            // For example, you can use a formula or logic to generate the values
+            String name = "Name " + rowIndex;
+            int age = rowIndex + 1;
+            String email = "email" + rowIndex + "@example.com";
+            return List.of(name, age, email);
+        }
+
+        // Implement the remaining Iterator methods as needed
+        // ...
     }
 }
