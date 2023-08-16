@@ -1,0 +1,92 @@
+// Copyright 2022 Goldman Sachs
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+import meta::external::format::arrow::executionPlan::platformBinding::legendJava::externalize::helperFunctions::*;
+import meta::pure::executionPlan::*;
+import meta::external::format::arrow::executionPlan::platformBinding::legendJava::externalize::*;
+import meta::external::shared::format::executionPlan::*;
+import meta::pure::executionPlan::platformBinding::typeInfo::*;
+import meta::external::shared::format::executionPlan::platformBinding::legendJava::*;
+import meta::pure::executionPlan::platformBinding::legendJava::*;
+// ========================================================================================================================================================
+// Descriptor
+// ========================================================================================================================================================
+
+// function meta::external::format::arrow::executionPlan::platformBinding::legendJava::externalize::getExternalFormatExternalizeJavaBindingDescriptor(): ExternalFormatExternalizeBindingDescriptor[1]
+// {
+//   ^ExternalFormatExternalizeBindingDescriptor
+//   (
+//     externalizePreparator = {node:ExternalFormatExternalizeExecutionNode[1], path:String[1], context:GenerationContext[1], debug:DebugContext[1]| prepareForExternalize($node, $path, $context, $debug)},
+//     externalizeGenerator  = {node:ExternalFormatExternalizeExecutionNode[1], path:String[1], context:GenerationContext[1], debug:DebugContext[1]| generateForExternalize($node, $path, $context, $debug)}
+//   );
+// }
+
+// ========================================================================================================================================================
+// prepare
+// ========================================================================================================================================================
+
+// function meta::external::format::arrow::executionPlan::platformBinding::legendJava::externalize::prepareForExternalize(node:ExternalFormatExternalizeExecutionNode[1], path:String[1], context:meta::pure::executionPlan::platformBinding::legendJava::GenerationContext[1], debug:DebugContext[1]): TypeInfoSet[1]
+// {
+//    print(if($debug.debug,|$debug.space+'('+$path+') prepare ExternalFormatExternalizeExecutionNode for arrowSchema \n', |''));
+
+//    let classIn      = $node.executionNodes.resultType->match([
+//                          c:ClassResultType[1] | $c.type->cast(@meta::pure::metamodel::type::Class<Any>)
+//                       ]);
+
+//    let tree         = resolveTreeForSerialize($node.tree);
+
+//    $context.typeInfos->addForGraphFetchTree($tree);
+// }
+
+
+// ========================================================================================================================================================
+// generate
+// ========================================================================================================================================================
+
+// function meta::external::format::arrow::executionPlan::platformBinding::legendJava::externalize::generateForExternalize(node:ExternalFormatExternalizeExecutionNode[1], path:String[1], context:meta::pure::executionPlan::platformBinding::legendJava::GenerationContext[1], debug:DebugContext[1]): meta::pure::executionPlan::platformBinding::legendJava::GeneratedCode[1]
+// {
+//    print(if($debug.debug,|$debug.space+'('+$path+') generate ExternalFormatExternalizeExecutionNode for arrowSchema \n', |''));
+
+//    let classIn      = $node.executionNodes.resultType->match([
+//                          c:ClassResultType[1] | $c.type->cast(@meta::pure::metamodel::type::Class<Any>)
+//                       ]);
+//    let tree         = resolveTreeForSerialize($node.tree);
+
+//    let childInfo    = $context->childNodeInfosForPath($path);
+
+//    let data         = ^SerializeData(
+//                           tree           = $tree,
+//                           auxiliaryTrees = $childInfo.graphFetchTrees
+//                       );
+
+//    let serializeClass = $context.conventions->planNodeClass('public', $path, 'Serialize');
+
+//    let project = mergeProjects([
+//       generateInterfacesAndEnums($context, $debug->indent()),
+//       createSerializeProject($path, $context, $data, $debug)
+//    ]);
+//    generatedCode($project, $serializeClass);
+// }
+
+//========================================================================================================================================================
+//helper functions
+//========================================================================================================================================================
+
+// function meta::external::format::arrow::executionPlan::platformBinding::legendJava::externalize::helperFunctions::resolveTreeForSerialize(tree:meta::pure::graphFetch::RootGraphFetchTree<Any>[1]): meta::pure::graphFetch::RootGraphFetchTree<Any>[1]
+// {
+//    if($tree.class == meta::pure::dataQuality::Checked,
+//      |let propTree = $tree.subTrees->cast(@PropertyGraphFetchTree)->filter(p | $p.property.name == 'value')->toOne();
+//       $propTree->propertyGraphFetchTreeToRootGraphFetchTree();,
+//      |$tree)
+// }
