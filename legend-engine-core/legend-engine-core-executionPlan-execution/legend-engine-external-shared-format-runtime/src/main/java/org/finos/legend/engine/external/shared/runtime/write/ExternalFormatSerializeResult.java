@@ -14,6 +14,9 @@
 
 package org.finos.legend.engine.external.shared.runtime.write;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import org.eclipse.collections.impl.factory.Lists;
 import org.finos.legend.engine.plan.execution.result.Result;
 import org.finos.legend.engine.plan.execution.result.ResultVisitor;
@@ -52,6 +55,21 @@ public class ExternalFormatSerializeResult extends StreamingResult
         if (this.childResult != null)
         {
             this.childResult.close();
+        }
+    }
+
+    @Override
+    public String flush(Serializer serializer)
+    {
+        try
+        {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            externalFormatWriter.writeDataAsString(bos);
+            return bos.toString(StandardCharsets.UTF_8.name());
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
         }
     }
 

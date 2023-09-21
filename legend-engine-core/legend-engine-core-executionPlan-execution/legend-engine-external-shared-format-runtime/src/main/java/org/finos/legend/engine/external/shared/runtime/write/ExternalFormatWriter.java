@@ -20,4 +20,10 @@ import java.io.OutputStream;
 public abstract class ExternalFormatWriter
 {
     public abstract void writeData(OutputStream stream) throws IOException;
+
+    public void writeDataAsString(OutputStream stream) throws IOException
+    {
+            writeData(stream);
+    }
+
 }

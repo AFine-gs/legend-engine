@@ -21,6 +21,7 @@ import org.apache.arrow.vector.ipc.ArrowFileWriter;
 import org.apache.arrow.vector.ipc.ArrowStreamReader;
 import org.eclipse.collections.impl.list.mutable.FastList;
 import org.finos.legend.engine.external.format.arrow.ArrowRuntimeExtension;
+import org.finos.legend.engine.external.shared.runtime.write.ExternalFormatDefaultSerializer;
 import org.finos.legend.engine.external.shared.runtime.write.ExternalFormatSerializeResult;
 import org.finos.legend.engine.plan.execution.result.serialization.SerializationFormat;
 import org.finos.legend.engine.plan.execution.stores.relational.activity.RelationalExecutionActivity;
@@ -44,6 +45,8 @@ import static org.mockito.ArgumentMatchers.any;
 public class TestArrowNodeExecutor
 
 {
+
+
     @Test
     public void testExternalize() throws Exception
     {
@@ -57,6 +60,7 @@ public class TestArrowNodeExecutor
         Mockito.when(mockDatabaseConnection.accept(any())).thenReturn(false);
         try (Connection conn = DriverManager.getConnection("jdbc:h2:~/test", "sa", "");
              ByteArrayOutputStream outputStream = new ByteArrayOutputStream())
+
         {
             //setup table
             conn.createStatement().execute("DROP TABLE IF EXISTS testtable");
@@ -68,11 +72,57 @@ public class TestArrowNodeExecutor
             ExternalFormatSerializeResult nodeExecute = (ExternalFormatSerializeResult) extension.executeExternalizeTDSExecutionNode(node, result, null, null);
 
             nodeExecute.stream(outputStream, SerializationFormat.DEFAULT);
-            assertArrow(outputStream, "TESTINT\tTESTSTRING\tTESTDATE\tTESTBOOL\n" +
+            String expected = "TESTINT\tTESTSTRING\tTESTDATE\tTESTBOOL\n" +
                     "1\tA\t1577854800000\ttrue\n" +
                     "2\tB\t1577844000000\tfalse\n" +
-                    "3\tB\t1577854800000\tfalse\n");
+                    "3\tB\t1577854800000\tfalse\n";
+            assertArrow(outputStream, expected);
+            RelationalResult result2 = new RelationalResult(FastList.newListWith(new RelationalExecutionActivity("SELECT * FROM testtable", null)), mockExecutionNode, FastList.newListWith(new SQLResultColumn("testInt", "INTEGER"), new SQLResultColumn("testString", "VARCHAR"), new SQLResultColumn("testDate", "TIMESTAMP"), new SQLResultColumn("testBool", "TIMESTAMP")), null, "GMT", conn, null, null, null, new RequestContext());
+
+            ExternalFormatSerializeResult nodeExecute2 = (ExternalFormatSerializeResult) extension.executeExternalizeTDSExecutionNode(node, result2, null, null);
+
+            String outputasString = nodeExecute2.flush(nodeExecute2.getSerializer(SerializationFormat.DEFAULT));
+
+            Assert.assertEquals(expected, outputasString);
         }
+
+
+    }
+
+    @Test
+    public void testExternalizeAsString() throws Exception
+    {
+        ArrowRuntimeExtension extension = new ArrowRuntimeExtension();
+        ExternalFormatExternalizeTDSExecutionNode node = new ExternalFormatExternalizeTDSExecutionNode();
+        //create a real result from H2
+        RelationalExecutionNode mockExecutionNode = Mockito.mock(RelationalExecutionNode.class);
+        DatabaseConnection mockDatabaseConnection = Mockito.mock(DatabaseConnection.class);
+
+        mockExecutionNode.connection = mockDatabaseConnection;
+        Mockito.when(mockDatabaseConnection.accept(any())).thenReturn(false);
+        try (Connection conn = DriverManager.getConnection("jdbc:h2:~/test", "sa", "");
+            )
+
+        {
+            //setup table
+            conn.createStatement().execute("DROP TABLE IF EXISTS testtable");
+            conn.createStatement().execute("Create Table testtable (testInt INTEGER, testString VARCHAR(255), testDate TIMESTAMP, testBool BOOLEAN)");
+            conn.createStatement().execute("INSERT INTO  testtable (testInt, testString, testDate, testBool) VALUES(1,'A', '2020-01-01 00:00:00-05:00',true),( 2,'B', '2020-01-01 00:00:00-02:00',false ),( 3,'B', '2020-01-01 00:00:00-05:00',false )");
+
+            RelationalResult result = new RelationalResult(FastList.newListWith(new RelationalExecutionActivity("SELECT * FROM testtable", null)), mockExecutionNode, FastList.newListWith(new SQLResultColumn("testInt", "INTEGER"), new SQLResultColumn("testString", "VARCHAR"), new SQLResultColumn("testDate", "TIMESTAMP"), new SQLResultColumn("testBool", "TIMESTAMP")), null, "GMT", conn, null, null, null, new RequestContext());
+
+            ExternalFormatSerializeResult nodeExecute = (ExternalFormatSerializeResult) extension.executeExternalizeTDSExecutionNode(node, result, null, null);
+
+            String expected = "TESTINT\tTESTSTRING\tTESTDATE\tTESTBOOL\n" +
+                    "1\tA\t1577854800000\ttrue\n" +
+                    "2\tB\t1577844000000\tfalse\n" +
+                    "3\tB\t1577854800000\tfalse\n";
+
+            String outputasString = nodeExecute.flush(nodeExecute.getSerializer(SerializationFormat.DEFAULT));
+
+            Assert.assertEquals(expected, outputasString);
+        }
+
 
     }
 
@@ -108,7 +158,7 @@ public class TestArrowNodeExecutor
     /*
      * This is a utility for generating arrow raw data to a file  for test setup
      */
-    protected void arrowFileCreationUtility(VectorSchemaRoot vectorSchemaRoot, String file)
+    private void arrowFileCreationUtility(VectorSchemaRoot vectorSchemaRoot, String file)
     {
 
         try (

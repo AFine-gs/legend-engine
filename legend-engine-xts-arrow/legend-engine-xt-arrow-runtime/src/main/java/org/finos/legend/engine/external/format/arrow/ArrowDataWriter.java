@@ -72,6 +72,28 @@ public class ArrowDataWriter extends ExternalFormatWriter implements AutoCloseab
     }
 
     @Override
+    public void writeDataAsString(OutputStream outputStream) throws IOException
+    {
+
+        try
+        {
+            while (this.iterator.hasNext())
+            {
+                try (VectorSchemaRoot vector = iterator.next())
+                {
+                    outputStream.write(vector.contentToTSVString().getBytes());
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            this.iterator.close();
+            throw e;
+        }
+
+    }
+
+    @Override
     public void close()
     {
         allocator.close();
