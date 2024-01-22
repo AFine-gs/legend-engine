@@ -121,7 +121,17 @@ function meta::pure::mapping::modelToModel::executionPlan::platformBinding::lege
                   )
                }
             },
-
+            filterCodeGeneratorWithCache = {set: InstanceSetImplementation[1], src: Code[1], withoutFilter: Code[1..*], context: GenerationContext[1], debug:DebugContext[1] |
+               {ps : PureInstanceSetImplementation[1] |
+                  if ($ps.filter->isNotEmpty(),
+                     |  let code = $ps.filter.expressionSequence->at(0)->evaluateAndDeactivate()->generateJavaWithCache($context.conventions, $debug->indent());
+                        let ifFilter = $code.code->j_if($withoutFilter, j_null()->j_return())->toCodeCollectionWithCache($code.conventions);
+                        
+                        ,
+                     | $withoutFilter->toCodeCollectionWithCache($context.conventions)
+                  )
+               }
+            },
             mappingTransformExtractors = [
                ppm : PurePropertyMapping[1] | $ppm.transform
             ],

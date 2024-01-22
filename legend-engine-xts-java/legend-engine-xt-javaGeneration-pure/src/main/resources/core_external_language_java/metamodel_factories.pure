@@ -2757,6 +2757,11 @@ function meta::external::language::java::factory::addDependencyProject(state:Cod
    ^$state(projectsByDependency=$state.projectsByDependency->put($name, $project));
 }
 
+function meta::external::language::java::factory::addDependencyVisitedFunctions(state:CodeDependencyResolutionState[1], visitedFunctions:String[1]):CodeDependencyResolutionState[1]
+{
+   ^$state(visitedFunctions=$state.visitedFunctions->concatenate($visitedFunctions));
+}
+
 function meta::external::language::java::factory::resolveProjects(dependencies:CodeDependency[*]):CodeDependencyResolutionState[1]
 {
    $dependencies->resolveProjects(^CodeDependencyResolutionState(projectsByDependency=^Map<String, Project>()));
