@@ -248,11 +248,15 @@ function <<access.private>> meta::external::language::java::transform::processFu
 
    $result->debugAndReturn($debug);
 }
+function <<access.private>> meta::external::language::java::transform::classHasFunction(cl:meta::external::language::java::metamodel::Class[1], f:FunctionSignature[1]):Boolean[1]
+{
+  $f.class.simpleName==$cl.simpleName &&    $f.class.package==$cl.package && $cl.methods.name->contains($f.method.name);  
+
+}
 
 function <<access.private>> meta::external::language::java::transform::processConcreteFunctionExpression(fe: FunctionExpression[1], conventions: Conventions[1], debug: meta::pure::tools::DebugContext[1]):Code[1]
 {
    print(if($debug.debug,|$debug.space+'processConcreteFunctionExpression '+$fe.func->elementToPath()+'\n',|''));
-
    let signature = $conventions->functionSignature($fe.func->cast(@ConcreteFunctionDefinition<Any>));
    let args      = $fe.parametersValues->evaluateAndDeactivate()->map(p| $p->generateJava($conventions, $debug->indent()));
    let argTypes  = $signature.method.parameters.type;
@@ -265,11 +269,11 @@ function <<access.private>> meta::external::language::java::transform::processCo
          if($argType->isJavaList(), |$arg->j_listOf($argType), |$arg)->j_cast($argType);
       }
    );
-
-   if(!($conventions.visitedFunctions->contains($fe)),
+ 
+   if(!($conventions.visitedFunctions->contains($fe)) && $conventions.existingClasses->filter(c|$c->classHasFunction($signature))->isEmpty(),
       |let newCon = ^$conventions(visitedFunctions += $fe->cast(@FunctionExpression));
-      let name = $fe.func->elementToPath();
-      let dependency = newDependency(
+       let name = $fe.func->elementToPath();
+       let dependency = newDependency(
         $name,
         {state|
         if(!$state.visitedFunctions->contains($fe.func->elementToPath()),

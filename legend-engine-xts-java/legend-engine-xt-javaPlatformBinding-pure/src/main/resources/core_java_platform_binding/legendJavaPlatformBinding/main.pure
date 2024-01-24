@@ -39,6 +39,7 @@ Class meta::pure::executionPlan::platformBinding::legendJava::GenerationContext
    conventions               : Conventions[1];
    nodeInfos                 : NodeInfo[*];
    baseProject               : Project[0..1];
+   generatedProjects         : Project[*];
 }
 
 Class meta::pure::executionPlan::platformBinding::legendJava::NodeInfo
@@ -83,6 +84,7 @@ Class meta::pure::executionPlan::platformBinding::legendJava::GeneratedNode
 // ----------------------------------------------------------------------------------------------------------
 // --- Plan generation
 // ----------------------------------------------------------------------------------------------------------
+
 
 
 function meta::pure::executionPlan::platformBinding::legendJava::projectToImplementation(project:Project[1]):JavaPlatformImplementation[1]

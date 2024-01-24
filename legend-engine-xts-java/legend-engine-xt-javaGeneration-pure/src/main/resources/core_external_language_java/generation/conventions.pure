@@ -54,7 +54,7 @@ Class meta::external::language::java::transform::Conventions
    newFunctionProhibitedList   : meta::pure::metamodel::type::Class<Any>[*];
    providedVariables           : Map<String, Code>[1];
    visitedFunctions            : FunctionExpression[*];
-
+   existingClasses            :  meta::external::language::java::metamodel::Class[*];
    extensions : meta::pure::extension::Extension[*];
 }
 

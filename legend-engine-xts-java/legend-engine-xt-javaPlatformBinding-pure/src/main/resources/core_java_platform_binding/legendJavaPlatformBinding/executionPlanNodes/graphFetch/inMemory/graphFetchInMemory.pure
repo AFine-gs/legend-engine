@@ -593,6 +593,7 @@ function <<access.private>> meta::pure::mapping::modelToModel::executionPlan::pl
 function <<access.private>> meta::pure::mapping::modelToModel::executionPlan::platformBinding::legendJava::graphFetch::setTransformerCodes(input: Code[1],path: String[1], set: InstanceSetImplementation[1], graphFetchTree: RoutedGraphFetchTree[1], graphImplClass: meta::external::language::java::metamodel::Class[1], wrapAsGraphInstance: Boolean[1], resolveToList: Boolean[1], context: GenerationContext[1], extensions: Extension[*], debug: DebugContext[1]): Code[1..*]
 {
    let conventions       = $context.conventions;
+   let updatedConventions = ^$conventions(existingClasses = $context.generatedProjects->map(p|$p->allClasses()));
    let requiredSubTrees  = $graphFetchTree.subTrees->cast(@RoutedPropertyGraphFetchTree)->filter(st | $st.property->instanceOf(Property) && ($st.property->isPrimitiveValueProperty() || !generatePropertyNodeForComplexProperty($st, $set)));
    let setHasExplosion   = $set->hasExplodeProperty();
    let result            = j_variable($graphImplClass, 'result');
@@ -601,13 +602,13 @@ function <<access.private>> meta::pure::mapping::modelToModel::executionPlan::pl
    let src               = j_variable($srcJavaClass, 'src');
    let isMerged = $set->isPartOfMerge();
    let transform = if ($setHasExplosion,
-                       | $set->cast(@PureInstanceSetImplementation)->propertyExplosionCodes($requiredSubTrees, $result, $graphImplClass, $src, $wrapAsGraphInstance, $resolveToList, $conventions, $extensions, $debug),
+                       | $set->cast(@PureInstanceSetImplementation)->propertyExplosionCodes($requiredSubTrees, $result, $graphImplClass, $src, $wrapAsGraphInstance, $resolveToList, $updatedConventions, $extensions, $debug),
                        | let inScopeSubTrees = $requiredSubTrees->filter( t| $set->propertyMappingsByPropertyName($t.property->cast(@Property<Nil,Any|*>).name->toOne())->head()->isNotEmpty() && $isMerged || !$isMerged );
 
                          let propertyValues = $inScopeSubTrees->map({st |
                             let prop = $st.property->cast(@Property<Nil,Any|*>);
                             let propertyMapping =  $set->propertyMappingsByPropertyName($prop.name->toOne())->head();
-                            let value = $set->generatePropertyMappingTransform($prop, $propertyMapping, $src, $conventions, $extensions, $debug->indent());
+                            let value = $set->generatePropertyMappingTransform($prop, $propertyMapping, $src, $updatedConventions, $extensions, $debug->indent());
                             $value->map(v| pair($prop, $v));
                          });
                          let milestoneDateGetter   = {strategy: SingleDateTemporalStrategy[1] |
@@ -658,7 +659,6 @@ function meta::pure::mapping::modelToModel::executionPlan::platformBinding::lege
 function meta::pure::mapping::modelToModel::executionPlan::platformBinding::legendJava::graphFetch::generatePropertyMappingTransform(setImpl: InstanceSetImplementation[1], property: Property<Nil,Any|*>[1], propertyMapping: PropertyMapping[0..1], src: Code[1], conventions: Conventions[1], extensions: Extension[*], explodeProperty: Boolean[1], debug: DebugContext[1]): Code[0..1]
 {
    print(if($debug.debug,|$debug.space+'generatePropertyMappingTransform: \''+$property.name->toOne()+'\'\n', |''));
-
    let isNoMappingPassThru       = $propertyMapping->isEmpty() && $property.owner->instanceOf(meta::pure::metamodel::type::Class) && $setImpl->passThruProperty($property, $extensions);
    let isNoMappingDefaultToEmpty = $propertyMapping->isEmpty() && $property.owner->instanceOf(meta::pure::metamodel::type::Class) && $setImpl->isNoMappingDefaultToEmpty($property);
    let isMergedUnMappedProperty =  $propertyMapping->isEmpty() && $setImpl ->isPartOfMerge();

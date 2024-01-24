@@ -83,7 +83,7 @@ function meta::pure::mapping::modelToModel::executionPlan::platformBinding::lege
 
       generateLegendJavaCodeForExtraChildNodes = {node: ExecutionNode[1], project: Project[0..1], path: String[1], context: GenerationContext[1], extensions: Extension[*], debug: DebugContext[1] |
          $node->match([
-            {i: InMemoryGraphFetchExecutionNode[1] |
+            {i: InMemoryGraphFetchExecutionNode[1] | 
                let transformedChildren = $i.children->size()->range()->map(x | $i.children->at($x)->generateLegendJavaPlatformBindingCode($path + '.localChild' + $x->toString(), $context, $extensions, $debug));
                ^GeneratedNode
                (
@@ -116,7 +116,9 @@ function meta::pure::mapping::modelToModel::executionPlan::platformBinding::lege
             filterCodeGenerator = {set: InstanceSetImplementation[1], src: Code[1], withoutFilter: Code[1..*], context: GenerationContext[1], debug:DebugContext[1] |
                {ps : PureInstanceSetImplementation[1] |
                   if ($ps.filter->isNotEmpty(),
-                     | $ps.filter.expressionSequence->at(0)->evaluateAndDeactivate()->generateJava($context.conventions, $debug->indent())->j_if($withoutFilter, j_null()->j_return()),
+                     |     let conventions       = $context.conventions;
+                          let updatedConventions = ^$conventions(existingClasses = $context.generatedProjects->map(p|$p->allClasses()));
+                       $ps.filter.expressionSequence->at(0)->evaluateAndDeactivate()->generateJava($updatedConventions, $debug->indent())->j_if($withoutFilter, j_null()->j_return());,
                      | $withoutFilter
                   )
                }

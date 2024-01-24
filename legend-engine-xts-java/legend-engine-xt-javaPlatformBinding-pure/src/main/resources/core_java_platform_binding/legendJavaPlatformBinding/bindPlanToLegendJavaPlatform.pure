@@ -32,10 +32,10 @@ function meta::pure::executionPlan::platformBinding::legendJava::bindPlanToLegen
    let legendJavaConfig   = $platformBindingConfig->convertToLegendJavaPlatformBindingConfigIfPossible();
    let generationContext  = $plan->prepareGenerationContext($legendJavaConfig, $extensions, $debug);
 
-   let baseProject        = $generationContext->generateTypes($debug);
+   let baseProject        = $generationContext->generateTypes($debug); //first one 
    let generatedNode      = $plan.rootExecutionNode->generateLegendJavaPlatformBindingCode('root', $generationContext, $extensions, $debug);
    let generatedProject   = $baseProject->concatenate($generatedNode.project)->toOneMany()->mergeProjects();
-
+ // $generatedProject->  meta::external::language::java::serialization::printProject()->println()  ; []->toOne();
    ^$plan
    (
       rootExecutionNode = $generatedNode.node,
@@ -126,13 +126,13 @@ function meta::pure::executionPlan::platformBinding::legendJava::generateLegendJ
 
    let newNode     = ^$node(executionNodes = $generatedChildren.node, implementation = $generated.implementation);
    let fullProject = $generated.project->concatenate($generatedChildren.project)->concatenate($context.baseProject)->mergeProjectsNullable();
-
+   let updatedContext = ^$context(generatedProjects+=$fullProject);
    if ($supportingExtension.generateLegendJavaCodeForExtraChildNodes->isNotEmpty(),
-       | $supportingExtension.generateLegendJavaCodeForExtraChildNodes->toOne()->eval($newNode, $fullProject, $path, $context, $extensions, $debug),
+       | $supportingExtension.generateLegendJavaCodeForExtraChildNodes->toOne()->eval($newNode, $fullProject, $path, $updatedContext, $extensions, $debug),
        | $newNode->match([
             {g:GlobalGraphFetchExecutionNode[1] |
-               let transformedChildren = $g.children->size()->range()->map(x | $g.children->at($x)->generateLegendJavaPlatformBindingCode($path + '.globalChild' + $x->toString(), $context, $extensions, $debug));
-               let transformedLocal = $g.localGraphFetchExecutionNode->generateLegendJavaPlatformBindingCode($path + localGraphFetchNodePathPrefix(), $context, $extensions, $debug);
+               let transformedChildren = $g.children->size()->range()->map(x | $g.children->at($x)->generateLegendJavaPlatformBindingCode($path + '.globalChild' + $x->toString(), $updatedContext, $extensions, $debug));
+               let transformedLocal = $g.localGraphFetchExecutionNode->generateLegendJavaPlatformBindingCode($path + localGraphFetchNodePathPrefix(),  ^$updatedContext(generatedProjects+=$transformedChildren.project), $extensions, $debug);
                ^GeneratedNode(
                   node = ^$g
                          (
