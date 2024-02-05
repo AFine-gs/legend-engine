@@ -433,7 +433,7 @@ Class meta::pure::graphFetch::EnrichmentState
 {
 
   tree: GraphFetchTree[1];
-  visitedFunctions : Function<Any>[*];
+  visitedFunctions : String[*];
 
 }
 function <<access.private>> meta::pure::graphFetch::createState(tree:GraphFetchTree[1]):EnrichmentState[1]

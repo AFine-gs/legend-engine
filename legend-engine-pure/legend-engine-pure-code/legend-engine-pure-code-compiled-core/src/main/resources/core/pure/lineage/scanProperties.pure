@@ -36,7 +36,7 @@ Class meta::pure::lineage::scanProperties::Res
 {
    current : List<PropertyPathNode>[1];
    result : List<PropertyPathNode>[*];
-   visitedFunctions:Function<Any>[*];
+   visitedFunctions:String[*];
 }
 
 Class meta::pure::lineage::scanProperties::propertyTree::PropertyPathTree
@@ -51,7 +51,7 @@ Class meta::pure::lineage::scanProperties::ScanConfig
 {
   scanClasses:Boolean[1];
   explodeMilestonedProperties:Boolean[1];
-  visitedFunctions:Function<Any>[*];
+  visitedFunctions:String[*];
 }
 
 function  meta::pure::lineage::scanProperties::defaultScanConfig(): ScanConfig[1]
@@ -141,10 +141,10 @@ function meta::pure::lineage::scanProperties::scanProperties(vs:ValueSpecificati
 function meta::pure::lineage::scanProperties::scanProperties(vs:ValueSpecification[1], debug:DebugContext[1], config:ScanConfig[1]):Res[0..1]
 { 
    print(if($debug.debug,|$debug.space+'>>> ScanProperties in : ' +$vs->printValueSpecification('') + ' \n',|''));
-   internal_scanProperties($vs, $config.visitedFunctions, noVars(), $config,  ^$debug(space=$debug.space+'    '));
+   internal_scanProperties($vs,[], noVars(), $config,  ^$debug(space=$debug.space+'    '));
 }
 
-function <<access.private>> meta::pure::lineage::scanProperties::internal_scanProperties(vs:ValueSpecification[1], processed:Function<Any>[*], vars:Map<String,List<PropertyPathNode>>[1], config:ScanConfig[1], debug: meta::pure::tools::DebugContext[1]):Res[0..1]
+function <<access.private>> meta::pure::lineage::scanProperties::internal_scanProperties(vs:ValueSpecification[1], processed:Function<Any>[*], vars:Map<String,List<PropertyPathNode>>[1], config:ScanConfig[1],  debug: meta::pure::tools::DebugContext[1]):Res[0..1]
 {
   print(if($debug.debug,|$vars->keyValues()->map(kv | '{' + $kv.first + ' : ' + $kv.second->printPropertyNodeLists('') + '}')->makeString($debug.space + 'Context : ', ', ', '\n'),|''));
 
@@ -336,7 +336,7 @@ function <<access.private>> meta::pure::lineage::scanProperties::internal_scanPr
                                                                                let pp = $params->map(v|$v->internal_scanProperties($processed, $vars, $config,  ^$debug(space=$debug.space+'    ')));
                                                                                
                                                                                print(if($debug.debug,|$debug.space+'checking if func should be processed further \n',|''));
-                                                                               let func = $fe.func->filter(f| $f->shouldBeProcessed($processed))->first();
+                                                                               let func = $fe.func->filter(f| $f->shouldBeProcessed($config.visitedFunctions))->first();
                                                                                $func->processFunction($pp, $vars, $processed,  $config, ^$debug(space=$debug.space+'    '));
                                                                             }
                                                                          ))))))))))));
@@ -380,10 +380,10 @@ function <<access.private>> meta::pure::lineage::scanProperties::internal_scanPr
    $res;
 }
 
-function <<access.private>> meta::pure::lineage::scanProperties::shouldBeProcessed(f:Function<Any>[1], processed:Function<Any>[*]):Boolean[1]
+function <<access.private>> meta::pure::lineage::scanProperties::shouldBeProcessed(f:Function<Any>[1], processed:String[*]):Boolean[1]
 {
    let pkgOk = !$f->isWithinPackage(meta) || $f->meta::alloy::isMetaAlloyTestDependency() || $f->isWithinPackage(meta::pure::lineage::scanProperties::test);
-   $pkgOk && !$processed->contains($f);
+   $pkgOk && !$processed->contains($f->elementToPath());
 }
 
 function <<access.private>> meta::pure::lineage::scanProperties::extractType(vs:ValueSpecification[1]):Type[1]
@@ -422,9 +422,10 @@ $fn.name->println();
          let newVars     = $f->functionType().parameters.name->zip($paramPaths.current)->newMap();
          let allVars     = $vars->putAll($newVars);
          let expressions = $f->match([l:FunctionDefinition<Any>[1]| $l.expressionSequence, n:NativeFunction<Any>[1]| []]);
-
+          let fnPath = $f->elementToPath();
+         let updatedConfig = ^$config(visitedFunctions+=$f->elementToPath());
          let body = $expressions->processExpressionSequence($allVars, $processed->concatenate($f), $config, $debug);
-         ^$body(result=$fromParams.result->concatenate($body.result)->concatenate($funcParamNodes),visitedFunctions+=$f);
+         ^$body(result=$fromParams.result->concatenate($body.result)->concatenate($funcParamNodes),visitedFunctions+=$f->elementToPath());
       }
    ]);
 }
