@@ -405,7 +405,9 @@ function <<access.private>> meta::pure::lineage::scanProperties::processFunction
 {
    print(if($debug.debug,|$debug.space+'  - func '+if($fn->isEmpty(), |'not found or excuded', |if($fn.name->isEmpty(), |$fn->toOne()->type().name->toOne(), |$fn.name->toOne()))+'\n',|''));
                                                                               'Check'->println();
-$fn.name->println();
+
+  
+
    let fromParams = ^Res(current=emptyPath(), result=$paramPaths.result);
 
    $fn->match([
@@ -417,15 +419,14 @@ $fn.name->println();
                list($funcParamClasses -> map(c|$c->dummyNodeForClass()));,
            | [] 
            );
-
-
+          println($fn.name);
+         let updatedElements = if($f->instanceOf(ConcreteFunctionDefinition),|$config.visitedFunctions->concatenate($f->elementToPath()),|$config.visitedFunctions);
          let newVars     = $f->functionType().parameters.name->zip($paramPaths.current)->newMap();
          let allVars     = $vars->putAll($newVars);
          let expressions = $f->match([l:FunctionDefinition<Any>[1]| $l.expressionSequence, n:NativeFunction<Any>[1]| []]);
-          let fnPath = $f->elementToPath();
-         let updatedConfig = ^$config(visitedFunctions+=$f->elementToPath());
+         let updatedConfig = ^$config(visitedFunctions+=$updatedElements);
          let body = $expressions->processExpressionSequence($allVars, $processed->concatenate($f), $config, $debug);
-         ^$body(result=$fromParams.result->concatenate($body.result)->concatenate($funcParamNodes),visitedFunctions+=$f->elementToPath());
+         ^$body(result=$fromParams.result->concatenate($body.result)->concatenate($funcParamNodes),visitedFunctions=$updatedElements);
       }
    ]);
 }
