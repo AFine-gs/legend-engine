@@ -1333,6 +1333,28 @@ function <<test.Test>> meta::pure::graphFetch::tests::sourceTreeCalc::testSuperA
    assertEquals($expectedSourceTree->sortTree()->meta::pure::graphFetch::treeToString(), $sourceTree->sortTree()->meta::pure::graphFetch::treeToString());
 }
 
+function <<test.Test>> meta::pure::graphFetch::tests::sourceTreeCalc::testFunctionScanReUsed():Boolean[1]
+{
+   let tree = #{
+      meta::pure::graphFetch::tests::sourceTreeCalc::withSubType::TargetStreetCluster{
+         streetNames,
+         zipCodes
+      }
+   }#;
+
+   let sourceTree = calculateSourceTree($tree, meta::pure::graphFetch::tests::sourceTreeCalc::withSubType::testMappingWithFunctions, meta::pure::extension::defaultExtensions())->sortTree();
+   let expectedSourceTree = #{
+      meta::pure::graphFetch::tests::sourceTreeCalc::withSubType::SourceStreetCluster{
+                streetCluster{
+                    street
+                }
+      }
+   }#;
+
+   assertEquals($expectedSourceTree->sortTree()->meta::pure::graphFetch::treeToString(), $sourceTree->sortTree()->meta::pure::graphFetch::treeToString());
+}
+
+
 function meta::pure::lineage::scanProperties::test::getZipCodes(s:Location[*]):String[*]
 {
    $s->map(x|$x.zipCode);
@@ -1364,6 +1386,16 @@ Mapping meta::pure::graphFetch::tests::sourceTreeCalc::withSubType::testMappingW
     ~src meta::pure::graphFetch::tests::sourceTreeCalc::withSubType::SourceStreetCluster
     streetNames: $src.streetCluster.street,
     zipCodes: $src.streetCluster.zipCode
+  }
+)
+
+Mapping meta::pure::graphFetch::tests::sourceTreeCalc::withSubType::testMappingWithFunctions
+(
+  *meta::pure::graphFetch::tests::sourceTreeCalc::withSubType::TargetStreetCluster: Pure
+  {
+    ~src meta::pure::graphFetch::tests::sourceTreeCalc::withSubType::SourceStreetCluster
+    streetNames: $src.streetCluster->meta::pure::lineage::scanProperties::test::getStreetNames()
+    zipCodes: $src.streetCluster->meta::pure::lineage::scanProperties::test::getStreetNames()
   }
 )
 

@@ -36,6 +36,7 @@ Class meta::pure::lineage::scanProperties::Res
 {
    current : List<PropertyPathNode>[1];
    result : List<PropertyPathNode>[*];
+   visitedFunctions:Function<Any>[*];
 }
 
 Class meta::pure::lineage::scanProperties::propertyTree::PropertyPathTree
@@ -50,6 +51,7 @@ Class meta::pure::lineage::scanProperties::ScanConfig
 {
   scanClasses:Boolean[1];
   explodeMilestonedProperties:Boolean[1];
+  visitedFunctions:Function<Any>[*];
 }
 
 function  meta::pure::lineage::scanProperties::defaultScanConfig(): ScanConfig[1]
@@ -139,7 +141,7 @@ function meta::pure::lineage::scanProperties::scanProperties(vs:ValueSpecificati
 function meta::pure::lineage::scanProperties::scanProperties(vs:ValueSpecification[1], debug:DebugContext[1], config:ScanConfig[1]):Res[0..1]
 { 
    print(if($debug.debug,|$debug.space+'>>> ScanProperties in : ' +$vs->printValueSpecification('') + ' \n',|''));
-   internal_scanProperties($vs, [], noVars(), $config,  ^$debug(space=$debug.space+'    '));
+   internal_scanProperties($vs, $config.visitedFunctions, noVars(), $config,  ^$debug(space=$debug.space+'    '));
 }
 
 function <<access.private>> meta::pure::lineage::scanProperties::internal_scanProperties(vs:ValueSpecification[1], processed:Function<Any>[*], vars:Map<String,List<PropertyPathNode>>[1], config:ScanConfig[1], debug: meta::pure::tools::DebugContext[1]):Res[0..1]
@@ -335,7 +337,6 @@ function <<access.private>> meta::pure::lineage::scanProperties::internal_scanPr
                                                                                
                                                                                print(if($debug.debug,|$debug.space+'checking if func should be processed further \n',|''));
                                                                                let func = $fe.func->filter(f| $f->shouldBeProcessed($processed))->first();
-
                                                                                $func->processFunction($pp, $vars, $processed,  $config, ^$debug(space=$debug.space+'    '));
                                                                             }
                                                                          ))))))))))));
@@ -403,7 +404,8 @@ function <<access.private>> meta::pure::lineage::scanProperties::processFunction
 function <<access.private>> meta::pure::lineage::scanProperties::processFunction(fn:Function<Any>[0..1], paramPaths:Res[*], vars:Map<String,List<PropertyPathNode>>[1], processed:Function<Any>[*], config:ScanConfig[1], debug:DebugContext[1] , addFunctionParamClasses : Boolean[1]):Res[1]
 {
    print(if($debug.debug,|$debug.space+'  - func '+if($fn->isEmpty(), |'not found or excuded', |if($fn.name->isEmpty(), |$fn->toOne()->type().name->toOne(), |$fn.name->toOne()))+'\n',|''));
-
+                                                                              'Check'->println();
+$fn.name->println();
    let fromParams = ^Res(current=emptyPath(), result=$paramPaths.result);
 
    $fn->match([
@@ -422,7 +424,7 @@ function <<access.private>> meta::pure::lineage::scanProperties::processFunction
          let expressions = $f->match([l:FunctionDefinition<Any>[1]| $l.expressionSequence, n:NativeFunction<Any>[1]| []]);
 
          let body = $expressions->processExpressionSequence($allVars, $processed->concatenate($f), $config, $debug);
-         ^$body(result=$fromParams.result->concatenate($body.result)->concatenate($funcParamNodes));
+         ^$body(result=$fromParams.result->concatenate($body.result)->concatenate($funcParamNodes),visitedFunctions+=$f);
       }
    ]);
 }
