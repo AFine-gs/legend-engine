@@ -292,6 +292,11 @@
                     <version>${google.maven.download.plugin.version}</version>
                 </plugin>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.2.1</version>
+                </plugin>
+                <plugin>
                     <groupId>org.finos.legend.pure</groupId>
                     <artifactId>legend-pure-maven-generation-java</artifactId>
                     <version>${legend.pure.version}</version>
