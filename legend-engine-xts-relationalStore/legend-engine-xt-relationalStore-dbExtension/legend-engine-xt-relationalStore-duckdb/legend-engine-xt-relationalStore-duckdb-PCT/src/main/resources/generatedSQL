@@ -1,580 +1,640 @@
-
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_6940226_1751051762201}#->asOfJoin(#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_76364_1751051762382}#, {x, y|$x.time > $y.time2}, {x, y|$x.key == $y.key2})'
-'SQL: select "tb_6940226_1751051762201_0"."key" as "key", "tb_6940226_1751051762201_0"."time" as "time", "tb_6940226_1751051762201_0"."value" as "value", "tb_6940226_1751051762201_0"."key2" as "key2", "tb_6940226_1751051762201_0"."time2" as "time2", "tb_6940226_1751051762201_0"."value2" as "value2" from (select "tb_6940226_1751051762201_1"."key" as "key", "tb_6940226_1751051762201_1"."time" as "time", "tb_6940226_1751051762201_1"."value" as "value", "tb_76364_1751051762382_0"."key2" as "key2", "tb_76364_1751051762382_0"."time2" as "time2", "tb_76364_1751051762382_0"."value2" as "value2" from (select "tb_6940226_1751051762201_2".key as "key", "tb_6940226_1751051762201_2".time as "time", "tb_6940226_1751051762201_2".value as "value" from leSchema.tb_6940226_1751051762201 as "tb_6940226_1751051762201_2") as "tb_6940226_1751051762201_1"asof left join (select "tb_76364_1751051762382_1".key2 as "key2", "tb_76364_1751051762382_1".time2 as "time2", "tb_76364_1751051762382_1".value2 as "value2" from leSchema.tb_76364_1751051762382 as "tb_76364_1751051762382_1") as "tb_76364_1751051762382_0"on ("tb_6940226_1751051762201_1"."time" > "tb_76364_1751051762382_0"."time2" and "tb_6940226_1751051762201_1"."key" = "tb_76364_1751051762382_0"."key2")) as "tb_6940226_1751051762201_0"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_5789157_1751051774400}#->asOfJoin(#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_9804393_1751051774405}#, {x, y|$x.time < $y.time2}, {x, y|$x.key == $y.key2})'
-'SQL: select "tb_5789157_1751051774400_0"."key" as "key", "tb_5789157_1751051774400_0"."time" as "time", "tb_5789157_1751051774400_0"."value" as "value", "tb_5789157_1751051774400_0"."key2" as "key2", "tb_5789157_1751051774400_0"."time2" as "time2", "tb_5789157_1751051774400_0"."value2" as "value2" from (select "tb_5789157_1751051774400_1"."key" as "key", "tb_5789157_1751051774400_1"."time" as "time", "tb_5789157_1751051774400_1"."value" as "value", "tb_9804393_1751051774405_0"."key2" as "key2", "tb_9804393_1751051774405_0"."time2" as "time2", "tb_9804393_1751051774405_0"."value2" as "value2" from (select "tb_5789157_1751051774400_2".key as "key", "tb_5789157_1751051774400_2".time as "time", "tb_5789157_1751051774400_2".value as "value" from leSchema.tb_5789157_1751051774400 as "tb_5789157_1751051774400_2") as "tb_5789157_1751051774400_1"asof left join (select "tb_9804393_1751051774405_1".key2 as "key2", "tb_9804393_1751051774405_1".time2 as "time2", "tb_9804393_1751051774405_1".value2 as "value2" from leSchema.tb_9804393_1751051774405 as "tb_9804393_1751051774405_1") as "tb_9804393_1751051774405_0"on ("tb_5789157_1751051774400_1"."time" < "tb_9804393_1751051774405_0"."time2" and "tb_5789157_1751051774400_1"."key" = "tb_9804393_1751051774405_0"."key2")) as "tb_5789157_1751051774400_0"'
-EXAMPLE: 
-EXPRESSION:' |let tds1 = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_2051122_1751051774838}#;
- let tds2 = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_5567126_1751051774853}#;
+'EXAMPLE'
+'EXPRESSION: |let tds1 = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_7998479_1751219917831}#;
+ let tds2 = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_1830859_1751219917838}#;
  $tds1->asOfJoin($tds2, {x, y|$x.time > $y.time2}, {x, y|$x.key == $y.key2});
 '
-'SQL: WITH tds1 AS (select "tb_2051122_1751051774838_0".key as "key", "tb_2051122_1751051774838_0".time as "time", "tb_2051122_1751051774838_0".value as "value" from leSchema.tb_2051122_1751051774838 as "tb_2051122_1751051774838_0"), 
-tds2 AS (select "tb_2051122_1751051774838_0".key2 as "key2", "tb_2051122_1751051774838_0".time2 as "time2", "tb_2051122_1751051774838_0".value2 as "value2" from leSchema.tb_5567126_1751051774853 as "tb_2051122_1751051774838_0") 
-select "tds1_0"."key" as "key", "tds1_0"."time" as "time", "tds1_0"."value" as "value", "tds1_0"."key2" as "key2", "tds1_0"."time2" as "time2", "tds1_0"."value2" as "value2" from (select "tds1_1"."key" as "key", "tds1_1"."time" as "time", "tds1_1"."value" as "value", "tds2_0"."key2" as "key2", "tds2_0"."time2" as "time2", "tds2_0"."value2" as "value2" from (select "root"."key", "root"."time", "root"."value" from tds1 as "root") as "tds1_1"asof left join (select "root"."key2", "root"."time2", "root"."value2" from tds2 as "root") as "tds2_0"on ("tds1_1"."time" > "tds2_0"."time2" and "tds1_1"."key" = "tds2_0"."key2")) as "tds1_0"'
-EXAMPLE: 
-EXPRESSION:' |let tds1 = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_8392729_1751051775550}#;
- let tds2 = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_1361212_1751051775573}#;
- $tds1->asOfJoin($tds2, {x, y|$x.time < $y.time2}, {x, y|$x.key == $y.key2});
-'
-'SQL: WITH tds1 AS (select "tb_8392729_1751051775550_0".key as "key", "tb_8392729_1751051775550_0".time as "time", "tb_8392729_1751051775550_0".value as "value" from leSchema.tb_8392729_1751051775550 as "tb_8392729_1751051775550_0"), 
-tds2 AS (select "tb_8392729_1751051775550_0".key2 as "key2", "tb_8392729_1751051775550_0".time2 as "time2", "tb_8392729_1751051775550_0".value2 as "value2" from leSchema.tb_1361212_1751051775573 as "tb_8392729_1751051775550_0") 
-select "tds1_0"."key" as "key", "tds1_0"."time" as "time", "tds1_0"."value" as "value", "tds1_0"."key2" as "key2", "tds1_0"."time2" as "time2", "tds1_0"."value2" as "value2" from (select "tds1_1"."key" as "key", "tds1_1"."time" as "time", "tds1_1"."value" as "value", "tds2_0"."key2" as "key2", "tds2_0"."time2" as "time2", "tds2_0"."value2" as "value2" from (select "root"."key", "root"."time", "root"."value" from tds1 as "root") as "tds1_1"asof left join (select "root"."key2", "root"."time2", "root"."value2" from tds2 as "root") as "tds2_0"on ("tds1_1"."time" < "tds2_0"."time2" and "tds1_1"."key" = "tds2_0"."key2")) as "tds1_0"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_7984688_1751051776089}#->asOfJoin(#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_9759678_1751051776102}#, {x, y|$x.time > $y.time2})'
-'SQL: select "tb_7984688_1751051776089_0"."key" as "key", "tb_7984688_1751051776089_0"."time" as "time", "tb_7984688_1751051776089_0"."value" as "value", "tb_7984688_1751051776089_0"."key2" as "key2", "tb_7984688_1751051776089_0"."time2" as "time2", "tb_7984688_1751051776089_0"."value2" as "value2" from (select "tb_7984688_1751051776089_1"."key" as "key", "tb_7984688_1751051776089_1"."time" as "time", "tb_7984688_1751051776089_1"."value" as "value", "tb_9759678_1751051776102_0"."key2" as "key2", "tb_9759678_1751051776102_0"."time2" as "time2", "tb_9759678_1751051776102_0"."value2" as "value2" from (select "tb_7984688_1751051776089_2".key as "key", "tb_7984688_1751051776089_2".time as "time", "tb_7984688_1751051776089_2".value as "value" from leSchema.tb_7984688_1751051776089 as "tb_7984688_1751051776089_2") as "tb_7984688_1751051776089_1"asof left join (select "tb_9759678_1751051776102_1".key2 as "key2", "tb_9759678_1751051776102_1".time2 as "time2", "tb_9759678_1751051776102_1".value2 as "value2" from leSchema.tb_9759678_1751051776102 as "tb_9759678_1751051776102_1") as "tb_9759678_1751051776102_0"on ("tb_7984688_1751051776089_1"."time" > "tb_9759678_1751051776102_0"."time2")) as "tb_7984688_1751051776089_0"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_2191289_1751051776632}#->asOfJoin(#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_9767102_1751051776652}#, {x, y|$x.time < $y.time2})'
-'SQL: select "tb_2191289_1751051776632_0"."key" as "key", "tb_2191289_1751051776632_0"."time" as "time", "tb_2191289_1751051776632_0"."value" as "value", "tb_2191289_1751051776632_0"."key2" as "key2", "tb_2191289_1751051776632_0"."time2" as "time2", "tb_2191289_1751051776632_0"."value2" as "value2" from (select "tb_2191289_1751051776632_1"."key" as "key", "tb_2191289_1751051776632_1"."time" as "time", "tb_2191289_1751051776632_1"."value" as "value", "tb_9767102_1751051776652_0"."key2" as "key2", "tb_9767102_1751051776652_0"."time2" as "time2", "tb_9767102_1751051776652_0"."value2" as "value2" from (select "tb_2191289_1751051776632_2".key as "key", "tb_2191289_1751051776632_2".time as "time", "tb_2191289_1751051776632_2".value as "value" from leSchema.tb_2191289_1751051776632 as "tb_2191289_1751051776632_2") as "tb_2191289_1751051776632_1"asof left join (select "tb_9767102_1751051776652_1".key2 as "key2", "tb_9767102_1751051776652_1".time2 as "time2", "tb_9767102_1751051776652_1".value2 as "value2" from leSchema.tb_9767102_1751051776652 as "tb_9767102_1751051776652_1") as "tb_9767102_1751051776652_0"on ("tb_2191289_1751051776632_1"."time" < "tb_9767102_1751051776652_0"."time2")) as "tb_2191289_1751051776632_0"'
-EXAMPLE: 
-EXPRESSION:' |let tds1 = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_5342348_1751051777101}#;
- let tds2 = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_9338301_1751051777112}#;
+'SQL: WITH tds1 AS (select "tb_1830859_1751219917838_0".key as "key", "tb_1830859_1751219917838_0".time as "time", "tb_1830859_1751219917838_0".value as "value" from leSchema.tb_7998479_1751219917831 as "tb_1830859_1751219917838_0"),
+tds2 AS (select "tb_1830859_1751219917838_0".key2 as "key2", "tb_1830859_1751219917838_0".time2 as "time2", "tb_1830859_1751219917838_0".value2 as "value2" from leSchema.tb_1830859_1751219917838 as "tb_1830859_1751219917838_0")
+select "tds1_0"."key" as "key", "tds1_0"."time" as "time", "tds1_0"."value" as "value", "tds1_0"."key2" as "key2", "tds1_0"."time2" as "time2", "tds1_0"."value2" as "value2" from (select "tds1_1"."key" as "key", "tds1_1"."time" as "time", "tds1_1"."value" as "value", "tds2_0"."key2" as "key2", "tds2_0"."time2" as "time2", "tds2_0"."value2" as "value2" from (select "root"."key", "root"."time", "root"."value" from tds1 as "root") as "tds1_1"asof join (select "root"."key2", "root"."time2", "root"."value2" from tds2 as "root") as "tds2_0"MATCH_CONDITION ("tds1_1"."time" > "tds2_0"."time2")ON ("tds1_1"."key" = "tds2_0"."key2")) as "tds1_0"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_3197513_1751219918215}#->asOfJoin(#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_3868341_1751219918228}#, {x, y|$x.time > $y.time2})'
+'SQL: select "tb_3197513_1751219918215_0"."key" as "key", "tb_3197513_1751219918215_0"."time" as "time", "tb_3197513_1751219918215_0"."value" as "value", "tb_3197513_1751219918215_0"."key2" as "key2", "tb_3197513_1751219918215_0"."time2" as "time2", "tb_3197513_1751219918215_0"."value2" as "value2" from (select "tb_3197513_1751219918215_1"."key" as "key", "tb_3197513_1751219918215_1"."time" as "time", "tb_3197513_1751219918215_1"."value" as "value", "tb_3868341_1751219918228_0"."key2" as "key2", "tb_3868341_1751219918228_0"."time2" as "time2", "tb_3868341_1751219918228_0"."value2" as "value2" from (select "tb_3197513_1751219918215_2".key as "key", "tb_3197513_1751219918215_2".time as "time", "tb_3197513_1751219918215_2".value as "value" from leSchema.tb_3197513_1751219918215 as "tb_3197513_1751219918215_2") as "tb_3197513_1751219918215_1"asof join (select "tb_3868341_1751219918228_1".key2 as "key2", "tb_3868341_1751219918228_1".time2 as "time2", "tb_3868341_1751219918228_1".value2 as "value2" from leSchema.tb_3868341_1751219918228 as "tb_3868341_1751219918228_1") as "tb_3868341_1751219918228_0"MATCH_CONDITION ("tb_3197513_1751219918215_1"."time" > "tb_3868341_1751219918228_0"."time2")) as "tb_3197513_1751219918215_0"'
+
+'EXAMPLE'
+'EXPRESSION: |let tds1 = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_3123745_1751219918426}#;
+ let tds2 = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_8386886_1751219918434}#;
  $tds1->asOfJoin($tds2, {x, y|$x.time > $y.time2});
 '
-'SQL: WITH tds1 AS (select "tb_5342348_1751051777101_0".key as "key", "tb_5342348_1751051777101_0".time as "time", "tb_5342348_1751051777101_0".value as "value" from leSchema.tb_5342348_1751051777101 as "tb_5342348_1751051777101_0"), 
-tds2 AS (select "tb_5342348_1751051777101_0".key2 as "key2", "tb_5342348_1751051777101_0".time2 as "time2", "tb_5342348_1751051777101_0".value2 as "value2" from leSchema.tb_9338301_1751051777112 as "tb_5342348_1751051777101_0") 
-select "tds1_0"."key" as "key", "tds1_0"."time" as "time", "tds1_0"."value" as "value", "tds1_0"."key2" as "key2", "tds1_0"."time2" as "time2", "tds1_0"."value2" as "value2" from (select "tds1_1"."key" as "key", "tds1_1"."time" as "time", "tds1_1"."value" as "value", "tds2_0"."key2" as "key2", "tds2_0"."time2" as "time2", "tds2_0"."value2" as "value2" from (select "root"."key", "root"."time", "root"."value" from tds1 as "root") as "tds1_1"asof left join (select "root"."key2", "root"."time2", "root"."value2" from tds2 as "root") as "tds2_0"on ("tds1_1"."time" > "tds2_0"."time2")) as "tds1_0"'
-EXAMPLE: 
-EXPRESSION:' |let tds1 = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_5335825_1751051777367}#;
- let tds2 = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_6234629_1751051777372}#;
- $tds1->asOfJoin($tds2, {x, y|$x.time < $y.time2});
-'
-'SQL: WITH tds1 AS (select "tb_5335825_1751051777367_0".key as "key", "tb_5335825_1751051777367_0".time as "time", "tb_5335825_1751051777367_0".value as "value" from leSchema.tb_5335825_1751051777367 as "tb_5335825_1751051777367_0"), 
-tds2 AS (select "tb_5335825_1751051777367_0".key2 as "key2", "tb_5335825_1751051777367_0".time2 as "time2", "tb_5335825_1751051777367_0".value2 as "value2" from leSchema.tb_6234629_1751051777372 as "tb_5335825_1751051777367_0") 
-select "tds1_0"."key" as "key", "tds1_0"."time" as "time", "tds1_0"."value" as "value", "tds1_0"."key2" as "key2", "tds1_0"."time2" as "time2", "tds1_0"."value2" as "value2" from (select "tds1_1"."key" as "key", "tds1_1"."time" as "time", "tds1_1"."value" as "value", "tds2_0"."key2" as "key2", "tds2_0"."time2" as "time2", "tds2_0"."value2" as "value2" from (select "root"."key", "root"."time", "root"."value" from tds1 as "root") as "tds1_1"asof left join (select "root"."key2", "root"."time2", "root"."value2" from tds2 as "root") as "tds2_0"on ("tds1_1"."time" < "tds2_0"."time2")) as "tds1_0"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_3823875_1751051777664}#->extend(~newCol:x|$x.str->toOne() + $x.val->toOne()->toString())->filter(x|$x.newCol == 'qw4')'
-'SQL: select "tb_3823875_1751051777664_0".val as "val", "tb_3823875_1751051777664_0".str as "str", concat("tb_3823875_1751051777664_0".str, cast("tb_3823875_1751051777664_0".val as varchar)) as "newCol" from leSchema.tb_3823875_1751051777664 as "tb_3823875_1751051777664_0" where concat("tb_3823875_1751051777664_0".str, cast("tb_3823875_1751051777664_0".val as varchar)) = 'qw4''
-EXAMPLE: 
-EXPRESSION:' |meta::pure::functions::relation::tests::composition::FirmTypeForCompositionTests.all()->project(~[legalName:x|$x.legalName,firstName:x|$x.employees.firstName])->filter(x|$x.legalName == 'Firm X')'
-'SQL: select "root".legalName as "legalName", "persontypeforcompositiontests836034_1751051778252_0".firstName as "firstName" from leSchema.FirmTypeForCompositionTests391446_1751051778234 as "root" left outer join leSchema.PersonTypeForCompositionTests836034_1751051778252 as "persontypeforcompositiontests836034_1751051778252_0" on ("root"._pureId = "persontypeforcompositiontests836034_1751051778252_0"._FirmTypeForCompositionTests_employees) where "root".legalName = 'Firm X''
-EXAMPLE: 
-EXPRESSION:' |meta::pure::functions::relation::tests::composition::PersonTypeForCompositionTests.all()->project(~[first:x|$x.firstName,last:x|$x.lastName])->extend(~first->over(~last->ascending()), ~[leadLast:{p, w, r|$p->lead($r).last},lagLast:{p, w, r|$p->lag($r).last}])->sort([~first->ascending(), ~last->ascending()])'
-'SQL: select "subselect"."first" as "first", "subselect"."last" as "last", "subselect"."leadLast" as "leadLast", "subselect"."lagLast" as "lagLast" from (select "subselect"."first" as "first", "subselect"."last" as "last", "subselect"."leadLast" as "leadLast", lag("subselect"."last") OVER (Partition By "subselect"."first" Order By "subselect"."last" ASC) as "lagLast" from (select "root".firstName as "first", "root".lastName as "last", lead("root".lastName) OVER (Partition By "root".firstName Order By "root".lastName ASC) as "leadLast" from leSchema.PersonTypeForCompositionTests5674476_1751051778882 as "root") as "subselect") as "subselect" order by "first","last"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_362276_1751051779292}#->distinct(~[val,str])->filter(x|$x.val > 2)'
-'SQL: select distinct "tb_362276_1751051779292_0".val as "val", "tb_362276_1751051779292_0".str as "str" from leSchema.tb_362276_1751051779292 as "tb_362276_1751051779292_0" where "tb_362276_1751051779292_0".val > 2'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_5892112_1751051779513}#->distinct()->groupBy(~[str], ~newCol:x|$x.val:x|$x->plus())->filter(x|$x.newCol > 2)'
-'SQL: select "tb_5892112_1751051779513_0"."str" as "str", sum("tb_5892112_1751051779513_0"."val") as "newCol" from (select distinct "tb_5892112_1751051779513_1".val as "val", "tb_5892112_1751051779513_1".str as "str", "tb_5892112_1751051779513_1".str2 as "str2" from leSchema.tb_5892112_1751051779513 as "tb_5892112_1751051779513_1") as "tb_5892112_1751051779513_0" group by "str" having sum("tb_5892112_1751051779513_0"."val") > 2'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_3865333_1751051779707}#->distinct(~[val,str])->groupBy(~str, ~newCol:x|$x.val:x|$x->plus())'
-'SQL: select "tb_3865333_1751051779707_0"."str" as "str", sum("tb_3865333_1751051779707_0"."val") as "newCol" from (select distinct "tb_3865333_1751051779707_1".val as "val", "tb_3865333_1751051779707_1".str as "str" from leSchema.tb_3865333_1751051779707 as "tb_3865333_1751051779707_1") as "tb_3865333_1751051779707_0" group by "str"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_8180972_1751051779862}#->extend(~yr:x|$x.year->toOne() - 2000)->filter(x|$x.yr > 10)->select(~[city,country,year,treePlanted])->groupBy(~[city,country], ~[year:x|$x.year:x|$x->plus(),treePlanted:x|$x.treePlanted:x|$x->plus()])->pivot(~[year], ~[newCol:x|$x.treePlanted:x|$x->plus()])'
-'SQL: select * from (pivot (select "tb_8180972_1751051779862_1"."city", "tb_8180972_1751051779862_1"."country", "tb_8180972_1751051779862_1"."treePlanted", concat("tb_8180972_1751051779862_1"."year", '__|__', 'newCol') as pivot_column from (select "tb_8180972_1751051779862_2".city as "city", "tb_8180972_1751051779862_2".country as "country", sum("tb_8180972_1751051779862_2".year) as "year", sum("tb_8180972_1751051779862_2".treePlanted) as "treePlanted" from leSchema.tb_8180972_1751051779862 as "tb_8180972_1751051779862_2" where ("tb_8180972_1751051779862_2".year - 2000) > 10 group by "city","country") as "tb_8180972_1751051779862_1") as "tb_8180972_1751051779862_0" on concat('''', pivot_column, '''') using sum("treePlanted"))'
+'SQL: WITH tds1 AS (select "tb_8386886_1751219918434_0".key as "key", "tb_8386886_1751219918434_0".time as "time", "tb_8386886_1751219918434_0".value as "value" from leSchema.tb_3123745_1751219918426 as "tb_8386886_1751219918434_0"),
+tds2 AS (select "tb_8386886_1751219918434_0".key2 as "key2", "tb_8386886_1751219918434_0".time2 as "time2", "tb_8386886_1751219918434_0".value2 as "value2" from leSchema.tb_8386886_1751219918434 as "tb_8386886_1751219918434_0")
+select "tds1_0"."key" as "key", "tds1_0"."time" as "time", "tds1_0"."value" as "value", "tds1_0"."key2" as "key2", "tds1_0"."time2" as "time2", "tds1_0"."value2" as "value2" from (select "tds1_1"."key" as "key", "tds1_1"."time" as "time", "tds1_1"."value" as "value", "tds2_0"."key2" as "key2", "tds2_0"."time2" as "time2", "tds2_0"."value2" as "value2" from (select "root"."key", "root"."time", "root"."value" from tds1 as "root") as "tds1_1"asof join (select "root"."key2", "root"."time2", "root"."value2" from tds2 as "root") as "tds2_0"MATCH_CONDITION ("tds1_1"."time" > "tds2_0"."time2")) as "tds1_0"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_5457870_1751219918666}#->extend(~newCol:x|$x.str->toOne() + $x.val->toOne()->toString())->filter(x|$x.newCol == 'qw4')'
+'SQL: select "tb_5457870_1751219918666_0".val as "val", "tb_5457870_1751219918666_0".str as "str", concat("tb_5457870_1751219918666_0".str, cast("tb_5457870_1751219918666_0".val as varchar)) as "newCol" from leSchema.tb_5457870_1751219918666 as "tb_5457870_1751219918666_0" where concat("tb_5457870_1751219918666_0".str, cast("tb_5457870_1751219918666_0".val as varchar)) = 'qw4''
+
+'EXAMPLE'
+'EXPRESSION: |meta::pure::functions::relation::tests::composition::FirmTypeForCompositionTests.all()->project(~[legalName:x|$x.legalName,firstName:x|$x.employees.firstName])->filter(x|$x.legalName == 'Firm X')'
+'SQL: select "root".legalName as "legalName", "persontypeforcompositiontests7596113_1751219919292_0".firstName as "firstName" from leSchema.FirmTypeForCompositionTests3719917_1751219919280 as "root" left outer join leSchema.PersonTypeForCompositionTests7596113_1751219919292 as "persontypeforcompositiontests7596113_1751219919292_0" on ("root"._pureId = "persontypeforcompositiontests7596113_1751219919292_0"._FirmTypeForCompositionTests_employees) where "root".legalName = 'Firm X''
+
+'EXAMPLE'
+'EXPRESSION: |meta::pure::functions::relation::tests::composition::PersonTypeForCompositionTests.all()->project(~[first:x|$x.firstName,last:x|$x.lastName])->extend(~first->over(~last->ascending()), ~[leadLast:{p, w, r|$p->lead($r).last},lagLast:{p, w, r|$p->lag($r).last}])->sort([~first->ascending(), ~last->ascending()])'
+'SQL: select "subselect"."first" as "first", "subselect"."last" as "last", "subselect"."leadLast" as "leadLast", "subselect"."lagLast" as "lagLast" from (select "subselect"."first" as "first", "subselect"."last" as "last", "subselect"."leadLast" as "leadLast", lag("subselect"."last") OVER (Partition By "subselect"."first" Order By "subselect"."last" ASC) as "lagLast" from (select "root".firstName as "first", "root".lastName as "last", lead("root".lastName) OVER (Partition By "root".firstName Order By "root".lastName ASC) as "leadLast" from leSchema.PersonTypeForCompositionTests1890837_1751219920009 as "root") as "subselect") as "subselect" order by "first","last"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_1778233_1751219920399}#->distinct(~[val,str])->filter(x|$x.val > 2)'
+'SQL: select distinct "tb_1778233_1751219920399_0".val as "val", "tb_1778233_1751219920399_0".str as "str" from leSchema.tb_1778233_1751219920399 as "tb_1778233_1751219920399_0" where "tb_1778233_1751219920399_0".val > 2'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_5357887_1751219920597}#->distinct()->groupBy(~[str], ~newCol:x|$x.val:x|$x->plus())->filter(x|$x.newCol > 2)'
+'SQL: select "tb_5357887_1751219920597_0"."str" as "str", sum("tb_5357887_1751219920597_0"."val") as "newCol" from (select distinct "tb_5357887_1751219920597_1".val as "val", "tb_5357887_1751219920597_1".str as "str", "tb_5357887_1751219920597_1".str2 as "str2" from leSchema.tb_5357887_1751219920597 as "tb_5357887_1751219920597_1") as "tb_5357887_1751219920597_0" group by "str" having sum("tb_5357887_1751219920597_0"."val") > 2'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_7316223_1751219920767}#->distinct(~[val,str])->groupBy(~str, ~newCol:x|$x.val:x|$x->plus())'
+'SQL: select "tb_7316223_1751219920767_0"."str" as "str", sum("tb_7316223_1751219920767_0"."val") as "newCol" from (select distinct "tb_7316223_1751219920767_1".val as "val", "tb_7316223_1751219920767_1".str as "str" from leSchema.tb_7316223_1751219920767 as "tb_7316223_1751219920767_1") as "tb_7316223_1751219920767_0" group by "str"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_6120820_1751219920884}#->extend(~yr:x|$x.year->toOne() - 2000)->filter(x|$x.yr > 10)->select(~[city,country,year,treePlanted])->groupBy(~[city,country], ~[year:x|$x.year:x|$x->plus(),treePlanted:x|$x.treePlanted:x|$x->plus()])->pivot(~[year], ~[newCol:x|$x.treePlanted:x|$x->plus()])'
+'SQL: select * from (select "tb_6120820_1751219920884_1"."city", "tb_6120820_1751219920884_1"."country", "tb_6120820_1751219920884_1"."treePlanted", concat("tb_6120820_1751219920884_1"."year", '__|__', 'newCol') as pivot_column from (select "tb_6120820_1751219920884_2".city as "city", "tb_6120820_1751219920884_2".country as "country", sum("tb_6120820_1751219920884_2".year) as "year", sum("tb_6120820_1751219920884_2".treePlanted) as "treePlanted" from leSchema.tb_6120820_1751219920884 as "tb_6120820_1751219920884_2" where ("tb_6120820_1751219920884_2".year - 2000) > 10 group by "city","country") as "tb_6120820_1751219920884_1") as "tb_6120820_1751219920884_0" pivot (sum("treePlanted") for pivot_column in (ANY ORDER BY pivot_column))'
 
 
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_6555327_1751051780260}#->groupBy(~[str,str2], ~newCol:x|$x.val:x|$x->plus())->distinct(~[str,newCol])->filter(x|$x.newCol > 2)'
-'SQL: select distinct "tb_6555327_1751051780260_0"."str" as "str", "tb_6555327_1751051780260_0"."newCol" as "newCol" from (select "tb_6555327_1751051780260_1".str as "str", "tb_6555327_1751051780260_1".str2 as "str2", sum("tb_6555327_1751051780260_1".val) as "newCol" from leSchema.tb_6555327_1751051780260 as "tb_6555327_1751051780260_1" group by "str","str2") as "tb_6555327_1751051780260_0" where "tb_6555327_1751051780260_0"."newCol" > 2'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_512168_1751051780476}#->groupBy(~[str,str2], ~newCol:x|$x.val:x|$x->plus())->distinct(~[str])'
-'SQL: select distinct "tb_512168_1751051780476_0"."str" as "str" from (select "tb_512168_1751051780476_1".str as "str", "tb_512168_1751051780476_1".str2 as "str2" from leSchema.tb_512168_1751051780476 as "tb_512168_1751051780476_1" group by "str","str2") as "tb_512168_1751051780476_0"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_7755788_1751051780649}#->groupBy(~str, ~newCol:x|$x.val:x|$x->plus())->filter(x|$x.newCol > 4)'
-'SQL: select "tb_7755788_1751051780649_0".str as "str", sum("tb_7755788_1751051780649_0".val) as "newCol" from leSchema.tb_7755788_1751051780649 as "tb_7755788_1751051780649_0" group by "str" having sum("tb_7755788_1751051780649_0".val) > 4'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_4411059_1751051780808}#->groupBy(~[str,str2], ~newCol:x|$x.val:x|$x->plus())->groupBy(~[str], ~newCol2:x|$x.newCol:x|$x->plus())'
-'SQL: select "tb_4411059_1751051780808_0"."str" as "str", sum("tb_4411059_1751051780808_0"."newCol") as "newCol2" from (select "tb_4411059_1751051780808_1".str as "str", "tb_4411059_1751051780808_1".str2 as "str2", sum("tb_4411059_1751051780808_1".val) as "newCol" from leSchema.tb_4411059_1751051780808 as "tb_4411059_1751051780808_1" group by "str","str2") as "tb_4411059_1751051780808_0" group by "str"'
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_5150418_1751219921177}#->groupBy(~[str,str2], ~newCol:x|$x.val:x|$x->plus())->distinct(~[str,newCol])->filter(x|$x.newCol > 2)'
+'SQL: select distinct "tb_5150418_1751219921177_0"."str" as "str", "tb_5150418_1751219921177_0"."newCol" as "newCol" from (select "tb_5150418_1751219921177_1".str as "str", "tb_5150418_1751219921177_1".str2 as "str2", sum("tb_5150418_1751219921177_1".val) as "newCol" from leSchema.tb_5150418_1751219921177 as "tb_5150418_1751219921177_1" group by "str","str2") as "tb_5150418_1751219921177_0" where "tb_5150418_1751219921177_0"."newCol" > 2'
 
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_2518938_1751219921348}#->groupBy(~[str,str2], ~newCol:x|$x.val:x|$x->plus())->distinct(~[str])'
+'SQL: select distinct "tb_2518938_1751219921348_0"."str" as "str" from (select "tb_2518938_1751219921348_1".str as "str", "tb_2518938_1751219921348_1".str2 as "str2" from leSchema.tb_2518938_1751219921348 as "tb_2518938_1751219921348_1" group by "str","str2") as "tb_2518938_1751219921348_0"'
 
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_4921881_1751219921468}#->groupBy(~str, ~newCol:x|$x.val:x|$x->plus())->filter(x|$x.newCol > 4)'
+'SQL: select "tb_4921881_1751219921468_0".str as "str", sum("tb_4921881_1751219921468_0".val) as "newCol" from leSchema.tb_4921881_1751219921468 as "tb_4921881_1751219921468_0" group by "str" having sum("tb_4921881_1751219921468_0".val) > 4'
 
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_7658373_1751051781003}#->concatenate(#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_7111601_1751051781006}#)'
-'SQL: select "unionalias_0"."val" as "val", "unionalias_0"."str" as "str" from (select "tb_7111601_1751051781006_0".val as "val", "tb_7111601_1751051781006_0".str as "str" from leSchema.tb_7658373_1751051781003 as "tb_7111601_1751051781006_0" UNION ALL select "tb_7111601_1751051781006_0".val as "val", "tb_7111601_1751051781006_0".str as "str" from leSchema.tb_7111601_1751051781006 as "tb_7111601_1751051781006_0") as "unionalias_0"'
-EXAMPLE: 
-EXPRESSION:' |let a = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_9929802_1751051781183}#;
- let b = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_853387_1751051781186}#;
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_1152859_1751219921574}#->groupBy(~[str,str2], ~newCol:x|$x.val:x|$x->plus())->groupBy(~[str], ~newCol2:x|$x.newCol:x|$x->plus())'
+'SQL: select "tb_1152859_1751219921574_0"."str" as "str", sum("tb_1152859_1751219921574_0"."newCol") as "newCol2" from (select "tb_1152859_1751219921574_1".str as "str", "tb_1152859_1751219921574_1".str2 as "str2", sum("tb_1152859_1751219921574_1".val) as "newCol" from leSchema.tb_1152859_1751219921574 as "tb_1152859_1751219921574_1" group by "str","str2") as "tb_1152859_1751219921574_0" group by "str"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_7837020_1751219921710}#->concatenate(#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_1179119_1751219921715}#)'
+'SQL: select "unionalias_0"."val" as "val", "unionalias_0"."str" as "str" from (select "tb_1179119_1751219921715_0".val as "val", "tb_1179119_1751219921715_0".str as "str" from leSchema.tb_7837020_1751219921710 as "tb_1179119_1751219921715_0" UNION ALL select "tb_1179119_1751219921715_0".val as "val", "tb_1179119_1751219921715_0".str as "str" from leSchema.tb_1179119_1751219921715 as "tb_1179119_1751219921715_0") as "unionalias_0"'
+
+'EXAMPLE'
+'EXPRESSION: |let a = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_6361132_1751219921857}#;
+ let b = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_3066989_1751219921865}#;
  let c = $a->concatenate($b);
  $c->concatenate($b);
 '
-'SQL: WITH a AS (select "tb_9929802_1751051781183_0".val as "val", "tb_9929802_1751051781183_0".str as "str" from leSchema.tb_9929802_1751051781183 as "tb_9929802_1751051781183_0"), 
-b AS (select "tb_9929802_1751051781183_0".val as "val", "tb_9929802_1751051781183_0".str as "str" from leSchema.tb_853387_1751051781186 as "tb_9929802_1751051781183_0"), 
-c AS (select "unionalias_0"."val", "unionalias_0"."str" from (select "root"."val", "root"."str" from a as "root" UNION ALL select "root"."val", "root"."str" from b as "root") as "unionalias_0") 
+'SQL: WITH a AS (select "tb_3066989_1751219921865_0".val as "val", "tb_3066989_1751219921865_0".str as "str" from leSchema.tb_6361132_1751219921857 as "tb_3066989_1751219921865_0"),
+b AS (select "tb_3066989_1751219921865_0".val as "val", "tb_3066989_1751219921865_0".str as "str" from leSchema.tb_3066989_1751219921865 as "tb_3066989_1751219921865_0"),
+c AS (select "unionalias_0"."val", "unionalias_0"."str" from (select "root"."val", "root"."str" from a as "root" UNION ALL select "root"."val", "root"."str" from b as "root") as "unionalias_0")
 select "unionalias_0"."val", "unionalias_0"."str" from (select "root"."val", "root"."str" from c as "root" UNION ALL select "root"."val", "root"."str" from b as "root") as "unionalias_0"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_5931070_1751051781350}#->extend(~grp->over(~id->descending()), ~other:{p, w, r|$p->cumulativeDistribution($w, $r)->round(2)})'
-'SQL: select "tb_5931070_1751051781350_0".id as "id", "tb_5931070_1751051781350_0".grp as "grp", "tb_5931070_1751051781350_0".name as "name", round(cume_dist() OVER (Partition By "tb_5931070_1751051781350_0".grp Order By "tb_5931070_1751051781350_0".id DESC), 2) as "other" from leSchema.tb_5931070_1751051781350 as "tb_5931070_1751051781350_0"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_963639_1751051781540}#->extend(~grp->over(~id->descending()), ~other:{p, w, r|$p->denseRank($w, $r)})'
-'SQL: select "tb_963639_1751051781540_0".id as "id", "tb_963639_1751051781540_0".grp as "grp", "tb_963639_1751051781540_0".name as "name", dense_rank() OVER (Partition By "tb_963639_1751051781540_0".grp Order By "tb_963639_1751051781540_0".id DESC) as "other" from leSchema.tb_963639_1751051781540 as "tb_963639_1751051781540_0"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_4365563_1751051781709}#->distinct()'
-'SQL: select distinct "tb_4365563_1751051781709_0".val as "val", "tb_4365563_1751051781709_0".str as "str" from leSchema.tb_4365563_1751051781709 as "tb_4365563_1751051781709_0"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_1416586_1751051781846}#;
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_5813700_1751219922001}#->extend(~grp->over(~id->descending()), ~other:{p, w, r|$p->cumulativeDistribution($w, $r)->round(2)})'
+'SQL: select "tb_5813700_1751219922001_0".id as "id", "tb_5813700_1751219922001_0".grp as "grp", "tb_5813700_1751219922001_0".name as "name", round(cume_dist() OVER (Partition By "tb_5813700_1751219922001_0".grp Order By "tb_5813700_1751219922001_0".id DESC), 2) as "other" from leSchema.tb_5813700_1751219922001 as "tb_5813700_1751219922001_0"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_5479531_1751219922116}#->extend(~grp->over(~id->descending()), ~other:{p, w, r|$p->denseRank($w, $r)})'
+'SQL: select "tb_5479531_1751219922116_0".id as "id", "tb_5479531_1751219922116_0".grp as "grp", "tb_5479531_1751219922116_0".name as "name", dense_rank() OVER (Partition By "tb_5479531_1751219922116_0".grp Order By "tb_5479531_1751219922116_0".id DESC) as "other" from leSchema.tb_5479531_1751219922116 as "tb_5479531_1751219922116_0"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_284625_1751219922227}#->distinct()'
+'SQL: select distinct "tb_284625_1751219922227_0".val as "val", "tb_284625_1751219922227_0".str as "str" from leSchema.tb_284625_1751219922227 as "tb_284625_1751219922227_0"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_659706_1751219922313}#;
  $t->distinct();
 '
-'SQL: WITH t AS (select "tb_1416586_1751051781846_0".val as "val", "tb_1416586_1751051781846_0".str as "str" from leSchema.tb_1416586_1751051781846 as "tb_1416586_1751051781846_0") 
+'SQL: WITH t AS (select "tb_659706_1751219922313_0".val as "val", "tb_659706_1751219922313_0".str as "str" from leSchema.tb_659706_1751219922313 as "tb_659706_1751219922313_0")
 select distinct "root"."val", "root"."str" from t as "root"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_2614622_1751051781980}#->distinct(~[val,str])'
-'SQL: select distinct "tb_2614622_1751051781980_0".val as "val", "tb_2614622_1751051781980_0".str as "str" from leSchema.tb_2614622_1751051781980 as "tb_2614622_1751051781980_0"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_1427348_1751051782126}#;
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_4779248_1751219922415}#->distinct(~[val,str])'
+'SQL: select distinct "tb_4779248_1751219922415_0".val as "val", "tb_4779248_1751219922415_0".str as "str" from leSchema.tb_4779248_1751219922415 as "tb_4779248_1751219922415_0"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_3614097_1751219922503}#;
  $t->distinct(~[val,str]);
 '
-'SQL: WITH t AS (select "tb_1427348_1751051782126_0".val as "val", "tb_1427348_1751051782126_0".str as "str" from leSchema.tb_1427348_1751051782126 as "tb_1427348_1751051782126_0") 
+'SQL: WITH t AS (select "tb_3614097_1751219922503_0".val as "val", "tb_3614097_1751219922503_0".str as "str" from leSchema.tb_3614097_1751219922503 as "tb_3614097_1751219922503_0")
 select distinct "root"."val", "root"."str" from t as "root"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_5055564_1751051782258}#->distinct(~[val])'
-'SQL: select distinct "tb_5055564_1751051782258_0".val as "val" from leSchema.tb_5055564_1751051782258 as "tb_5055564_1751051782258_0"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_1620410_1751051782402}#;
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_2689674_1751219922595}#->distinct(~[val])'
+'SQL: select distinct "tb_2689674_1751219922595_0".val as "val" from leSchema.tb_2689674_1751219922595 as "tb_2689674_1751219922595_0"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_2610931_1751219922689}#;
  $t->distinct(~[val]);
 '
-'SQL: WITH t AS (select "tb_1620410_1751051782402_0".val as "val", "tb_1620410_1751051782402_0".str as "str" from leSchema.tb_1620410_1751051782402 as "tb_1620410_1751051782402_0") 
+'SQL: WITH t AS (select "tb_2610931_1751219922689_0".val as "val", "tb_2610931_1751219922689_0".str as "str" from leSchema.tb_2610931_1751219922689 as "tb_2610931_1751219922689_0")
 select distinct "root"."val" from t as "root"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_1741707_1751051782551}#->sort(~val->ascending())->drop(3)'
-'SQL: select "tb_1741707_1751051782551_0".val as "val", "tb_1741707_1751051782551_0".str as "str" from leSchema.tb_1741707_1751051782551 as "tb_1741707_1751051782551_0" order by "val" offset 3'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_1387809_1751051782698}#;
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_4819236_1751219922778}#->sort(~val->ascending())->drop(3)'
+'SQL: select "tb_4819236_1751219922778_0".val as "val", "tb_4819236_1751219922778_0".str as "str" from leSchema.tb_4819236_1751219922778 as "tb_4819236_1751219922778_0" order by "val" limit '' offset 3'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_6740439_1751219922868}#;
  let t2 = $t->drop(2);
  $t2->drop(1);
 '
-'SQL: WITH t AS (select "tb_1387809_1751051782698_0".val as "val", "tb_1387809_1751051782698_0".str as "str" from leSchema.tb_1387809_1751051782698 as "tb_1387809_1751051782698_0"), 
-t2 AS (select "root"."val", "root"."str" from t as "root" offset 2) 
-select "subselect"."val" as "val", "subselect"."str" as "str" from (select "root"."val", "root"."str" from t2 as "root" offset 1) as "subselect"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_5334933_1751051782914}#->extend(~grp->over(~id->descending()), ~newCol:{p, w, r|$r.id}:y|$y->plus())'
-'SQL: select "tb_5334933_1751051782914_0".id as "id", "tb_5334933_1751051782914_0".grp as "grp", "tb_5334933_1751051782914_0".name as "name", sum("tb_5334933_1751051782914_0".id) OVER (Partition By "tb_5334933_1751051782914_0".grp Order By "tb_5334933_1751051782914_0".id DESC) as "newCol" from leSchema.tb_5334933_1751051782914 as "tb_5334933_1751051782914_0"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_4928826_1751051783070}#;
+'SQL: WITH t AS (select "tb_6740439_1751219922868_0".val as "val", "tb_6740439_1751219922868_0".str as "str" from leSchema.tb_6740439_1751219922868 as "tb_6740439_1751219922868_0"),
+t2 AS (select "root"."val", "root"."str" from t as "root" limit '' offset 2)
+select "subselect"."val" as "val", "subselect"."str" as "str" from (select "root"."val", "root"."str" from t2 as "root" limit '' offset 1) as "subselect"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_6810165_1751219923067}#->extend(~grp->over(~id->descending()), ~newCol:{p, w, r|$r.id}:y|$y->plus())'
+'SQL: select "tb_6810165_1751219923067_0".id as "id", "tb_6810165_1751219923067_0".grp as "grp", "tb_6810165_1751219923067_0".name as "name", sum("tb_6810165_1751219923067_0".id) OVER (Partition By "tb_6810165_1751219923067_0".grp Order By "tb_6810165_1751219923067_0".id DESC) as "newCol" from leSchema.tb_6810165_1751219923067 as "tb_6810165_1751219923067_0"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_9634422_1751219923154}#;
  $t->extend(~grp->over(~id->descending()), ~newCol:{p, w, r|$r.id}:y|$y->plus());
 '
-'SQL: WITH t AS (select "tb_4928826_1751051783070_0".id as "id", "tb_4928826_1751051783070_0".grp as "grp", "tb_4928826_1751051783070_0".name as "name" from leSchema.tb_4928826_1751051783070 as "tb_4928826_1751051783070_0") 
+'SQL: WITH t AS (select "tb_9634422_1751219923154_0".id as "id", "tb_9634422_1751219923154_0".grp as "grp", "tb_9634422_1751219923154_0".name as "name" from leSchema.tb_9634422_1751219923154 as "tb_9634422_1751219923154_0")
 select "subselect"."id" as "id", "subselect"."grp" as "grp", "subselect"."name" as "name", "subselect"."newCol" as "newCol" from (select "root"."id", "root"."grp", "root"."name", sum("root"."id") OVER (Partition By "root"."grp" Order By "root"."id" DESC) as "newCol" from t as "root") as "subselect"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_1282949_1751051783223}#->extend(~newCol:c|$c.id:y|$y->plus())->extend(~other:x|floor($x.newCol->toOne() / $x.id->toOne()))'
-'SQL: select "subselect"."id" as "id", "subselect"."grp" as "grp", "subselect"."name" as "name", "subselect"."newCol" as "newCol", cast(floor(((1.0 * "subselect"."newCol") / "subselect"."id")) as INTEGER) as "other" from (select "tb_1282949_1751051783223_1".id as "id", "tb_1282949_1751051783223_1".grp as "grp", "tb_1282949_1751051783223_1".name as "name", sum("tb_1282949_1751051783223_1".id) OVER () as "newCol" from leSchema.tb_1282949_1751051783223 as "tb_1282949_1751051783223_1") as "subselect"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_2662026_1751051783423}#;
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_8744116_1751219923248}#->extend(~newCol:c|$c.id:y|$y->plus())->extend(~other:x|floor($x.newCol->toOne() / $x.id->toOne()))'
+'SQL: select "subselect"."id" as "id", "subselect"."grp" as "grp", "subselect"."name" as "name", "subselect"."newCol" as "newCol", cast(floor(((1.0 * "subselect"."newCol") / "subselect"."id")) as INTEGER) as "other" from (select "tb_8744116_1751219923248_1".id as "id", "tb_8744116_1751219923248_1".grp as "grp", "tb_8744116_1751219923248_1".name as "name", sum("tb_8744116_1751219923248_1".id) OVER () as "newCol" from leSchema.tb_8744116_1751219923248 as "tb_8744116_1751219923248_1") as "subselect"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_7096279_1751219923351}#;
  let t2 = $t->extend(~newCol:c|$c.id:y|$y->plus());
  $t2->extend(~other:x|floor($x.newCol->toOne() / $x.id->toOne()));
 '
-'SQL: WITH t AS (select "tb_2662026_1751051783423_0".id as "id", "tb_2662026_1751051783423_0".grp as "grp", "tb_2662026_1751051783423_0".name as "name" from leSchema.tb_2662026_1751051783423 as "tb_2662026_1751051783423_0"), 
-t2 AS (select "root"."id", "root"."grp", "root"."name", sum("root"."id") OVER () as "newCol" from t as "root") 
+'SQL: WITH t AS (select "tb_7096279_1751219923351_0".id as "id", "tb_7096279_1751219923351_0".grp as "grp", "tb_7096279_1751219923351_0".name as "name" from leSchema.tb_7096279_1751219923351 as "tb_7096279_1751219923351_0"),
+t2 AS (select "root"."id", "root"."grp", "root"."name", sum("root"."id") OVER () as "newCol" from t as "root")
 select "root"."id", "root"."grp", "root"."name", "root"."newCol", cast(floor(((1.0 * "root"."newCol") / "root"."id")) as INTEGER) as "other" from t2 as "root"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_7557567_1751051783677}#->extend(~[newCol:c|$c.id:y|$y->plus(),other:c|$c.grp:y|$y->plus()])'
-'SQL: select "tb_7557567_1751051783677_0".id as "id", "tb_7557567_1751051783677_0".grp as "grp", "tb_7557567_1751051783677_0".name as "name", sum("tb_7557567_1751051783677_0".id) OVER () as "newCol", sum("tb_7557567_1751051783677_0".grp) OVER () as "other" from leSchema.tb_7557567_1751051783677 as "tb_7557567_1751051783677_0"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_3321148_1751051783838}#;
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_2141527_1751219923434}#->extend(~[newCol:c|$c.id:y|$y->plus(),other:c|$c.grp:y|$y->plus()])'
+'SQL: select "tb_2141527_1751219923434_0".id as "id", "tb_2141527_1751219923434_0".grp as "grp", "tb_2141527_1751219923434_0".name as "name", sum("tb_2141527_1751219923434_0".id) OVER () as "newCol", sum("tb_2141527_1751219923434_0".grp) OVER () as "other" from leSchema.tb_2141527_1751219923434 as "tb_2141527_1751219923434_0"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_183783_1751219923545}#;
  $t->extend(~[newCol:c|$c.id:y|$y->plus(),other:c|$c.grp:y|$y->plus()]);
 '
-'SQL: WITH t AS (select "tb_3321148_1751051783838_0".id as "id", "tb_3321148_1751051783838_0".grp as "grp", "tb_3321148_1751051783838_0".name as "name" from leSchema.tb_3321148_1751051783838 as "tb_3321148_1751051783838_0") 
+'SQL: WITH t AS (select "tb_183783_1751219923545_0".id as "id", "tb_183783_1751219923545_0".grp as "grp", "tb_183783_1751219923545_0".name as "name" from leSchema.tb_183783_1751219923545 as "tb_183783_1751219923545_0")
 select "subselect"."id" as "id", "subselect"."grp" as "grp", "subselect"."name" as "name", "subselect"."newCol" as "newCol", "subselect"."other" as "other" from (select "subselect"."id" as "id", "subselect"."grp" as "grp", "subselect"."name" as "name", "subselect"."newCol" as "newCol", sum("subselect"."grp") OVER () as "other" from (select "root"."id", "root"."grp", "root"."name", sum("root"."id") OVER () as "newCol" from t as "root") as "subselect") as "subselect"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_8290127_1751051783998}#->extend(~newCol:c|$c.id:y|$y->plus())'
-'SQL: select "tb_8290127_1751051783998_0".id as "id", "tb_8290127_1751051783998_0".grp as "grp", "tb_8290127_1751051783998_0".name as "name", sum("tb_8290127_1751051783998_0".id) OVER () as "newCol" from leSchema.tb_8290127_1751051783998 as "tb_8290127_1751051783998_0"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_8780827_1751051784139}#;
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_6484895_1751219923621}#->extend(~newCol:c|$c.id:y|$y->plus())'
+'SQL: select "tb_6484895_1751219923621_0".id as "id", "tb_6484895_1751219923621_0".grp as "grp", "tb_6484895_1751219923621_0".name as "name", sum("tb_6484895_1751219923621_0".id) OVER () as "newCol" from leSchema.tb_6484895_1751219923621 as "tb_6484895_1751219923621_0"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_8452424_1751219923707}#;
  $t->extend(~newCol:c|$c.id:y|$y->plus());
 '
-'SQL: WITH t AS (select "tb_8780827_1751051784139_0".id as "id", "tb_8780827_1751051784139_0".grp as "grp", "tb_8780827_1751051784139_0".name as "name" from leSchema.tb_8780827_1751051784139 as "tb_8780827_1751051784139_0") 
+'SQL: WITH t AS (select "tb_8452424_1751219923707_0".id as "id", "tb_8452424_1751219923707_0".grp as "grp", "tb_8452424_1751219923707_0".name as "name" from leSchema.tb_8452424_1751219923707 as "tb_8452424_1751219923707_0")
 select "subselect"."id" as "id", "subselect"."grp" as "grp", "subselect"."name" as "name", "subselect"."newCol" as "newCol" from (select "root"."id", "root"."grp", "root"."name", sum("root"."id") OVER () as "newCol" from t as "root") as "subselect"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_5230659_1751051784295}#->extend(~grp->over(~id->descending()), ~newCol:{p, w, r|$r.name}:y|$y->joinStrings(''))'
-'SQL: select "tb_5230659_1751051784295_0".id as "id", "tb_5230659_1751051784295_0".grp as "grp", "tb_5230659_1751051784295_0".name as "name", string_agg("tb_5230659_1751051784295_0".name,'') OVER (Partition By "tb_5230659_1751051784295_0".grp Order By "tb_5230659_1751051784295_0".id DESC) as "newCol" from leSchema.tb_5230659_1751051784295 as "tb_5230659_1751051784295_0"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_3695222_1751051784432}#;
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_4469101_1751219923787}#->extend(~grp->over(~id->descending()), ~newCol:{p, w, r|$r.name}:y|$y->joinStrings(''))'
+'SQL: select "tb_4469101_1751219923787_0".id as "id", "tb_4469101_1751219923787_0".grp as "grp", "tb_4469101_1751219923787_0".name as "name", listagg("tb_4469101_1751219923787_0".name, '') OVER (Partition By "tb_4469101_1751219923787_0".grp Order By "tb_4469101_1751219923787_0".id DESC) as "newCol" from leSchema.tb_4469101_1751219923787 as "tb_4469101_1751219923787_0"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_4757668_1751219923883}#;
  $t->extend(~grp->over(~id->descending()), ~newCol:{p, w, r|$r.name}:y|$y->joinStrings(''));
 '
-'SQL: WITH t AS (select "tb_3695222_1751051784432_0".id as "id", "tb_3695222_1751051784432_0".grp as "grp", "tb_3695222_1751051784432_0".name as "name" from leSchema.tb_3695222_1751051784432 as "tb_3695222_1751051784432_0") 
-select "subselect"."id" as "id", "subselect"."grp" as "grp", "subselect"."name" as "name", "subselect"."newCol" as "newCol" from (select "root"."id", "root"."grp", "root"."name", string_agg("root"."name",'') OVER (Partition By "root"."grp" Order By "root"."id" DESC) as "newCol" from t as "root") as "subselect"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_9132354_1751051784578}#->extend(~id->descending()->over(), ~newCol:{p, w, r|$r.id}:y|$y->plus())'
-'SQL: select "tb_9132354_1751051784578_0".id as "id", "tb_9132354_1751051784578_0".grp as "grp", "tb_9132354_1751051784578_0".name as "name", sum("tb_9132354_1751051784578_0".id) OVER (Order By "tb_9132354_1751051784578_0".id DESC) as "newCol" from leSchema.tb_9132354_1751051784578 as "tb_9132354_1751051784578_0"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_4307115_1751051784708}#;
+'SQL: WITH t AS (select "tb_4757668_1751219923883_0".id as "id", "tb_4757668_1751219923883_0".grp as "grp", "tb_4757668_1751219923883_0".name as "name" from leSchema.tb_4757668_1751219923883 as "tb_4757668_1751219923883_0")
+select "subselect"."id" as "id", "subselect"."grp" as "grp", "subselect"."name" as "name", "subselect"."newCol" as "newCol" from (select "root"."id", "root"."grp", "root"."name", listagg("root"."name", '') OVER (Partition By "root"."grp" Order By "root"."id" DESC) as "newCol" from t as "root") as "subselect"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_955692_1751219923970}#->extend(~id->descending()->over(), ~newCol:{p, w, r|$r.id}:y|$y->plus())'
+'SQL: select "tb_955692_1751219923970_0".id as "id", "tb_955692_1751219923970_0".grp as "grp", "tb_955692_1751219923970_0".name as "name", sum("tb_955692_1751219923970_0".id) OVER (Order By "tb_955692_1751219923970_0".id DESC) as "newCol" from leSchema.tb_955692_1751219923970 as "tb_955692_1751219923970_0"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_3729714_1751219924052}#;
  $t->extend(~id->descending()->over(), ~newCol:{p, w, r|$r.id}:y|$y->plus());
 '
-'SQL: WITH t AS (select "tb_4307115_1751051784708_0".id as "id", "tb_4307115_1751051784708_0".grp as "grp", "tb_4307115_1751051784708_0".name as "name" from leSchema.tb_4307115_1751051784708 as "tb_4307115_1751051784708_0") 
+'SQL: WITH t AS (select "tb_3729714_1751219924052_0".id as "id", "tb_3729714_1751219924052_0".grp as "grp", "tb_3729714_1751219924052_0".name as "name" from leSchema.tb_3729714_1751219924052 as "tb_3729714_1751219924052_0")
 select "subselect"."id" as "id", "subselect"."grp" as "grp", "subselect"."name" as "name", "subselect"."newCol" as "newCol" from (select "root"."id", "root"."grp", "root"."name", sum("root"."id") OVER (Order By "root"."id" DESC) as "newCol" from t as "root") as "subselect"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_8814610_1751051784849}#->extend(~grp->over(~id->descending()), ~[newCol:{p, w, r|$r.name}:y|$y->joinStrings(''),other:{p, w, r|$r.id}:y|$y->plus()])'
-'SQL: select "tb_8814610_1751051784849_0".id as "id", "tb_8814610_1751051784849_0".grp as "grp", "tb_8814610_1751051784849_0".name as "name", string_agg("tb_8814610_1751051784849_0".name,'') OVER (Partition By "tb_8814610_1751051784849_0".grp Order By "tb_8814610_1751051784849_0".id DESC) as "newCol", sum("tb_8814610_1751051784849_0".id) OVER (Partition By "tb_8814610_1751051784849_0".grp Order By "tb_8814610_1751051784849_0".id DESC) as "other" from leSchema.tb_8814610_1751051784849 as "tb_8814610_1751051784849_0"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_7279227_1751051785001}#;
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_7455452_1751219924147}#->extend(~grp->over(~id->descending()), ~[newCol:{p, w, r|$r.name}:y|$y->joinStrings(''),other:{p, w, r|$r.id}:y|$y->plus()])'
+'SQL: select "tb_7455452_1751219924147_0".id as "id", "tb_7455452_1751219924147_0".grp as "grp", "tb_7455452_1751219924147_0".name as "name", listagg("tb_7455452_1751219924147_0".name, '') OVER (Partition By "tb_7455452_1751219924147_0".grp Order By "tb_7455452_1751219924147_0".id DESC) as "newCol", sum("tb_7455452_1751219924147_0".id) OVER (Partition By "tb_7455452_1751219924147_0".grp Order By "tb_7455452_1751219924147_0".id DESC) as "other" from leSchema.tb_7455452_1751219924147 as "tb_7455452_1751219924147_0"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_4981623_1751219924236}#;
  $t->extend(~grp->over(~id->descending()), ~[newCol:{p, w, r|$r.name}:y|$y->joinStrings(''),other:{p, w, r|$r.id}:y|$y->plus()]);
 '
-'SQL: WITH t AS (select "tb_7279227_1751051785001_0".id as "id", "tb_7279227_1751051785001_0".grp as "grp", "tb_7279227_1751051785001_0".name as "name" from leSchema.tb_7279227_1751051785001 as "tb_7279227_1751051785001_0") 
-select "subselect"."id" as "id", "subselect"."grp" as "grp", "subselect"."name" as "name", "subselect"."newCol" as "newCol", "subselect"."other" as "other" from (select "subselect"."id" as "id", "subselect"."grp" as "grp", "subselect"."name" as "name", "subselect"."newCol" as "newCol", sum("subselect"."id") OVER (Partition By "subselect"."grp" Order By "subselect"."id" DESC) as "other" from (select "root"."id", "root"."grp", "root"."name", string_agg("root"."name",'') OVER (Partition By "root"."grp" Order By "root"."id" DESC) as "newCol" from t as "root") as "subselect") as "subselect"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_3716897_1751051785156}#->extend(~grp->over(), ~[newCol:{p, w, r|$r.id}:y|$y->plus(),other:{p, w, r|$r.grp}:y|$y->plus()])'
-'SQL: select "tb_3716897_1751051785156_0".id as "id", "tb_3716897_1751051785156_0".grp as "grp", "tb_3716897_1751051785156_0".name as "name", sum("tb_3716897_1751051785156_0".id) OVER (Partition By "tb_3716897_1751051785156_0".grp ) as "newCol", sum("tb_3716897_1751051785156_0".grp) OVER (Partition By "tb_3716897_1751051785156_0".grp ) as "other" from leSchema.tb_3716897_1751051785156 as "tb_3716897_1751051785156_0"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_1615677_1751051785299}#;
+'SQL: WITH t AS (select "tb_4981623_1751219924236_0".id as "id", "tb_4981623_1751219924236_0".grp as "grp", "tb_4981623_1751219924236_0".name as "name" from leSchema.tb_4981623_1751219924236 as "tb_4981623_1751219924236_0")
+select "subselect"."id" as "id", "subselect"."grp" as "grp", "subselect"."name" as "name", "subselect"."newCol" as "newCol", "subselect"."other" as "other" from (select "subselect"."id" as "id", "subselect"."grp" as "grp", "subselect"."name" as "name", "subselect"."newCol" as "newCol", sum("subselect"."id") OVER (Partition By "subselect"."grp" Order By "subselect"."id" DESC) as "other" from (select "root"."id", "root"."grp", "root"."name", listagg("root"."name", '') OVER (Partition By "root"."grp" Order By "root"."id" DESC) as "newCol" from t as "root") as "subselect") as "subselect"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_8213003_1751219924331}#->extend(~grp->over(), ~[newCol:{p, w, r|$r.id}:y|$y->plus(),other:{p, w, r|$r.grp}:y|$y->plus()])'
+'SQL: select "tb_8213003_1751219924331_0".id as "id", "tb_8213003_1751219924331_0".grp as "grp", "tb_8213003_1751219924331_0".name as "name", sum("tb_8213003_1751219924331_0".id) OVER (Partition By "tb_8213003_1751219924331_0".grp ) as "newCol", sum("tb_8213003_1751219924331_0".grp) OVER (Partition By "tb_8213003_1751219924331_0".grp ) as "other" from leSchema.tb_8213003_1751219924331 as "tb_8213003_1751219924331_0"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_9582940_1751219924417}#;
  $t->extend(~grp->over(), ~[newCol:{p, w, r|$r.id}:y|$y->plus(),other:{p, w, r|$r.grp}:y|$y->plus()]);
 '
-'SQL: WITH t AS (select "tb_1615677_1751051785299_0".id as "id", "tb_1615677_1751051785299_0".grp as "grp", "tb_1615677_1751051785299_0".name as "name" from leSchema.tb_1615677_1751051785299 as "tb_1615677_1751051785299_0") 
+'SQL: WITH t AS (select "tb_9582940_1751219924417_0".id as "id", "tb_9582940_1751219924417_0".grp as "grp", "tb_9582940_1751219924417_0".name as "name" from leSchema.tb_9582940_1751219924417 as "tb_9582940_1751219924417_0")
 select "subselect"."id" as "id", "subselect"."grp" as "grp", "subselect"."name" as "name", "subselect"."newCol" as "newCol", "subselect"."other" as "other" from (select "subselect"."id" as "id", "subselect"."grp" as "grp", "subselect"."name" as "name", "subselect"."newCol" as "newCol", sum("subselect"."grp") OVER (Partition By "subselect"."grp" ) as "other" from (select "root"."id", "root"."grp", "root"."name", sum("root"."id") OVER (Partition By "root"."grp" ) as "newCol" from t as "root") as "subselect") as "subselect"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_7062759_1751051785451}#->extend(~grp->over(), ~newCol:{p, w, r|$r.id}:y|$y->plus())'
-'SQL: select "tb_7062759_1751051785451_0".id as "id", "tb_7062759_1751051785451_0".grp as "grp", "tb_7062759_1751051785451_0".name as "name", sum("tb_7062759_1751051785451_0".id) OVER (Partition By "tb_7062759_1751051785451_0".grp ) as "newCol" from leSchema.tb_7062759_1751051785451 as "tb_7062759_1751051785451_0"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_9837815_1751051785593}#;
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_2403459_1751219924511}#->extend(~grp->over(), ~newCol:{p, w, r|$r.id}:y|$y->plus())'
+'SQL: select "tb_2403459_1751219924511_0".id as "id", "tb_2403459_1751219924511_0".grp as "grp", "tb_2403459_1751219924511_0".name as "name", sum("tb_2403459_1751219924511_0".id) OVER (Partition By "tb_2403459_1751219924511_0".grp ) as "newCol" from leSchema.tb_2403459_1751219924511 as "tb_2403459_1751219924511_0"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_7829370_1751219924590}#;
  $t->extend(~grp->over(), ~newCol:{p, w, r|$r.id}:y|$y->plus());
 '
-'SQL: WITH t AS (select "tb_9837815_1751051785593_0".id as "id", "tb_9837815_1751051785593_0".grp as "grp", "tb_9837815_1751051785593_0".name as "name" from leSchema.tb_9837815_1751051785593 as "tb_9837815_1751051785593_0") 
+'SQL: WITH t AS (select "tb_7829370_1751219924590_0".id as "id", "tb_7829370_1751219924590_0".grp as "grp", "tb_7829370_1751219924590_0".name as "name" from leSchema.tb_7829370_1751219924590 as "tb_7829370_1751219924590_0")
 select "subselect"."id" as "id", "subselect"."grp" as "grp", "subselect"."name" as "name", "subselect"."newCol" as "newCol" from (select "root"."id", "root"."grp", "root"."name", sum("root"."id") OVER (Partition By "root"."grp" ) as "newCol" from t as "root") as "subselect"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_2568383_1751051785730}#->extend(~[grp,grp2]->over(~id->descending()), ~[newCol:{p, w, r|$p->lead($r).id},other:{p, w, r|$p->first($w, $r).name}])'
-'SQL: select "tb_2568383_1751051785730_0".id as "id", "tb_2568383_1751051785730_0".grp as "grp", "tb_2568383_1751051785730_0".grp2 as "grp2", "tb_2568383_1751051785730_0".name as "name", lead("tb_2568383_1751051785730_0".id) OVER (Partition By "tb_2568383_1751051785730_0".grp,"tb_2568383_1751051785730_0".grp2 Order By "tb_2568383_1751051785730_0".id DESC) as "newCol", first("tb_2568383_1751051785730_0".name) OVER (Partition By "tb_2568383_1751051785730_0".grp,"tb_2568383_1751051785730_0".grp2 Order By "tb_2568383_1751051785730_0".id DESC) as "other" from leSchema.tb_2568383_1751051785730 as "tb_2568383_1751051785730_0"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_187111_1751051785922}#;
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_9146911_1751219924681}#->extend(~[grp,grp2]->over(~id->descending()), ~[newCol:{p, w, r|$p->lead($r).id},other:{p, w, r|$p->first($w, $r).name}])'
+'SQL: select "tb_9146911_1751219924681_0".id as "id", "tb_9146911_1751219924681_0".grp as "grp", "tb_9146911_1751219924681_0".grp2 as "grp2", "tb_9146911_1751219924681_0".name as "name", lead("tb_9146911_1751219924681_0".id) OVER (Partition By "tb_9146911_1751219924681_0".grp,"tb_9146911_1751219924681_0".grp2 Order By "tb_9146911_1751219924681_0".id DESC) as "newCol", first_value("tb_9146911_1751219924681_0".name) OVER (Partition By "tb_9146911_1751219924681_0".grp,"tb_9146911_1751219924681_0".grp2 Order By "tb_9146911_1751219924681_0".id DESC) as "other" from leSchema.tb_9146911_1751219924681 as "tb_9146911_1751219924681_0"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_2452445_1751219924778}#;
  $t->extend(~[grp,grp2]->over(~id->descending()), ~[newCol:{p, w, r|$p->lead($r).id},other:{p, w, r|$p->first($w, $r).name}]);
 '
-'SQL: WITH t AS (select "tb_187111_1751051785922_0".id as "id", "tb_187111_1751051785922_0".grp as "grp", "tb_187111_1751051785922_0".grp2 as "grp2", "tb_187111_1751051785922_0".name as "name" from leSchema.tb_187111_1751051785922 as "tb_187111_1751051785922_0") 
-select "subselect"."id" as "id", "subselect"."grp" as "grp", "subselect"."grp2" as "grp2", "subselect"."name" as "name", "subselect"."newCol" as "newCol", "subselect"."other" as "other" from (select "subselect"."id" as "id", "subselect"."grp" as "grp", "subselect"."grp2" as "grp2", "subselect"."name" as "name", "subselect"."newCol" as "newCol", first("subselect"."name") OVER (Partition By "subselect"."grp","subselect"."grp2" Order By "subselect"."id" DESC) as "other" from (select "root"."id", "root"."grp", "root"."grp2", "root"."name", lead("root"."id") OVER (Partition By "root"."grp","root"."grp2" Order By "root"."id" DESC) as "newCol" from t as "root") as "subselect") as "subselect"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_1984105_1751051786066}#->filter(x|$x.id < 9)->extend(~grp->over([~name->ascending(), ~height->ascending()]), ~[newCol:{p, w, r|$p->lead($r).id},other:{p, w, r|$p->first($w, $r).name}])'
-'SQL: select "tb_1984105_1751051786066_0".id as "id", "tb_1984105_1751051786066_0".grp as "grp", "tb_1984105_1751051786066_0".name as "name", "tb_1984105_1751051786066_0".height as "height", lead("tb_1984105_1751051786066_0".id) OVER (Partition By "tb_1984105_1751051786066_0".grp Order By "tb_1984105_1751051786066_0".name ASC, "tb_1984105_1751051786066_0".height ASC) as "newCol", first("tb_1984105_1751051786066_0".name) OVER (Partition By "tb_1984105_1751051786066_0".grp Order By "tb_1984105_1751051786066_0".name ASC, "tb_1984105_1751051786066_0".height ASC) as "other" from leSchema.tb_1984105_1751051786066 as "tb_1984105_1751051786066_0" where "tb_1984105_1751051786066_0".id < 9'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_7207246_1751051786248}#->extend(~grp->over([~name->ascending(), ~height->ascending()]), ~[newCol:{p, w, r|$p->lead($r).id},other:{p, w, r|$p->first($w, $r).name}])'
-'SQL: select "tb_7207246_1751051786248_0".id as "id", "tb_7207246_1751051786248_0".grp as "grp", "tb_7207246_1751051786248_0".name as "name", "tb_7207246_1751051786248_0".height as "height", lead("tb_7207246_1751051786248_0".id) OVER (Partition By "tb_7207246_1751051786248_0".grp Order By "tb_7207246_1751051786248_0".name ASC, "tb_7207246_1751051786248_0".height ASC) as "newCol", first("tb_7207246_1751051786248_0".name) OVER (Partition By "tb_7207246_1751051786248_0".grp Order By "tb_7207246_1751051786248_0".name ASC, "tb_7207246_1751051786248_0".height ASC) as "other" from leSchema.tb_7207246_1751051786248 as "tb_7207246_1751051786248_0"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_1136135_1751051786417}#->extend(~grp->over(~id->descending()), ~[newCol:{p, w, r|$p->lead($r).id},other:{p, w, r|$p->first($w, $r).name}])'
-'SQL: select "tb_1136135_1751051786417_0".id as "id", "tb_1136135_1751051786417_0".grp as "grp", "tb_1136135_1751051786417_0".name as "name", lead("tb_1136135_1751051786417_0".id) OVER (Partition By "tb_1136135_1751051786417_0".grp Order By "tb_1136135_1751051786417_0".id DESC) as "newCol", first("tb_1136135_1751051786417_0".name) OVER (Partition By "tb_1136135_1751051786417_0".grp Order By "tb_1136135_1751051786417_0".id DESC) as "other" from leSchema.tb_1136135_1751051786417 as "tb_1136135_1751051786417_0"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_119877_1751051786568}#;
+'SQL: WITH t AS (select "tb_2452445_1751219924778_0".id as "id", "tb_2452445_1751219924778_0".grp as "grp", "tb_2452445_1751219924778_0".grp2 as "grp2", "tb_2452445_1751219924778_0".name as "name" from leSchema.tb_2452445_1751219924778 as "tb_2452445_1751219924778_0")
+select "subselect"."id" as "id", "subselect"."grp" as "grp", "subselect"."grp2" as "grp2", "subselect"."name" as "name", "subselect"."newCol" as "newCol", "subselect"."other" as "other" from (select "subselect"."id" as "id", "subselect"."grp" as "grp", "subselect"."grp2" as "grp2", "subselect"."name" as "name", "subselect"."newCol" as "newCol", first_value("subselect"."name") OVER (Partition By "subselect"."grp","subselect"."grp2" Order By "subselect"."id" DESC) as "other" from (select "root"."id", "root"."grp", "root"."grp2", "root"."name", lead("root"."id") OVER (Partition By "root"."grp","root"."grp2" Order By "root"."id" DESC) as "newCol" from t as "root") as "subselect") as "subselect"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_1049514_1751219924869}#->filter(x|$x.id < 9)->extend(~grp->over([~name->ascending(), ~height->ascending()]), ~[newCol:{p, w, r|$p->lead($r).id},other:{p, w, r|$p->first($w, $r).name}])'
+'SQL: select "tb_1049514_1751219924869_0".id as "id", "tb_1049514_1751219924869_0".grp as "grp", "tb_1049514_1751219924869_0".name as "name", "tb_1049514_1751219924869_0".height as "height", lead("tb_1049514_1751219924869_0".id) OVER (Partition By "tb_1049514_1751219924869_0".grp Order By "tb_1049514_1751219924869_0".name ASC, "tb_1049514_1751219924869_0".height ASC) as "newCol", first_value("tb_1049514_1751219924869_0".name) OVER (Partition By "tb_1049514_1751219924869_0".grp Order By "tb_1049514_1751219924869_0".name ASC, "tb_1049514_1751219924869_0".height ASC) as "other" from leSchema.tb_1049514_1751219924869 as "tb_1049514_1751219924869_0" where "tb_1049514_1751219924869_0".id < 9'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_8906640_1751219924975}#->extend(~grp->over([~name->ascending(), ~height->ascending()]), ~[newCol:{p, w, r|$p->lead($r).id},other:{p, w, r|$p->first($w, $r).name}])'
+'SQL: select "tb_8906640_1751219924975_0".id as "id", "tb_8906640_1751219924975_0".grp as "grp", "tb_8906640_1751219924975_0".name as "name", "tb_8906640_1751219924975_0".height as "height", lead("tb_8906640_1751219924975_0".id) OVER (Partition By "tb_8906640_1751219924975_0".grp Order By "tb_8906640_1751219924975_0".name ASC, "tb_8906640_1751219924975_0".height ASC) as "newCol", first_value("tb_8906640_1751219924975_0".name) OVER (Partition By "tb_8906640_1751219924975_0".grp Order By "tb_8906640_1751219924975_0".name ASC, "tb_8906640_1751219924975_0".height ASC) as "other" from leSchema.tb_8906640_1751219924975 as "tb_8906640_1751219924975_0"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_2985357_1751219925083}#->extend(~grp->over(~id->descending()), ~[newCol:{p, w, r|$p->lead($r).id},other:{p, w, r|$p->first($w, $r).name}])'
+'SQL: select "tb_2985357_1751219925083_0".id as "id", "tb_2985357_1751219925083_0".grp as "grp", "tb_2985357_1751219925083_0".name as "name", lead("tb_2985357_1751219925083_0".id) OVER (Partition By "tb_2985357_1751219925083_0".grp Order By "tb_2985357_1751219925083_0".id DESC) as "newCol", first_value("tb_2985357_1751219925083_0".name) OVER (Partition By "tb_2985357_1751219925083_0".grp Order By "tb_2985357_1751219925083_0".id DESC) as "other" from leSchema.tb_2985357_1751219925083 as "tb_2985357_1751219925083_0"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_6268611_1751219925164}#;
  $t->extend(~grp->over(~id->descending()), ~[newCol:{p, w, r|$p->lead($r).id},other:{p, w, r|$p->first($w, $r).name}]);
 '
-'SQL: WITH t AS (select "tb_119877_1751051786568_0".id as "id", "tb_119877_1751051786568_0".grp as "grp", "tb_119877_1751051786568_0".name as "name" from leSchema.tb_119877_1751051786568 as "tb_119877_1751051786568_0") 
-select "subselect"."id" as "id", "subselect"."grp" as "grp", "subselect"."name" as "name", "subselect"."newCol" as "newCol", "subselect"."other" as "other" from (select "subselect"."id" as "id", "subselect"."grp" as "grp", "subselect"."name" as "name", "subselect"."newCol" as "newCol", first("subselect"."name") OVER (Partition By "subselect"."grp" Order By "subselect"."id" DESC) as "other" from (select "root"."id", "root"."grp", "root"."name", lead("root"."id") OVER (Partition By "root"."grp" Order By "root"."id" DESC) as "newCol" from t as "root") as "subselect") as "subselect"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_1561797_1751051786726}#->extend(~name:c|$c.doub->toOne() + 1.0)'
-'SQL: select "tb_1561797_1751051786726_0".val as "val", "tb_1561797_1751051786726_0".doub as "doub", ("tb_1561797_1751051786726_0".doub + 1.0) as "name" from leSchema.tb_1561797_1751051786726 as "tb_1561797_1751051786726_0"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_6534832_1751051786859}#;
+'SQL: WITH t AS (select "tb_6268611_1751219925164_0".id as "id", "tb_6268611_1751219925164_0".grp as "grp", "tb_6268611_1751219925164_0".name as "name" from leSchema.tb_6268611_1751219925164 as "tb_6268611_1751219925164_0")
+select "subselect"."id" as "id", "subselect"."grp" as "grp", "subselect"."name" as "name", "subselect"."newCol" as "newCol", "subselect"."other" as "other" from (select "subselect"."id" as "id", "subselect"."grp" as "grp", "subselect"."name" as "name", "subselect"."newCol" as "newCol", first_value("subselect"."name") OVER (Partition By "subselect"."grp" Order By "subselect"."id" DESC) as "other" from (select "root"."id", "root"."grp", "root"."name", lead("root"."id") OVER (Partition By "root"."grp" Order By "root"."id" DESC) as "newCol" from t as "root") as "subselect") as "subselect"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_4523586_1751219925263}#->extend(~name:c|$c.doub->toOne() + 1.0)'
+'SQL: select "tb_4523586_1751219925263_0".val as "val", "tb_4523586_1751219925263_0".doub as "doub", ("tb_4523586_1751219925263_0".doub + 1.0) as "name" from leSchema.tb_4523586_1751219925263 as "tb_4523586_1751219925263_0"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_9618886_1751219925357}#;
  $t->extend(~name:c|$c.doub->toOne() + 1.0);
 '
-'SQL: WITH t AS (select "tb_6534832_1751051786859_0".val as "val", "tb_6534832_1751051786859_0".doub as "doub" from leSchema.tb_6534832_1751051786859 as "tb_6534832_1751051786859_0") 
+'SQL: WITH t AS (select "tb_9618886_1751219925357_0".val as "val", "tb_9618886_1751219925357_0".doub as "doub" from leSchema.tb_9618886_1751219925357 as "tb_9618886_1751219925357_0")
 select "root"."val", "root"."doub", ("root"."doub" + 1.0) as "name" from t as "root"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_6131770_1751051786982}#->extend(~name:c|$c.val->toOne() + 1)'
-'SQL: select "tb_6131770_1751051786982_0".val as "val", "tb_6131770_1751051786982_0".str as "str", ("tb_6131770_1751051786982_0".val + 1) as "name" from leSchema.tb_6131770_1751051786982 as "tb_6131770_1751051786982_0"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_3013132_1751051787116}#;
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_3897021_1751219925449}#->extend(~name:c|$c.val->toOne() + 1)'
+'SQL: select "tb_3897021_1751219925449_0".val as "val", "tb_3897021_1751219925449_0".str as "str", ("tb_3897021_1751219925449_0".val + 1) as "name" from leSchema.tb_3897021_1751219925449 as "tb_3897021_1751219925449_0"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_2251627_1751219925532}#;
  $t->extend(~name:c|$c.val->toOne() + 1);
 '
-'SQL: WITH t AS (select "tb_3013132_1751051787116_0".val as "val", "tb_3013132_1751051787116_0".str as "str" from leSchema.tb_3013132_1751051787116 as "tb_3013132_1751051787116_0") 
+'SQL: WITH t AS (select "tb_2251627_1751219925532_0".val as "val", "tb_2251627_1751219925532_0".str as "str" from leSchema.tb_2251627_1751219925532 as "tb_2251627_1751219925532_0")
 select "root"."val", "root"."str", ("root"."val" + 1) as "name" from t as "root"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_5310051_1751051787281}#->extend(~name:c|$c.str->toOne() + $c.val->toOne()->toString())'
-'SQL: select "tb_5310051_1751051787281_0".val as "val", "tb_5310051_1751051787281_0".str as "str", concat("tb_5310051_1751051787281_0".str, cast("tb_5310051_1751051787281_0".val as varchar)) as "name" from leSchema.tb_5310051_1751051787281 as "tb_5310051_1751051787281_0"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_4397953_1751051787426}#;
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_4735209_1751219925610}#->extend(~name:c|$c.str->toOne() + $c.val->toOne()->toString())'
+'SQL: select "tb_4735209_1751219925610_0".val as "val", "tb_4735209_1751219925610_0".str as "str", concat("tb_4735209_1751219925610_0".str, cast("tb_4735209_1751219925610_0".val as varchar)) as "name" from leSchema.tb_4735209_1751219925610 as "tb_4735209_1751219925610_0"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_97613_1751219925691}#;
  $t->extend(~name:c|$c.str->toOne() + $c.val->toOne()->toString());
 '
-'SQL: WITH t AS (select "tb_4397953_1751051787426_0".val as "val", "tb_4397953_1751051787426_0".str as "str" from leSchema.tb_4397953_1751051787426 as "tb_4397953_1751051787426_0") 
+'SQL: WITH t AS (select "tb_97613_1751219925691_0".val as "val", "tb_97613_1751219925691_0".str as "str" from leSchema.tb_97613_1751219925691 as "tb_97613_1751219925691_0")
 select "root"."val", "root"."str", concat("root"."str", cast("root"."val" as varchar)) as "name" from t as "root"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_6608031_1751051787557}#->extend(~[name:c|$c.val->toOne() + 1,other:x|$x.str->toOne() + '_ext'])'
-'SQL: select "tb_6608031_1751051787557_0".val as "val", "tb_6608031_1751051787557_0".str as "str", ("tb_6608031_1751051787557_0".val + 1) as "name", concat("tb_6608031_1751051787557_0".str, '_ext') as "other" from leSchema.tb_6608031_1751051787557 as "tb_6608031_1751051787557_0"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_255398_1751051787716}#;
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_3815244_1751219925762}#->extend(~[name:c|$c.val->toOne() + 1,other:x|$x.str->toOne() + '_ext'])'
+'SQL: select "tb_3815244_1751219925762_0".val as "val", "tb_3815244_1751219925762_0".str as "str", ("tb_3815244_1751219925762_0".val + 1) as "name", concat("tb_3815244_1751219925762_0".str, '_ext') as "other" from leSchema.tb_3815244_1751219925762 as "tb_3815244_1751219925762_0"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_537423_1751219925864}#;
  $t->extend(~[name:c|$c.val->toOne() + 1,other:x|$x.str->toOne() + '_ext']);
 '
-'SQL: WITH t AS (select "tb_255398_1751051787716_0".val as "val", "tb_255398_1751051787716_0".str as "str" from leSchema.tb_255398_1751051787716 as "tb_255398_1751051787716_0") 
+'SQL: WITH t AS (select "tb_537423_1751219925864_0".val as "val", "tb_537423_1751219925864_0".str as "str" from leSchema.tb_537423_1751219925864 as "tb_537423_1751219925864_0")
 select "root"."val", "root"."str", ("root"."val" + 1) as "name", concat("root"."str", '_ext') as "other" from t as "root"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_2700571_1751051787871}#->filter(x|$x.val > 1)'
-'SQL: select "tb_2700571_1751051787871_0".val as "val" from leSchema.tb_2700571_1751051787871 as "tb_2700571_1751051787871_0" where "tb_2700571_1751051787871_0".val > 1'
-EXAMPLE: 
-EXPRESSION:' |let a = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_296797_1751051788006}#;
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_4377868_1751219925961}#->filter(x|$x.val > 1)'
+'SQL: select "tb_4377868_1751219925961_0".val as "val" from leSchema.tb_4377868_1751219925961 as "tb_4377868_1751219925961_0" where "tb_4377868_1751219925961_0".val > 1'
+
+'EXAMPLE'
+'EXPRESSION: |let a = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_8174243_1751219926042}#;
  let b = $a->filter(x|$x.val > 3);
  $b->filter(x|$x.val > 4);
 '
-'SQL: WITH a AS (select "tb_296797_1751051788006_0".val as "val" from leSchema.tb_296797_1751051788006 as "tb_296797_1751051788006_0"), 
-b AS (select "root"."val" from a as "root" where "root"."val" > 3) 
+'SQL: WITH a AS (select "tb_8174243_1751219926042_0".val as "val" from leSchema.tb_8174243_1751219926042 as "tb_8174243_1751219926042_0"),
+b AS (select "root"."val" from a as "root" where "root"."val" > 3)
 select "root"."val" from b as "root" where "root"."val" > 4'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_1900486_1751051788160}#->extend(~grp->over(~id->descending()), ~other:{p, w, r|$p->first($w, $r).name})'
-'SQL: select "tb_1900486_1751051788160_0".id as "id", "tb_1900486_1751051788160_0".grp as "grp", "tb_1900486_1751051788160_0".name as "name", first("tb_1900486_1751051788160_0".name) OVER (Partition By "tb_1900486_1751051788160_0".grp Order By "tb_1900486_1751051788160_0".id DESC) as "other" from leSchema.tb_1900486_1751051788160 as "tb_1900486_1751051788160_0"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_5499739_1751051788333}#->sort(~name->ascending())->groupBy(~[grp], ~[newCol:x|$x.name:y|$y->joinStrings(''),YoCol:x|$x.id:y|$y->plus()])'
-'SQL: select "tb_5499739_1751051788333_0"."grp" as "grp", string_agg("tb_5499739_1751051788333_0"."name",'') as "newCol", sum("tb_5499739_1751051788333_0"."id") as "YoCol" from (select "tb_5499739_1751051788333_1".id as "id", "tb_5499739_1751051788333_1".grp as "grp", "tb_5499739_1751051788333_1".name as "name" from leSchema.tb_5499739_1751051788333 as "tb_5499739_1751051788333_1" order by "name") as "tb_5499739_1751051788333_0" group by "grp"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_987041_1751051788491}#;
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_6305844_1751219926125}#->extend(~grp->over(~id->descending()), ~other:{p, w, r|$p->first($w, $r).name})'
+'SQL: select "tb_6305844_1751219926125_0".id as "id", "tb_6305844_1751219926125_0".grp as "grp", "tb_6305844_1751219926125_0".name as "name", first_value("tb_6305844_1751219926125_0".name) OVER (Partition By "tb_6305844_1751219926125_0".grp Order By "tb_6305844_1751219926125_0".id DESC) as "other" from leSchema.tb_6305844_1751219926125 as "tb_6305844_1751219926125_0"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_1115549_1751219926245}#->sort(~name->ascending())->groupBy(~[grp], ~[newCol:x|$x.name:y|$y->joinStrings(''),YoCol:x|$x.id:y|$y->plus()])'
+'SQL: select "tb_1115549_1751219926245_0"."grp" as "grp", listagg("tb_1115549_1751219926245_0"."name", '') as "newCol", sum("tb_1115549_1751219926245_0"."id") as "YoCol" from (select "tb_1115549_1751219926245_1".id as "id", "tb_1115549_1751219926245_1".grp as "grp", "tb_1115549_1751219926245_1".name as "name" from leSchema.tb_1115549_1751219926245 as "tb_1115549_1751219926245_1" order by "name") as "tb_1115549_1751219926245_0" group by "grp"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_3244329_1751219926331}#;
  $t->groupBy(~[grp], ~[newCol:x|$x.name:y|$y->joinStrings(''),YoCol:x|$x.id:y|$y->plus()]);
 '
-'SQL: WITH t AS (select "tb_987041_1751051788491_0".id as "id", "tb_987041_1751051788491_0".grp as "grp", "tb_987041_1751051788491_0".name as "name" from leSchema.tb_987041_1751051788491 as "tb_987041_1751051788491_0") 
-select "root"."grp" as "grp", string_agg("root"."name",'') as "newCol", sum("root"."id") as "YoCol" from t as "root" group by "grp"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_9300490_1751051788635}#->groupBy(~[grp], ~newCol:x|$x.name:y|$y->joinStrings(''))'
-'SQL: select "tb_9300490_1751051788635_0".grp as "grp", string_agg("tb_9300490_1751051788635_0".name,'') as "newCol" from leSchema.tb_9300490_1751051788635 as "tb_9300490_1751051788635_0" group by "grp"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_7770411_1751051788774}#;
+'SQL: WITH t AS (select "tb_3244329_1751219926331_0".id as "id", "tb_3244329_1751219926331_0".grp as "grp", "tb_3244329_1751219926331_0".name as "name" from leSchema.tb_3244329_1751219926331 as "tb_3244329_1751219926331_0")
+select "root"."grp" as "grp", listagg("root"."name", '') as "newCol", sum("root"."id") as "YoCol" from t as "root" group by "grp"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_6268016_1751219926415}#->groupBy(~[grp], ~newCol:x|$x.name:y|$y->joinStrings(''))'
+'SQL: select "tb_6268016_1751219926415_0".grp as "grp", listagg("tb_6268016_1751219926415_0".name, '') as "newCol" from leSchema.tb_6268016_1751219926415 as "tb_6268016_1751219926415_0" group by "grp"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_6499125_1751219926495}#;
  $t->groupBy(~[grp], ~newCol:x|$x.name:y|$y->joinStrings(''));
 '
-'SQL: WITH t AS (select "tb_7770411_1751051788774_0".id as "id", "tb_7770411_1751051788774_0".grp as "grp", "tb_7770411_1751051788774_0".name as "name" from leSchema.tb_7770411_1751051788774 as "tb_7770411_1751051788774_0") 
-select "root"."grp" as "grp", string_agg("root"."name",'') as "newCol" from t as "root" group by "grp"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_538849_1751051788907}#->groupBy(~grp, ~[newCol:x|$x.name:y|$y->joinStrings(''),YoCol:x|$x.id:y|$y->plus()])'
-'SQL: select "tb_538849_1751051788907_0".grp as "grp", string_agg("tb_538849_1751051788907_0".name,'') as "newCol", sum("tb_538849_1751051788907_0".id) as "YoCol" from leSchema.tb_538849_1751051788907 as "tb_538849_1751051788907_0" group by "grp"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_4155451_1751051789047}#;
+'SQL: WITH t AS (select "tb_6499125_1751219926495_0".id as "id", "tb_6499125_1751219926495_0".grp as "grp", "tb_6499125_1751219926495_0".name as "name" from leSchema.tb_6499125_1751219926495 as "tb_6499125_1751219926495_0")
+select "root"."grp" as "grp", listagg("root"."name", '') as "newCol" from t as "root" group by "grp"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_7654611_1751219926580}#->groupBy(~grp, ~[newCol:x|$x.name:y|$y->joinStrings(''),YoCol:x|$x.id:y|$y->plus()])'
+'SQL: select "tb_7654611_1751219926580_0".grp as "grp", listagg("tb_7654611_1751219926580_0".name, '') as "newCol", sum("tb_7654611_1751219926580_0".id) as "YoCol" from leSchema.tb_7654611_1751219926580 as "tb_7654611_1751219926580_0" group by "grp"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_2517497_1751219926657}#;
  $t->groupBy(~grp, ~[newCol:x|$x.name:y|$y->joinStrings(''),YoCol:x|$x.id:y|$y->plus()]);
 '
-'SQL: WITH t AS (select "tb_4155451_1751051789047_0".id as "id", "tb_4155451_1751051789047_0".grp as "grp", "tb_4155451_1751051789047_0".name as "name" from leSchema.tb_4155451_1751051789047 as "tb_4155451_1751051789047_0") 
-select "root"."grp" as "grp", string_agg("root"."name",'') as "newCol", sum("root"."id") as "YoCol" from t as "root" group by "grp"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_7800556_1751051789185}#->groupBy(~grp, ~newCol:x|$x.name:y|$y->joinStrings(''))'
-'SQL: select "tb_7800556_1751051789185_0".grp as "grp", string_agg("tb_7800556_1751051789185_0".name,'') as "newCol" from leSchema.tb_7800556_1751051789185 as "tb_7800556_1751051789185_0" group by "grp"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_7606473_1751051789302}#;
+'SQL: WITH t AS (select "tb_2517497_1751219926657_0".id as "id", "tb_2517497_1751219926657_0".grp as "grp", "tb_2517497_1751219926657_0".name as "name" from leSchema.tb_2517497_1751219926657 as "tb_2517497_1751219926657_0")
+select "root"."grp" as "grp", listagg("root"."name", '') as "newCol", sum("root"."id") as "YoCol" from t as "root" group by "grp"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_6180533_1751219926737}#->groupBy(~grp, ~newCol:x|$x.name:y|$y->joinStrings(''))'
+'SQL: select "tb_6180533_1751219926737_0".grp as "grp", listagg("tb_6180533_1751219926737_0".name, '') as "newCol" from leSchema.tb_6180533_1751219926737 as "tb_6180533_1751219926737_0" group by "grp"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_3305937_1751219926808}#;
  $t->groupBy(~grp, ~newCol:x|$x.name:y|$y->joinStrings(''));
 '
-'SQL: WITH t AS (select "tb_7606473_1751051789302_0".id as "id", "tb_7606473_1751051789302_0".grp as "grp", "tb_7606473_1751051789302_0".name as "name" from leSchema.tb_7606473_1751051789302 as "tb_7606473_1751051789302_0") 
-select "root"."grp" as "grp", string_agg("root"."name",'') as "newCol" from t as "root" group by "grp"'
-EXAMPLE: 
-EXPRESSION:' |let t1 = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_4226060_1751051789448}#;
- let t2 = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_514662_1751051789452}#;
+'SQL: WITH t AS (select "tb_3305937_1751219926808_0".id as "id", "tb_3305937_1751219926808_0".grp as "grp", "tb_3305937_1751219926808_0".name as "name" from leSchema.tb_3305937_1751219926808 as "tb_3305937_1751219926808_0")
+select "root"."grp" as "grp", listagg("root"."name", '') as "newCol" from t as "root" group by "grp"'
+
+'EXAMPLE'
+'EXPRESSION: |let t1 = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_6530906_1751219926902}#;
+ let t2 = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_368648_1751219926906}#;
  $t1->join($t2, meta::pure::functions::relation::JoinKind.LEFT, {x, y|$x.id == $y.id2});
 '
-'SQL: WITH t1 AS (select "tb_4226060_1751051789448_0".id as "id", "tb_4226060_1751051789448_0".col as "col", "tb_4226060_1751051789448_0".other as "other" from leSchema.tb_4226060_1751051789448 as "tb_4226060_1751051789448_0"), 
-t2 AS (select "tb_4226060_1751051789448_0".id2 as "id2", "tb_4226060_1751051789448_0".name as "name" from leSchema.tb_514662_1751051789452 as "tb_4226060_1751051789448_0") 
+'SQL: WITH t1 AS (select "tb_6530906_1751219926902_0".id as "id", "tb_6530906_1751219926902_0".col as "col", "tb_6530906_1751219926902_0".other as "other" from leSchema.tb_6530906_1751219926902 as "tb_6530906_1751219926902_0"),
+t2 AS (select "tb_6530906_1751219926902_0".id2 as "id2", "tb_6530906_1751219926902_0".name as "name" from leSchema.tb_368648_1751219926906 as "tb_6530906_1751219926902_0")
 select "t1_0"."id" as "id", "t1_0"."col" as "col", "t1_0"."other" as "other", "t1_0"."id2" as "id2", "t1_0"."name" as "name" from (select "t1_1"."id" as "id", "t1_1"."col" as "col", "t1_1"."other" as "other", "t2_0"."id2" as "id2", "t2_0"."name" as "name" from (select "root"."id", "root"."col", "root"."other" from t1 as "root") as "t1_1" left outer join (select "root"."id2", "root"."name" from t2 as "root") as "t2_0" on ("t1_1"."id" = "t2_0"."id2")) as "t1_0"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_2466772_1751051789581}#->join(#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_5972591_1751051789584}#, meta::pure::functions::relation::JoinKind.INNER, {x, y|$x.id == $y.id2})'
-'SQL: select "tb_2466772_1751051789581_0"."id" as "id", "tb_2466772_1751051789581_0"."name" as "name", "tb_2466772_1751051789581_0"."id2" as "id2", "tb_2466772_1751051789581_0"."col" as "col", "tb_2466772_1751051789581_0"."other" as "other" from (select "tb_2466772_1751051789581_1"."id" as "id", "tb_2466772_1751051789581_1"."name" as "name", "tb_5972591_1751051789584_0"."id2" as "id2", "tb_5972591_1751051789584_0"."col" as "col", "tb_5972591_1751051789584_0"."other" as "other" from (select "tb_2466772_1751051789581_2".id as "id", "tb_2466772_1751051789581_2".name as "name" from leSchema.tb_2466772_1751051789581 as "tb_2466772_1751051789581_2") as "tb_2466772_1751051789581_1" inner join (select "tb_5972591_1751051789584_1".id2 as "id2", "tb_5972591_1751051789584_1".col as "col", "tb_5972591_1751051789584_1".other as "other" from leSchema.tb_5972591_1751051789584 as "tb_5972591_1751051789584_1") as "tb_5972591_1751051789584_0" on ("tb_2466772_1751051789581_1"."id" = "tb_5972591_1751051789584_0"."id2")) as "tb_2466772_1751051789581_0"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_763209_1751051789715}#->join(#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_2955598_1751051789717}#, meta::pure::functions::relation::JoinKind.LEFT, {x, y|$x.id == $y.id2})'
-'SQL: select "tb_763209_1751051789715_0"."id" as "id", "tb_763209_1751051789715_0"."name" as "name", "tb_763209_1751051789715_0"."id2" as "id2", "tb_763209_1751051789715_0"."col" as "col", "tb_763209_1751051789715_0"."other" as "other" from (select "tb_763209_1751051789715_1"."id" as "id", "tb_763209_1751051789715_1"."name" as "name", "tb_2955598_1751051789717_0"."id2" as "id2", "tb_2955598_1751051789717_0"."col" as "col", "tb_2955598_1751051789717_0"."other" as "other" from (select "tb_763209_1751051789715_2".id as "id", "tb_763209_1751051789715_2".name as "name" from leSchema.tb_763209_1751051789715 as "tb_763209_1751051789715_2") as "tb_763209_1751051789715_1" left outer join (select "tb_2955598_1751051789717_1".id2 as "id2", "tb_2955598_1751051789717_1".col as "col", "tb_2955598_1751051789717_1".other as "other" from leSchema.tb_2955598_1751051789717 as "tb_2955598_1751051789717_1") as "tb_2955598_1751051789717_0" on ("tb_763209_1751051789715_1"."id" = "tb_2955598_1751051789717_0"."id2")) as "tb_763209_1751051789715_0"'
-EXAMPLE: 
-EXPRESSION:' |let t1 = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_1253907_1751051789847}#;
- let t2 = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_6773964_1751051789853}#;
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_5208116_1751219927003}#->join(#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_4266018_1751219927013}#, meta::pure::functions::relation::JoinKind.INNER, {x, y|$x.id == $y.id2})'
+'SQL: select "tb_5208116_1751219927003_0"."id" as "id", "tb_5208116_1751219927003_0"."name" as "name", "tb_5208116_1751219927003_0"."id2" as "id2", "tb_5208116_1751219927003_0"."col" as "col", "tb_5208116_1751219927003_0"."other" as "other" from (select "tb_5208116_1751219927003_1"."id" as "id", "tb_5208116_1751219927003_1"."name" as "name", "tb_4266018_1751219927013_0"."id2" as "id2", "tb_4266018_1751219927013_0"."col" as "col", "tb_4266018_1751219927013_0"."other" as "other" from (select "tb_5208116_1751219927003_2".id as "id", "tb_5208116_1751219927003_2".name as "name" from leSchema.tb_5208116_1751219927003 as "tb_5208116_1751219927003_2") as "tb_5208116_1751219927003_1" inner join (select "tb_4266018_1751219927013_1".id2 as "id2", "tb_4266018_1751219927013_1".col as "col", "tb_4266018_1751219927013_1".other as "other" from leSchema.tb_4266018_1751219927013 as "tb_4266018_1751219927013_1") as "tb_4266018_1751219927013_0" on ("tb_5208116_1751219927003_1"."id" = "tb_4266018_1751219927013_0"."id2")) as "tb_5208116_1751219927003_0"'
+
+'EXAMPLE'
+'EXPRESSION: |let t1 = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_9000734_1751219927100}#;
+ let t2 = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_7749606_1751219927104}#;
  $t1->join($t2, meta::pure::functions::relation::JoinKind.INNER, {x, y|$x.id == $y.id2});
 '
-'SQL: WITH t1 AS (select "tb_6773964_1751051789853_0".id as "id", "tb_6773964_1751051789853_0".name as "name" from leSchema.tb_1253907_1751051789847 as "tb_6773964_1751051789853_0"), 
-t2 AS (select "tb_6773964_1751051789853_0".id2 as "id2", "tb_6773964_1751051789853_0".col as "col", "tb_6773964_1751051789853_0".other as "other" from leSchema.tb_6773964_1751051789853 as "tb_6773964_1751051789853_0") 
+'SQL: WITH t1 AS (select "tb_9000734_1751219927100_0".id as "id", "tb_9000734_1751219927100_0".name as "name" from leSchema.tb_9000734_1751219927100 as "tb_9000734_1751219927100_0"),
+t2 AS (select "tb_9000734_1751219927100_0".id2 as "id2", "tb_9000734_1751219927100_0".col as "col", "tb_9000734_1751219927100_0".other as "other" from leSchema.tb_7749606_1751219927104 as "tb_9000734_1751219927100_0")
 select "t1_0"."id" as "id", "t1_0"."name" as "name", "t1_0"."id2" as "id2", "t1_0"."col" as "col", "t1_0"."other" as "other" from (select "t1_1"."id" as "id", "t1_1"."name" as "name", "t2_0"."id2" as "id2", "t2_0"."col" as "col", "t2_0"."other" as "other" from (select "root"."id", "root"."name" from t1 as "root") as "t1_1" inner join (select "root"."id2", "root"."col", "root"."other" from t2 as "root") as "t2_0" on ("t1_1"."id" = "t2_0"."id2")) as "t1_0"'
-EXAMPLE: 
-EXPRESSION:' |let t1 = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_6573048_1751051790010}#;
- let t2 = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_9257228_1751051790013}#;
- $t1->join($t2, meta::pure::functions::relation::JoinKind.LEFT, {x, y|$x.id == $y.id2});
-'
-'SQL: WITH t1 AS (select "tb_6573048_1751051790010_0".id as "id", "tb_6573048_1751051790010_0".name as "name" from leSchema.tb_6573048_1751051790010 as "tb_6573048_1751051790010_0"), 
-t2 AS (select "tb_6573048_1751051790010_0".id2 as "id2", "tb_6573048_1751051790010_0".col as "col", "tb_6573048_1751051790010_0".other as "other" from leSchema.tb_9257228_1751051790013 as "tb_6573048_1751051790010_0") 
-select "t1_0"."id" as "id", "t1_0"."name" as "name", "t1_0"."id2" as "id2", "t1_0"."col" as "col", "t1_0"."other" as "other" from (select "t1_1"."id" as "id", "t1_1"."name" as "name", "t2_0"."id2" as "id2", "t2_0"."col" as "col", "t2_0"."other" as "other" from (select "root"."id", "root"."name" from t1 as "root") as "t1_1" left outer join (select "root"."id2", "root"."col", "root"."other" from t2 as "root") as "t2_0" on ("t1_1"."id" = "t2_0"."id2")) as "t1_0"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_8373492_1751051790139}#->extend(~grp->over(~id->descending()), ~newCol:{p, w, r|$p->lag($r).name})'
-'SQL: select "tb_8373492_1751051790139_0".id as "id", "tb_8373492_1751051790139_0".grp as "grp", "tb_8373492_1751051790139_0".name as "name", lag("tb_8373492_1751051790139_0".name) OVER (Partition By "tb_8373492_1751051790139_0".grp Order By "tb_8373492_1751051790139_0".id DESC) as "newCol" from leSchema.tb_8373492_1751051790139 as "tb_8373492_1751051790139_0"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_4297413_1751051790285}#->extend(~grp->over(~id->descending()), ~newCol:{p, w, r|$p->last($w, $r).id})'
-'SQL: select "tb_4297413_1751051790285_0".id as "id", "tb_4297413_1751051790285_0".grp as "grp", "tb_4297413_1751051790285_0".name as "name", last("tb_4297413_1751051790285_0".id) OVER (Partition By "tb_4297413_1751051790285_0".grp Order By "tb_4297413_1751051790285_0".id DESC) as "newCol" from leSchema.tb_4297413_1751051790285 as "tb_4297413_1751051790285_0"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_5007999_1751051790430}#->extend(~grp->over(~id->descending()), ~newCol:{p, w, r|$p->lead($r).id})'
-'SQL: select "tb_5007999_1751051790430_0".id as "id", "tb_5007999_1751051790430_0".grp as "grp", "tb_5007999_1751051790430_0".name as "name", lead("tb_5007999_1751051790430_0".id) OVER (Partition By "tb_5007999_1751051790430_0".grp Order By "tb_5007999_1751051790430_0".id DESC) as "newCol" from leSchema.tb_5007999_1751051790430 as "tb_5007999_1751051790430_0"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_503564_1751051790576}#->sort(~val->ascending())->limit(3)'
-'SQL: select "tb_503564_1751051790576_0".val as "val", "tb_503564_1751051790576_0".str as "str" from leSchema.tb_503564_1751051790576 as "tb_503564_1751051790576_0" order by "val" limit 3'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_9683128_1751051790699}#;
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_295900_1751219927187}#->extend(~grp->over(~id->descending()), ~newCol:{p, w, r|$p->lag($r).name})'
+'SQL: select "tb_295900_1751219927187_0".id as "id", "tb_295900_1751219927187_0".grp as "grp", "tb_295900_1751219927187_0".name as "name", lag("tb_295900_1751219927187_0".name) OVER (Partition By "tb_295900_1751219927187_0".grp Order By "tb_295900_1751219927187_0".id DESC) as "newCol" from leSchema.tb_295900_1751219927187 as "tb_295900_1751219927187_0"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_8922868_1751219927262}#->extend(~grp->over(~id->descending()), ~newCol:{p, w, r|$p->last($w, $r).id})'
+'SQL: select "tb_8922868_1751219927262_0".id as "id", "tb_8922868_1751219927262_0".grp as "grp", "tb_8922868_1751219927262_0".name as "name", last_value("tb_8922868_1751219927262_0".id) OVER (Partition By "tb_8922868_1751219927262_0".grp Order By "tb_8922868_1751219927262_0".id DESC) as "newCol" from leSchema.tb_8922868_1751219927262 as "tb_8922868_1751219927262_0"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_1402350_1751219927350}#->extend(~grp->over(~id->descending()), ~newCol:{p, w, r|$p->lead($r).id})'
+'SQL: select "tb_1402350_1751219927350_0".id as "id", "tb_1402350_1751219927350_0".grp as "grp", "tb_1402350_1751219927350_0".name as "name", lead("tb_1402350_1751219927350_0".id) OVER (Partition By "tb_1402350_1751219927350_0".grp Order By "tb_1402350_1751219927350_0".id DESC) as "newCol" from leSchema.tb_1402350_1751219927350 as "tb_1402350_1751219927350_0"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_3693233_1751219927451}#->sort(~val->ascending())->limit(3)'
+'SQL: select "tb_3693233_1751219927451_0".val as "val", "tb_3693233_1751219927451_0".str as "str" from leSchema.tb_3693233_1751219927451 as "tb_3693233_1751219927451_0" order by "val" limit 3'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_1391621_1751219927522}#;
  $t->sort(~val->ascending())->limit(3);
 '
-'SQL: WITH t AS (select "tb_9683128_1751051790699_0".val as "val", "tb_9683128_1751051790699_0".str as "str" from leSchema.tb_9683128_1751051790699 as "tb_9683128_1751051790699_0") 
+'SQL: WITH t AS (select "tb_1391621_1751219927522_0".val as "val", "tb_1391621_1751219927522_0".str as "str" from leSchema.tb_1391621_1751219927522 as "tb_1391621_1751219927522_0")
 select "subselect"."val" as "val", "subselect"."str" as "str" from (select "root"."val", "root"."str" from t as "root" order by "val" limit 3) as "subselect"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_7197101_1751051790841}#->extend(~grp->over(~id->descending()), ~newCol:{p, w, r|$p->nth($w, $r, 2).id})'
-'SQL: select "tb_7197101_1751051790841_0".id as "id", "tb_7197101_1751051790841_0".grp as "grp", "tb_7197101_1751051790841_0".name as "name", nth_value("tb_7197101_1751051790841_0".id,2) OVER (Partition By "tb_7197101_1751051790841_0".grp Order By "tb_7197101_1751051790841_0".id DESC) as "newCol" from leSchema.tb_7197101_1751051790841 as "tb_7197101_1751051790841_0"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_6359025_1751051790976}#->extend(~grp->over(~id->descending()), ~newCol:{p, w, r|$p->nth($w, $r, 1).id})'
-'SQL: select "tb_6359025_1751051790976_0".id as "id", "tb_6359025_1751051790976_0".grp as "grp", "tb_6359025_1751051790976_0".name as "name", nth_value("tb_6359025_1751051790976_0".id,1) OVER (Partition By "tb_6359025_1751051790976_0".grp Order By "tb_6359025_1751051790976_0".id DESC) as "newCol" from leSchema.tb_6359025_1751051790976 as "tb_6359025_1751051790976_0"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_5045736_1751051791114}#->extend(~grp->over(~name->descending()), ~other:{p, w, r|$p->ntile($r, 2)})'
-'SQL: select "tb_5045736_1751051791114_0".id as "id", "tb_5045736_1751051791114_0".grp as "grp", "tb_5045736_1751051791114_0".name as "name", ntile(2) OVER (Partition By "tb_5045736_1751051791114_0".grp Order By "tb_5045736_1751051791114_0".name DESC) as "other" from leSchema.tb_5045736_1751051791114 as "tb_5045736_1751051791114_0"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_5458638_1751051791249}#->extend(~grp->over(~id->descending()), ~other:{p, w, r|$p->percentRank($w, $r)})'
-'SQL: select "tb_5458638_1751051791249_0".id as "id", "tb_5458638_1751051791249_0".grp as "grp", "tb_5458638_1751051791249_0".name as "name", percent_rank() OVER (Partition By "tb_5458638_1751051791249_0".grp Order By "tb_5458638_1751051791249_0".id DESC) as "other" from leSchema.tb_5458638_1751051791249 as "tb_5458638_1751051791249_0"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_6758988_1751051791417}#->pivot(~[country,city], ~[sum:x|$x.treePlanted->toOne() * $x.coefficient->toOne():y|$y->plus(),count:x|1:y|$y->plus()])'
-'SQL: select * from (pivot (select "unionalias_1"."year", "unionalias_1".pivot_column as pivot_column, "unionalias_1".aggregate_column as aggregate_column from (select "tb_6758988_1751051791417_0"."year", "tb_6758988_1751051791417_0".pivot_column as pivot_column, sum(("tb_6758988_1751051791417_0"."treePlanted" * "tb_6758988_1751051791417_0"."coefficient")) as aggregate_column from (select "tb_6758988_1751051791417_1"."year", "tb_6758988_1751051791417_1"."treePlanted", "tb_6758988_1751051791417_1"."coefficient", concat("tb_6758988_1751051791417_1"."country", '__|__', "tb_6758988_1751051791417_1"."city", '__|__', 'sum') as pivot_column from (select "tb_6758988_1751051791417_2".city as "city", "tb_6758988_1751051791417_2".country as "country", "tb_6758988_1751051791417_2".year as "year", "tb_6758988_1751051791417_2".treePlanted as "treePlanted", "tb_6758988_1751051791417_2".coefficient as "coefficient" from leSchema.tb_6758988_1751051791417 as "tb_6758988_1751051791417_2") as "tb_6758988_1751051791417_1") as "tb_6758988_1751051791417_0" group by "tb_6758988_1751051791417_0"."year",pivot_column UNION ALL select "tb_6758988_1751051791417_0"."year", "tb_6758988_1751051791417_0".pivot_column as pivot_column, sum(1) as aggregate_column from (select "tb_6758988_1751051791417_1"."year", "tb_6758988_1751051791417_1"."treePlanted", "tb_6758988_1751051791417_1"."coefficient", concat("tb_6758988_1751051791417_1"."country", '__|__', "tb_6758988_1751051791417_1"."city", '__|__', 'count') as pivot_column from (select "tb_6758988_1751051791417_2".city as "city", "tb_6758988_1751051791417_2".country as "country", "tb_6758988_1751051791417_2".year as "year", "tb_6758988_1751051791417_2".treePlanted as "treePlanted", "tb_6758988_1751051791417_2".coefficient as "coefficient" from leSchema.tb_6758988_1751051791417 as "tb_6758988_1751051791417_2") as "tb_6758988_1751051791417_1") as "tb_6758988_1751051791417_0" group by "tb_6758988_1751051791417_0"."year",pivot_column) as "unionalias_1") as "unionalias_0" on concat('''', pivot_column, '''') using max(aggregate_column))'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_2448933_1751051791575}#->pivot(~[country,city], ~[sum:x|$x.treePlanted:y|$y->plus(),count:x|1:y|$y->plus()])'
-'SQL: select * from (pivot (select "unionalias_1"."year", "unionalias_1".pivot_column as pivot_column, "unionalias_1".aggregate_column as aggregate_column from (select "tb_2448933_1751051791575_0"."year", "tb_2448933_1751051791575_0".pivot_column as pivot_column, sum("tb_2448933_1751051791575_0"."treePlanted") as aggregate_column from (select "tb_2448933_1751051791575_1"."year", "tb_2448933_1751051791575_1"."treePlanted", concat("tb_2448933_1751051791575_1"."country", '__|__', "tb_2448933_1751051791575_1"."city", '__|__', 'sum') as pivot_column from (select "tb_2448933_1751051791575_2".city as "city", "tb_2448933_1751051791575_2".country as "country", "tb_2448933_1751051791575_2".year as "year", "tb_2448933_1751051791575_2".treePlanted as "treePlanted" from leSchema.tb_2448933_1751051791575 as "tb_2448933_1751051791575_2") as "tb_2448933_1751051791575_1") as "tb_2448933_1751051791575_0" group by "tb_2448933_1751051791575_0"."year",pivot_column UNION ALL select "tb_2448933_1751051791575_0"."year", "tb_2448933_1751051791575_0".pivot_column as pivot_column, sum(1) as aggregate_column from (select "tb_2448933_1751051791575_1"."year", "tb_2448933_1751051791575_1"."treePlanted", concat("tb_2448933_1751051791575_1"."country", '__|__', "tb_2448933_1751051791575_1"."city", '__|__', 'count') as pivot_column from (select "tb_2448933_1751051791575_2".city as "city", "tb_2448933_1751051791575_2".country as "country", "tb_2448933_1751051791575_2".year as "year", "tb_2448933_1751051791575_2".treePlanted as "treePlanted" from leSchema.tb_2448933_1751051791575 as "tb_2448933_1751051791575_2") as "tb_2448933_1751051791575_1") as "tb_2448933_1751051791575_0" group by "tb_2448933_1751051791575_0"."year",pivot_column) as "unionalias_1") as "unionalias_0" on concat('''', pivot_column, '''') using max(aggregate_column))'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_7791521_1751051791727}#;
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_1077070_1751219927620}#->extend(~grp->over(~id->descending()), ~newCol:{p, w, r|$p->nth($w, $r, 2).id})'
+'SQL: select "tb_1077070_1751219927620_0".id as "id", "tb_1077070_1751219927620_0".grp as "grp", "tb_1077070_1751219927620_0".name as "name", nth_value("tb_1077070_1751219927620_0".id,2) OVER (Partition By "tb_1077070_1751219927620_0".grp Order By "tb_1077070_1751219927620_0".id DESC) as "newCol" from leSchema.tb_1077070_1751219927620 as "tb_1077070_1751219927620_0"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_7354557_1751219927708}#->extend(~grp->over(~id->descending()), ~newCol:{p, w, r|$p->nth($w, $r, 1).id})'
+'SQL: select "tb_7354557_1751219927708_0".id as "id", "tb_7354557_1751219927708_0".grp as "grp", "tb_7354557_1751219927708_0".name as "name", nth_value("tb_7354557_1751219927708_0".id,1) OVER (Partition By "tb_7354557_1751219927708_0".grp Order By "tb_7354557_1751219927708_0".id DESC) as "newCol" from leSchema.tb_7354557_1751219927708 as "tb_7354557_1751219927708_0"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_2083493_1751219927795}#->extend(~grp->over(~name->descending()), ~other:{p, w, r|$p->ntile($r, 2)})'
+'SQL: select "tb_2083493_1751219927795_0".id as "id", "tb_2083493_1751219927795_0".grp as "grp", "tb_2083493_1751219927795_0".name as "name", ntile(2) OVER (Partition By "tb_2083493_1751219927795_0".grp Order By "tb_2083493_1751219927795_0".name DESC) as "other" from leSchema.tb_2083493_1751219927795 as "tb_2083493_1751219927795_0"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_6797793_1751219927875}#->extend(~grp->over(~id->descending()), ~other:{p, w, r|$p->percentRank($w, $r)})'
+'SQL: select "tb_6797793_1751219927875_0".id as "id", "tb_6797793_1751219927875_0".grp as "grp", "tb_6797793_1751219927875_0".name as "name", percent_rank() OVER (Partition By "tb_6797793_1751219927875_0".grp Order By "tb_6797793_1751219927875_0".id DESC) as "other" from leSchema.tb_6797793_1751219927875 as "tb_6797793_1751219927875_0"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_3212493_1751219928010}#->pivot(~[country,city], ~[sum:x|$x.treePlanted->toOne() * $x.coefficient->toOne():y|$y->plus(),count:x|1:y|$y->plus()])'
+'SQL: select * from (select "unionalias_1"."year", "unionalias_1".pivot_column as pivot_column, "unionalias_1".aggregate_column as aggregate_column from (select "tb_3212493_1751219928010_0"."year", "tb_3212493_1751219928010_0".pivot_column as pivot_column, sum(("tb_3212493_1751219928010_0"."treePlanted" * "tb_3212493_1751219928010_0"."coefficient")) as aggregate_column from (select "tb_3212493_1751219928010_1"."year", "tb_3212493_1751219928010_1"."treePlanted", "tb_3212493_1751219928010_1"."coefficient", concat("tb_3212493_1751219928010_1"."country", '__|__', "tb_3212493_1751219928010_1"."city", '__|__', 'sum') as pivot_column from (select "tb_3212493_1751219928010_2".city as "city", "tb_3212493_1751219928010_2".country as "country", "tb_3212493_1751219928010_2".year as "year", "tb_3212493_1751219928010_2".treePlanted as "treePlanted", "tb_3212493_1751219928010_2".coefficient as "coefficient" from leSchema.tb_3212493_1751219928010 as "tb_3212493_1751219928010_2") as "tb_3212493_1751219928010_1") as "tb_3212493_1751219928010_0" group by "tb_3212493_1751219928010_0"."year",pivot_column UNION ALL select "tb_3212493_1751219928010_0"."year", "tb_3212493_1751219928010_0".pivot_column as pivot_column, sum(1) as aggregate_column from (select "tb_3212493_1751219928010_1"."year", "tb_3212493_1751219928010_1"."treePlanted", "tb_3212493_1751219928010_1"."coefficient", concat("tb_3212493_1751219928010_1"."country", '__|__', "tb_3212493_1751219928010_1"."city", '__|__', 'count') as pivot_column from (select "tb_3212493_1751219928010_2".city as "city", "tb_3212493_1751219928010_2".country as "country", "tb_3212493_1751219928010_2".year as "year", "tb_3212493_1751219928010_2".treePlanted as "treePlanted", "tb_3212493_1751219928010_2".coefficient as "coefficient" from leSchema.tb_3212493_1751219928010 as "tb_3212493_1751219928010_2") as "tb_3212493_1751219928010_1") as "tb_3212493_1751219928010_0" group by "tb_3212493_1751219928010_0"."year",pivot_column) as "unionalias_1") as "unionalias_0" pivot (max(aggregate_column) for pivot_column in (ANY ORDER BY pivot_column))'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_1015447_1751219928121}#->pivot(~[country,city], ~[sum:x|$x.treePlanted:y|$y->plus(),count:x|1:y|$y->plus()])'
+'SQL: select * from (select "unionalias_1"."year", "unionalias_1".pivot_column as pivot_column, "unionalias_1".aggregate_column as aggregate_column from (select "tb_1015447_1751219928121_0"."year", "tb_1015447_1751219928121_0".pivot_column as pivot_column, sum("tb_1015447_1751219928121_0"."treePlanted") as aggregate_column from (select "tb_1015447_1751219928121_1"."year", "tb_1015447_1751219928121_1"."treePlanted", concat("tb_1015447_1751219928121_1"."country", '__|__', "tb_1015447_1751219928121_1"."city", '__|__', 'sum') as pivot_column from (select "tb_1015447_1751219928121_2".city as "city", "tb_1015447_1751219928121_2".country as "country", "tb_1015447_1751219928121_2".year as "year", "tb_1015447_1751219928121_2".treePlanted as "treePlanted" from leSchema.tb_1015447_1751219928121 as "tb_1015447_1751219928121_2") as "tb_1015447_1751219928121_1") as "tb_1015447_1751219928121_0" group by "tb_1015447_1751219928121_0"."year",pivot_column UNION ALL select "tb_1015447_1751219928121_0"."year", "tb_1015447_1751219928121_0".pivot_column as pivot_column, sum(1) as aggregate_column from (select "tb_1015447_1751219928121_1"."year", "tb_1015447_1751219928121_1"."treePlanted", concat("tb_1015447_1751219928121_1"."country", '__|__', "tb_1015447_1751219928121_1"."city", '__|__', 'count') as pivot_column from (select "tb_1015447_1751219928121_2".city as "city", "tb_1015447_1751219928121_2".country as "country", "tb_1015447_1751219928121_2".year as "year", "tb_1015447_1751219928121_2".treePlanted as "treePlanted" from leSchema.tb_1015447_1751219928121 as "tb_1015447_1751219928121_2") as "tb_1015447_1751219928121_1") as "tb_1015447_1751219928121_0" group by "tb_1015447_1751219928121_0"."year",pivot_column) as "unionalias_1") as "unionalias_0" pivot (max(aggregate_column) for pivot_column in (ANY ORDER BY pivot_column))'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_9296956_1751219928204}#;
  $t->pivot(~[country,city], ~[sum:x|$x.treePlanted:y|$y->plus(),count:x|1:y|$y->plus()]);
 '
-'SQL: WITH t AS (select "tb_7791521_1751051791727_0".city as "city", "tb_7791521_1751051791727_0".country as "country", "tb_7791521_1751051791727_0".year as "year", "tb_7791521_1751051791727_0".treePlanted as "treePlanted" from leSchema.tb_7791521_1751051791727 as "tb_7791521_1751051791727_0") 
-select * from (select * from (pivot (select "subselect"."year" as "year", "subselect".pivot_column as pivot_column, "subselect".aggregate_column as aggregate_column from (select "unionalias_2"."year", "unionalias_2".pivot_column as pivot_column, "unionalias_2".aggregate_column as aggregate_column from (select "t_0"."year", "t_0".pivot_column as pivot_column, sum("t_0"."treePlanted") as aggregate_column from (select "subselect"."year" as "year", "subselect"."treePlanted" as "treePlanted", "subselect".pivot_column as pivot_column from (select "t_2"."year", "t_2"."treePlanted", concat("t_2"."country", '__|__', "t_2"."city", '__|__', 'sum') as pivot_column from (select "root"."city", "root"."country", "root"."year", "root"."treePlanted" from t as "root") as "t_2") as "subselect") as "t_0" group by "t_0"."year",pivot_column UNION ALL select "t_0"."year", "t_0".pivot_column as pivot_column, sum(1) as aggregate_column from (select "subselect"."year" as "year", "subselect"."treePlanted" as "treePlanted", "subselect".pivot_column as pivot_column from (select "t_2"."year", "t_2"."treePlanted", concat("t_2"."country", '__|__', "t_2"."city", '__|__', 'count') as pivot_column from (select "root"."city", "root"."country", "root"."year", "root"."treePlanted" from t as "root") as "t_2") as "subselect") as "t_0" group by "t_0"."year",pivot_column) as "unionalias_2") as "subselect") as "unionalias_1" on concat('''', pivot_column, '''') using max(aggregate_column))) as "subselect"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_6337475_1751051791892}#->pivot(~[country,city], ~sum:x|$x.treePlanted:y|$y->plus())'
-'SQL: select * from (pivot (select "tb_6337475_1751051791892_1"."year", "tb_6337475_1751051791892_1"."treePlanted", concat("tb_6337475_1751051791892_1"."country", '__|__', "tb_6337475_1751051791892_1"."city", '__|__', 'sum') as pivot_column from (select "tb_6337475_1751051791892_2".city as "city", "tb_6337475_1751051791892_2".country as "country", "tb_6337475_1751051791892_2".year as "year", "tb_6337475_1751051791892_2".treePlanted as "treePlanted" from leSchema.tb_6337475_1751051791892 as "tb_6337475_1751051791892_2") as "tb_6337475_1751051791892_1") as "tb_6337475_1751051791892_0" on concat('''', pivot_column, '''') using sum("treePlanted"))'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_9723619_1751051792030}#;
+'SQL: WITH t AS (select "tb_9296956_1751219928204_0".city as "city", "tb_9296956_1751219928204_0".country as "country", "tb_9296956_1751219928204_0".year as "year", "tb_9296956_1751219928204_0".treePlanted as "treePlanted" from leSchema.tb_9296956_1751219928204 as "tb_9296956_1751219928204_0")
+select * from (select * from (select "subselect"."year" as "year", "subselect".pivot_column as pivot_column, "subselect".aggregate_column as aggregate_column from (select "unionalias_2"."year", "unionalias_2".pivot_column as pivot_column, "unionalias_2".aggregate_column as aggregate_column from (select "t_0"."year", "t_0".pivot_column as pivot_column, sum("t_0"."treePlanted") as aggregate_column from (select "subselect"."year" as "year", "subselect"."treePlanted" as "treePlanted", "subselect".pivot_column as pivot_column from (select "t_2"."year", "t_2"."treePlanted", concat("t_2"."country", '__|__', "t_2"."city", '__|__', 'sum') as pivot_column from (select "root"."city", "root"."country", "root"."year", "root"."treePlanted" from t as "root") as "t_2") as "subselect") as "t_0" group by "t_0"."year",pivot_column UNION ALL select "t_0"."year", "t_0".pivot_column as pivot_column, sum(1) as aggregate_column from (select "subselect"."year" as "year", "subselect"."treePlanted" as "treePlanted", "subselect".pivot_column as pivot_column from (select "t_2"."year", "t_2"."treePlanted", concat("t_2"."country", '__|__', "t_2"."city", '__|__', 'count') as pivot_column from (select "root"."city", "root"."country", "root"."year", "root"."treePlanted" from t as "root") as "t_2") as "subselect") as "t_0" group by "t_0"."year",pivot_column) as "unionalias_2") as "subselect") as "unionalias_1" pivot (max(aggregate_column) for pivot_column in (ANY ORDER BY pivot_column))) as "subselect"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_3012047_1751219928301}#->pivot(~[country,city], ~sum:x|$x.treePlanted:y|$y->plus())'
+'SQL: select * from (select "tb_3012047_1751219928301_1"."year", "tb_3012047_1751219928301_1"."treePlanted", concat("tb_3012047_1751219928301_1"."country", '__|__', "tb_3012047_1751219928301_1"."city", '__|__', 'sum') as pivot_column from (select "tb_3012047_1751219928301_2".city as "city", "tb_3012047_1751219928301_2".country as "country", "tb_3012047_1751219928301_2".year as "year", "tb_3012047_1751219928301_2".treePlanted as "treePlanted" from leSchema.tb_3012047_1751219928301 as "tb_3012047_1751219928301_2") as "tb_3012047_1751219928301_1") as "tb_3012047_1751219928301_0" pivot (sum("treePlanted") for pivot_column in (ANY ORDER BY pivot_column))'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_9385660_1751219928377}#;
  $t->pivot(~[country,city], ~sum:x|$x.treePlanted:y|$y->plus());
 '
-'SQL: WITH t AS (select "tb_9723619_1751051792030_0".city as "city", "tb_9723619_1751051792030_0".country as "country", "tb_9723619_1751051792030_0".year as "year", "tb_9723619_1751051792030_0".treePlanted as "treePlanted" from leSchema.tb_9723619_1751051792030 as "tb_9723619_1751051792030_0") 
-select * from (select * from (pivot (select "subselect"."year" as "year", "subselect"."treePlanted" as "treePlanted", "subselect".pivot_column as pivot_column from (select "t_2"."year", "t_2"."treePlanted", concat("t_2"."country", '__|__', "t_2"."city", '__|__', 'sum') as pivot_column from (select "root"."city", "root"."country", "root"."year", "root"."treePlanted" from t as "root") as "t_2") as "subselect") as "t_1" on concat('''', pivot_column, '''') using sum("treePlanted"))) as "subselect"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_3433867_1751051792166}#->pivot(~[year], ~[sum:x|$x.treePlanted->toOne() * $x.coefficient->toOne():y|$y->plus(),count:x|1:y|$y->plus()])'
-'SQL: select * from (pivot (select "unionalias_1"."city", "unionalias_1"."country", "unionalias_1".pivot_column as pivot_column, "unionalias_1".aggregate_column as aggregate_column from (select "tb_3433867_1751051792166_0"."city", "tb_3433867_1751051792166_0"."country", "tb_3433867_1751051792166_0".pivot_column as pivot_column, sum(("tb_3433867_1751051792166_0"."treePlanted" * "tb_3433867_1751051792166_0"."coefficient")) as aggregate_column from (select "tb_3433867_1751051792166_1"."city", "tb_3433867_1751051792166_1"."country", "tb_3433867_1751051792166_1"."treePlanted", "tb_3433867_1751051792166_1"."coefficient", concat("tb_3433867_1751051792166_1"."year", '__|__', 'sum') as pivot_column from (select "tb_3433867_1751051792166_2".city as "city", "tb_3433867_1751051792166_2".country as "country", "tb_3433867_1751051792166_2".year as "year", "tb_3433867_1751051792166_2".treePlanted as "treePlanted", "tb_3433867_1751051792166_2".coefficient as "coefficient" from leSchema.tb_3433867_1751051792166 as "tb_3433867_1751051792166_2") as "tb_3433867_1751051792166_1") as "tb_3433867_1751051792166_0" group by "tb_3433867_1751051792166_0"."city","tb_3433867_1751051792166_0"."country",pivot_column UNION ALL select "tb_3433867_1751051792166_0"."city", "tb_3433867_1751051792166_0"."country", "tb_3433867_1751051792166_0".pivot_column as pivot_column, sum(1) as aggregate_column from (select "tb_3433867_1751051792166_1"."city", "tb_3433867_1751051792166_1"."country", "tb_3433867_1751051792166_1"."treePlanted", "tb_3433867_1751051792166_1"."coefficient", concat("tb_3433867_1751051792166_1"."year", '__|__', 'count') as pivot_column from (select "tb_3433867_1751051792166_2".city as "city", "tb_3433867_1751051792166_2".country as "country", "tb_3433867_1751051792166_2".year as "year", "tb_3433867_1751051792166_2".treePlanted as "treePlanted", "tb_3433867_1751051792166_2".coefficient as "coefficient" from leSchema.tb_3433867_1751051792166 as "tb_3433867_1751051792166_2") as "tb_3433867_1751051792166_1") as "tb_3433867_1751051792166_0" group by "tb_3433867_1751051792166_0"."city","tb_3433867_1751051792166_0"."country",pivot_column) as "unionalias_1") as "unionalias_0" on concat('''', pivot_column, '''') using max(aggregate_column))'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_3758317_1751051792312}#->pivot(~[year], ~[sum:x|$x.treePlanted:y|$y->plus(),count:x|1:y|$y->plus()])'
-'SQL: select * from (pivot (select "unionalias_1"."city", "unionalias_1"."country", "unionalias_1".pivot_column as pivot_column, "unionalias_1".aggregate_column as aggregate_column from (select "tb_3758317_1751051792312_0"."city", "tb_3758317_1751051792312_0"."country", "tb_3758317_1751051792312_0".pivot_column as pivot_column, sum("tb_3758317_1751051792312_0"."treePlanted") as aggregate_column from (select "tb_3758317_1751051792312_1"."city", "tb_3758317_1751051792312_1"."country", "tb_3758317_1751051792312_1"."treePlanted", concat("tb_3758317_1751051792312_1"."year", '__|__', 'sum') as pivot_column from (select "tb_3758317_1751051792312_2".city as "city", "tb_3758317_1751051792312_2".country as "country", "tb_3758317_1751051792312_2".year as "year", "tb_3758317_1751051792312_2".treePlanted as "treePlanted" from leSchema.tb_3758317_1751051792312 as "tb_3758317_1751051792312_2") as "tb_3758317_1751051792312_1") as "tb_3758317_1751051792312_0" group by "tb_3758317_1751051792312_0"."city","tb_3758317_1751051792312_0"."country",pivot_column UNION ALL select "tb_3758317_1751051792312_0"."city", "tb_3758317_1751051792312_0"."country", "tb_3758317_1751051792312_0".pivot_column as pivot_column, sum(1) as aggregate_column from (select "tb_3758317_1751051792312_1"."city", "tb_3758317_1751051792312_1"."country", "tb_3758317_1751051792312_1"."treePlanted", concat("tb_3758317_1751051792312_1"."year", '__|__', 'count') as pivot_column from (select "tb_3758317_1751051792312_2".city as "city", "tb_3758317_1751051792312_2".country as "country", "tb_3758317_1751051792312_2".year as "year", "tb_3758317_1751051792312_2".treePlanted as "treePlanted" from leSchema.tb_3758317_1751051792312 as "tb_3758317_1751051792312_2") as "tb_3758317_1751051792312_1") as "tb_3758317_1751051792312_0" group by "tb_3758317_1751051792312_0"."city","tb_3758317_1751051792312_0"."country",pivot_column) as "unionalias_1") as "unionalias_0" on concat('''', pivot_column, '''') using max(aggregate_column))'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_150093_1751051792454}#;
+'SQL: WITH t AS (select "tb_9385660_1751219928377_0".city as "city", "tb_9385660_1751219928377_0".country as "country", "tb_9385660_1751219928377_0".year as "year", "tb_9385660_1751219928377_0".treePlanted as "treePlanted" from leSchema.tb_9385660_1751219928377 as "tb_9385660_1751219928377_0")
+select * from (select * from (select "subselect"."year" as "year", "subselect"."treePlanted" as "treePlanted", "subselect".pivot_column as pivot_column from (select "t_2"."year", "t_2"."treePlanted", concat("t_2"."country", '__|__', "t_2"."city", '__|__', 'sum') as pivot_column from (select "root"."city", "root"."country", "root"."year", "root"."treePlanted" from t as "root") as "t_2") as "subselect") as "t_1" pivot (sum("treePlanted") for pivot_column in (ANY ORDER BY pivot_column))) as "subselect"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_8242618_1751219928445}#->pivot(~[year], ~[sum:x|$x.treePlanted->toOne() * $x.coefficient->toOne():y|$y->plus(),count:x|1:y|$y->plus()])'
+'SQL: select * from (select "unionalias_1"."city", "unionalias_1"."country", "unionalias_1".pivot_column as pivot_column, "unionalias_1".aggregate_column as aggregate_column from (select "tb_8242618_1751219928445_0"."city", "tb_8242618_1751219928445_0"."country", "tb_8242618_1751219928445_0".pivot_column as pivot_column, sum(("tb_8242618_1751219928445_0"."treePlanted" * "tb_8242618_1751219928445_0"."coefficient")) as aggregate_column from (select "tb_8242618_1751219928445_1"."city", "tb_8242618_1751219928445_1"."country", "tb_8242618_1751219928445_1"."treePlanted", "tb_8242618_1751219928445_1"."coefficient", concat("tb_8242618_1751219928445_1"."year", '__|__', 'sum') as pivot_column from (select "tb_8242618_1751219928445_2".city as "city", "tb_8242618_1751219928445_2".country as "country", "tb_8242618_1751219928445_2".year as "year", "tb_8242618_1751219928445_2".treePlanted as "treePlanted", "tb_8242618_1751219928445_2".coefficient as "coefficient" from leSchema.tb_8242618_1751219928445 as "tb_8242618_1751219928445_2") as "tb_8242618_1751219928445_1") as "tb_8242618_1751219928445_0" group by "tb_8242618_1751219928445_0"."city","tb_8242618_1751219928445_0"."country",pivot_column UNION ALL select "tb_8242618_1751219928445_0"."city", "tb_8242618_1751219928445_0"."country", "tb_8242618_1751219928445_0".pivot_column as pivot_column, sum(1) as aggregate_column from (select "tb_8242618_1751219928445_1"."city", "tb_8242618_1751219928445_1"."country", "tb_8242618_1751219928445_1"."treePlanted", "tb_8242618_1751219928445_1"."coefficient", concat("tb_8242618_1751219928445_1"."year", '__|__', 'count') as pivot_column from (select "tb_8242618_1751219928445_2".city as "city", "tb_8242618_1751219928445_2".country as "country", "tb_8242618_1751219928445_2".year as "year", "tb_8242618_1751219928445_2".treePlanted as "treePlanted", "tb_8242618_1751219928445_2".coefficient as "coefficient" from leSchema.tb_8242618_1751219928445 as "tb_8242618_1751219928445_2") as "tb_8242618_1751219928445_1") as "tb_8242618_1751219928445_0" group by "tb_8242618_1751219928445_0"."city","tb_8242618_1751219928445_0"."country",pivot_column) as "unionalias_1") as "unionalias_0" pivot (max(aggregate_column) for pivot_column in (ANY ORDER BY pivot_column))'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_6684477_1751219928525}#->pivot(~[year], ~[sum:x|$x.treePlanted:y|$y->plus(),count:x|1:y|$y->plus()])'
+'SQL: select * from (select "unionalias_1"."city", "unionalias_1"."country", "unionalias_1".pivot_column as pivot_column, "unionalias_1".aggregate_column as aggregate_column from (select "tb_6684477_1751219928525_0"."city", "tb_6684477_1751219928525_0"."country", "tb_6684477_1751219928525_0".pivot_column as pivot_column, sum("tb_6684477_1751219928525_0"."treePlanted") as aggregate_column from (select "tb_6684477_1751219928525_1"."city", "tb_6684477_1751219928525_1"."country", "tb_6684477_1751219928525_1"."treePlanted", concat("tb_6684477_1751219928525_1"."year", '__|__', 'sum') as pivot_column from (select "tb_6684477_1751219928525_2".city as "city", "tb_6684477_1751219928525_2".country as "country", "tb_6684477_1751219928525_2".year as "year", "tb_6684477_1751219928525_2".treePlanted as "treePlanted" from leSchema.tb_6684477_1751219928525 as "tb_6684477_1751219928525_2") as "tb_6684477_1751219928525_1") as "tb_6684477_1751219928525_0" group by "tb_6684477_1751219928525_0"."city","tb_6684477_1751219928525_0"."country",pivot_column UNION ALL select "tb_6684477_1751219928525_0"."city", "tb_6684477_1751219928525_0"."country", "tb_6684477_1751219928525_0".pivot_column as pivot_column, sum(1) as aggregate_column from (select "tb_6684477_1751219928525_1"."city", "tb_6684477_1751219928525_1"."country", "tb_6684477_1751219928525_1"."treePlanted", concat("tb_6684477_1751219928525_1"."year", '__|__', 'count') as pivot_column from (select "tb_6684477_1751219928525_2".city as "city", "tb_6684477_1751219928525_2".country as "country", "tb_6684477_1751219928525_2".year as "year", "tb_6684477_1751219928525_2".treePlanted as "treePlanted" from leSchema.tb_6684477_1751219928525 as "tb_6684477_1751219928525_2") as "tb_6684477_1751219928525_1") as "tb_6684477_1751219928525_0" group by "tb_6684477_1751219928525_0"."city","tb_6684477_1751219928525_0"."country",pivot_column) as "unionalias_1") as "unionalias_0" pivot (max(aggregate_column) for pivot_column in (ANY ORDER BY pivot_column))'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_135541_1751219928613}#;
  $t->pivot(~[year], ~[sum:x|$x.treePlanted:y|$y->plus(),count:x|1:y|$y->plus()]);
 '
-'SQL: WITH t AS (select "tb_150093_1751051792454_0".city as "city", "tb_150093_1751051792454_0".country as "country", "tb_150093_1751051792454_0".year as "year", "tb_150093_1751051792454_0".treePlanted as "treePlanted" from leSchema.tb_150093_1751051792454 as "tb_150093_1751051792454_0") 
-select * from (select * from (pivot (select "subselect"."city" as "city", "subselect"."country" as "country", "subselect".pivot_column as pivot_column, "subselect".aggregate_column as aggregate_column from (select "unionalias_2"."city", "unionalias_2"."country", "unionalias_2".pivot_column as pivot_column, "unionalias_2".aggregate_column as aggregate_column from (select "t_0"."city", "t_0"."country", "t_0".pivot_column as pivot_column, sum("t_0"."treePlanted") as aggregate_column from (select "subselect"."city" as "city", "subselect"."country" as "country", "subselect"."treePlanted" as "treePlanted", "subselect".pivot_column as pivot_column from (select "t_2"."city", "t_2"."country", "t_2"."treePlanted", concat("t_2"."year", '__|__', 'sum') as pivot_column from (select "root"."city", "root"."country", "root"."year", "root"."treePlanted" from t as "root") as "t_2") as "subselect") as "t_0" group by "t_0"."city","t_0"."country",pivot_column UNION ALL select "t_0"."city", "t_0"."country", "t_0".pivot_column as pivot_column, sum(1) as aggregate_column from (select "subselect"."city" as "city", "subselect"."country" as "country", "subselect"."treePlanted" as "treePlanted", "subselect".pivot_column as pivot_column from (select "t_2"."city", "t_2"."country", "t_2"."treePlanted", concat("t_2"."year", '__|__', 'count') as pivot_column from (select "root"."city", "root"."country", "root"."year", "root"."treePlanted" from t as "root") as "t_2") as "subselect") as "t_0" group by "t_0"."city","t_0"."country",pivot_column) as "unionalias_2") as "subselect") as "unionalias_1" on concat('''', pivot_column, '''') using max(aggregate_column))) as "subselect"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_6750929_1751051792599}#->pivot(~[year], ~[newCol:x|$x.treePlanted:y|$y->plus()])'
-'SQL: select * from (pivot (select "tb_6750929_1751051792599_1"."city", "tb_6750929_1751051792599_1"."country", "tb_6750929_1751051792599_1"."treePlanted", concat("tb_6750929_1751051792599_1"."year", '__|__', 'newCol') as pivot_column from (select "tb_6750929_1751051792599_2".city as "city", "tb_6750929_1751051792599_2".country as "country", "tb_6750929_1751051792599_2".year as "year", "tb_6750929_1751051792599_2".treePlanted as "treePlanted" from leSchema.tb_6750929_1751051792599 as "tb_6750929_1751051792599_2") as "tb_6750929_1751051792599_1") as "tb_6750929_1751051792599_0" on concat('''', pivot_column, '''') using sum("treePlanted"))'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_4047861_1751051792740}#;
+'SQL: WITH t AS (select "tb_135541_1751219928613_0".city as "city", "tb_135541_1751219928613_0".country as "country", "tb_135541_1751219928613_0".year as "year", "tb_135541_1751219928613_0".treePlanted as "treePlanted" from leSchema.tb_135541_1751219928613 as "tb_135541_1751219928613_0")
+select * from (select * from (select "subselect"."city" as "city", "subselect"."country" as "country", "subselect".pivot_column as pivot_column, "subselect".aggregate_column as aggregate_column from (select "unionalias_2"."city", "unionalias_2"."country", "unionalias_2".pivot_column as pivot_column, "unionalias_2".aggregate_column as aggregate_column from (select "t_0"."city", "t_0"."country", "t_0".pivot_column as pivot_column, sum("t_0"."treePlanted") as aggregate_column from (select "subselect"."city" as "city", "subselect"."country" as "country", "subselect"."treePlanted" as "treePlanted", "subselect".pivot_column as pivot_column from (select "t_2"."city", "t_2"."country", "t_2"."treePlanted", concat("t_2"."year", '__|__', 'sum') as pivot_column from (select "root"."city", "root"."country", "root"."year", "root"."treePlanted" from t as "root") as "t_2") as "subselect") as "t_0" group by "t_0"."city","t_0"."country",pivot_column UNION ALL select "t_0"."city", "t_0"."country", "t_0".pivot_column as pivot_column, sum(1) as aggregate_column from (select "subselect"."city" as "city", "subselect"."country" as "country", "subselect"."treePlanted" as "treePlanted", "subselect".pivot_column as pivot_column from (select "t_2"."city", "t_2"."country", "t_2"."treePlanted", concat("t_2"."year", '__|__', 'count') as pivot_column from (select "root"."city", "root"."country", "root"."year", "root"."treePlanted" from t as "root") as "t_2") as "subselect") as "t_0" group by "t_0"."city","t_0"."country",pivot_column) as "unionalias_2") as "subselect") as "unionalias_1" pivot (max(aggregate_column) for pivot_column in (ANY ORDER BY pivot_column))) as "subselect"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_2735276_1751219928689}#->pivot(~[year], ~[newCol:x|$x.treePlanted:y|$y->plus()])'
+'SQL: select * from (select "tb_2735276_1751219928689_1"."city", "tb_2735276_1751219928689_1"."country", "tb_2735276_1751219928689_1"."treePlanted", concat("tb_2735276_1751219928689_1"."year", '__|__', 'newCol') as pivot_column from (select "tb_2735276_1751219928689_2".city as "city", "tb_2735276_1751219928689_2".country as "country", "tb_2735276_1751219928689_2".year as "year", "tb_2735276_1751219928689_2".treePlanted as "treePlanted" from leSchema.tb_2735276_1751219928689 as "tb_2735276_1751219928689_2") as "tb_2735276_1751219928689_1") as "tb_2735276_1751219928689_0" pivot (sum("treePlanted") for pivot_column in (ANY ORDER BY pivot_column))'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_2163055_1751219928762}#;
  $t->pivot(~[year], ~[newCol:x|$x.treePlanted:y|$y->plus()]);
 '
-'SQL: WITH t AS (select "tb_4047861_1751051792740_0".city as "city", "tb_4047861_1751051792740_0".country as "country", "tb_4047861_1751051792740_0".year as "year", "tb_4047861_1751051792740_0".treePlanted as "treePlanted" from leSchema.tb_4047861_1751051792740 as "tb_4047861_1751051792740_0") 
-select * from (select * from (pivot (select "subselect"."city" as "city", "subselect"."country" as "country", "subselect"."treePlanted" as "treePlanted", "subselect".pivot_column as pivot_column from (select "t_2"."city", "t_2"."country", "t_2"."treePlanted", concat("t_2"."year", '__|__', 'newCol') as pivot_column from (select "root"."city", "root"."country", "root"."year", "root"."treePlanted" from t as "root") as "t_2") as "subselect") as "t_1" on concat('''', pivot_column, '''') using sum("treePlanted"))) as "subselect"'
-EXAMPLE: 
-EXPRESSION:' |meta::pure::functions::relation::tests::project::TypeForProjectTest.all()->project(~[one:x|$x.name,two:x|$x.addresses.val,three:x|$x.values.val])'
-'SQL: select "root".name as "one", "address5586072_1751051792899_0".val as "two", "primitivecontainer9301669_1751051792899_0".val as "three" from leSchema.TypeForProjectTest8078615_1751051792898 as "root" left outer join leSchema.Address5586072_1751051792899 as "address5586072_1751051792899_0" on ("root"._pureId = "address5586072_1751051792899_0"._TypeForProjectTest_addresses) left outer join leSchema.PrimitiveContainer9301669_1751051792899 as "primitivecontainer9301669_1751051792899_0" on ("root"._pureId = "primitivecontainer9301669_1751051792899_0"._TypeForProjectTest_values)'
-EXAMPLE: 
-EXPRESSION:' |meta::pure::functions::relation::tests::project::TypeForProjectTest.all()->toOne()->project(~[one:x|$x.name,two:x|$x.addresses.val,three:x|$x.values.val])'
-'SQL: select "root".name as "one", "address3776031_1751051793039_0".val as "two", "primitivecontainer8745173_1751051793039_0".val as "three" from leSchema.TypeForProjectTest7257228_1751051793039 as "root" left outer join leSchema.Address3776031_1751051793039 as "address3776031_1751051793039_0" on ("root"._pureId = "address3776031_1751051793039_0"._TypeForProjectTest_addresses) left outer join leSchema.PrimitiveContainer8745173_1751051793039 as "primitivecontainer8745173_1751051793039_0" on ("root"._pureId = "primitivecontainer8745173_1751051793039_0"._TypeForProjectTest_values)'
-EXAMPLE: 
-EXPRESSION:' |meta::pure::functions::relation::tests::project::TypeForProjectTest.all()->toOne()->project(~[one:x|$x.name,two:x|$x.addresses.val,three:x|$x.values.val])'
-'SQL: select "root".name as "one", "address5014464_1751051793180_0".val as "two", "primitivecontainer2898993_1751051793180_0".val as "three" from leSchema.TypeForProjectTest3472407_1751051793179 as "root" left outer join leSchema.Address5014464_1751051793180 as "address5014464_1751051793180_0" on ("root"._pureId = "address5014464_1751051793180_0"._TypeForProjectTest_addresses) left outer join leSchema.PrimitiveContainer2898993_1751051793180 as "primitivecontainer2898993_1751051793180_0" on ("root"._pureId = "primitivecontainer2898993_1751051793180_0"._TypeForProjectTest_values)'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_9867965_1751051793308}#->project(~[name:c|$c.str->toOne() + $c.val->toOne()->toString()])'
-'SQL: select concat("tb_9867965_1751051793308_0".str, cast("tb_9867965_1751051793308_0".val as varchar)) as "name" from leSchema.tb_9867965_1751051793308 as "tb_9867965_1751051793308_0"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_3987269_1751051793441}#->extend(~grp->over(~id->descending()), ~other:{p, w, r|$p->rank($w, $r)})'
-'SQL: select "tb_3987269_1751051793441_0".id as "id", "tb_3987269_1751051793441_0".grp as "grp", "tb_3987269_1751051793441_0".name as "name", rank() OVER (Partition By "tb_3987269_1751051793441_0".grp Order By "tb_3987269_1751051793441_0".id DESC) as "other" from leSchema.tb_3987269_1751051793441 as "tb_3987269_1751051793441_0"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_2712203_1751051793575}#->rename(~str, ~newStr)'
-'SQL: select "tb_2712203_1751051793575_0"."val" as "val", "tb_2712203_1751051793575_0"."str" as "newStr" from (select "tb_2712203_1751051793575_1".val as "val", "tb_2712203_1751051793575_1".str as "str" from leSchema.tb_2712203_1751051793575 as "tb_2712203_1751051793575_1") as "tb_2712203_1751051793575_0"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_4847598_1751051793697}#;
+'SQL: WITH t AS (select "tb_2163055_1751219928762_0".city as "city", "tb_2163055_1751219928762_0".country as "country", "tb_2163055_1751219928762_0".year as "year", "tb_2163055_1751219928762_0".treePlanted as "treePlanted" from leSchema.tb_2163055_1751219928762 as "tb_2163055_1751219928762_0")
+select * from (select * from (select "subselect"."city" as "city", "subselect"."country" as "country", "subselect"."treePlanted" as "treePlanted", "subselect".pivot_column as pivot_column from (select "t_2"."city", "t_2"."country", "t_2"."treePlanted", concat("t_2"."year", '__|__', 'newCol') as pivot_column from (select "root"."city", "root"."country", "root"."year", "root"."treePlanted" from t as "root") as "t_2") as "subselect") as "t_1" pivot (sum("treePlanted") for pivot_column in (ANY ORDER BY pivot_column))) as "subselect"'
+
+'EXAMPLE'
+'EXPRESSION: |meta::pure::functions::relation::tests::project::TypeForProjectTest.all()->project(~[one:x|$x.name,two:x|$x.addresses.val,three:x|$x.values.val])'
+'SQL: select "root".name as "one", "address8531718_1751219928879_0".val as "two", "primitivecontainer4364182_1751219928879_0".val as "three" from leSchema.TypeForProjectTest3427938_1751219928879 as "root" left outer join leSchema.Address8531718_1751219928879 as "address8531718_1751219928879_0" on ("root"._pureId = "address8531718_1751219928879_0"._TypeForProjectTest_addresses) left outer join leSchema.PrimitiveContainer4364182_1751219928879 as "primitivecontainer4364182_1751219928879_0" on ("root"._pureId = "primitivecontainer4364182_1751219928879_0"._TypeForProjectTest_values)'
+
+'EXAMPLE'
+'EXPRESSION: |meta::pure::functions::relation::tests::project::TypeForProjectTest.all()->toOne()->project(~[one:x|$x.name,two:x|$x.addresses.val,three:x|$x.values.val])'
+'SQL: select "root".name as "one", "address618775_1751219928971_0".val as "two", "primitivecontainer2878373_1751219928972_0".val as "three" from leSchema.TypeForProjectTest1322356_1751219928971 as "root" left outer join leSchema.Address618775_1751219928971 as "address618775_1751219928971_0" on ("root"._pureId = "address618775_1751219928971_0"._TypeForProjectTest_addresses) left outer join leSchema.PrimitiveContainer2878373_1751219928972 as "primitivecontainer2878373_1751219928972_0" on ("root"._pureId = "primitivecontainer2878373_1751219928972_0"._TypeForProjectTest_values)'
+
+'EXAMPLE'
+'EXPRESSION: |meta::pure::functions::relation::tests::project::TypeForProjectTest.all()->toOne()->project(~[one:x|$x.name,two:x|$x.addresses.val,three:x|$x.values.val])'
+'SQL: select "root".name as "one", "address8314976_1751219929069_0".val as "two", "primitivecontainer3442895_1751219929069_0".val as "three" from leSchema.TypeForProjectTest9068200_1751219929069 as "root" left outer join leSchema.Address8314976_1751219929069 as "address8314976_1751219929069_0" on ("root"._pureId = "address8314976_1751219929069_0"._TypeForProjectTest_addresses) left outer join leSchema.PrimitiveContainer3442895_1751219929069 as "primitivecontainer3442895_1751219929069_0" on ("root"._pureId = "primitivecontainer3442895_1751219929069_0"._TypeForProjectTest_values)'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_4693522_1751219929156}#->project(~[name:c|$c.str->toOne() + $c.val->toOne()->toString()])'
+'SQL: select concat("tb_4693522_1751219929156_0".str, cast("tb_4693522_1751219929156_0".val as varchar)) as "name" from leSchema.tb_4693522_1751219929156 as "tb_4693522_1751219929156_0"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_4086310_1751219929261}#->extend(~grp->over(~id->descending()), ~other:{p, w, r|$p->rank($w, $r)})'
+'SQL: select "tb_4086310_1751219929261_0".id as "id", "tb_4086310_1751219929261_0".grp as "grp", "tb_4086310_1751219929261_0".name as "name", rank() OVER (Partition By "tb_4086310_1751219929261_0".grp Order By "tb_4086310_1751219929261_0".id DESC) as "other" from leSchema.tb_4086310_1751219929261 as "tb_4086310_1751219929261_0"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_5992301_1751219929350}#->rename(~str, ~newStr)'
+'SQL: select "tb_5992301_1751219929350_0"."val" as "val", "tb_5992301_1751219929350_0"."str" as "newStr" from (select "tb_5992301_1751219929350_1".val as "val", "tb_5992301_1751219929350_1".str as "str" from leSchema.tb_5992301_1751219929350 as "tb_5992301_1751219929350_1") as "tb_5992301_1751219929350_0"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_2655253_1751219929426}#;
  $t->rename(~str, ~newStr);
 '
-'SQL: WITH t AS (select "tb_4847598_1751051793697_0".val as "val", "tb_4847598_1751051793697_0".str as "str" from leSchema.tb_4847598_1751051793697 as "tb_4847598_1751051793697_0") 
+'SQL: WITH t AS (select "tb_2655253_1751219929426_0".val as "val", "tb_2655253_1751219929426_0".str as "str" from leSchema.tb_2655253_1751219929426 as "tb_2655253_1751219929426_0")
 select "t_0"."val" as "val", "t_0"."str" as "newStr" from (select "root"."val", "root"."str" from t as "root") as "t_0"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_8530870_1751051793815}#->extend(~grp->over(~id->descending()), ~other:{p, w, r|$p->rowNumber($r)})'
-'SQL: select "tb_8530870_1751051793815_0".id as "id", "tb_8530870_1751051793815_0".grp as "grp", "tb_8530870_1751051793815_0".name as "name", row_number() OVER (Partition By "tb_8530870_1751051793815_0".grp Order By "tb_8530870_1751051793815_0".id DESC) as "other" from leSchema.tb_8530870_1751051793815 as "tb_8530870_1751051793815_0"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_1279948_1751051793955}#->select(~[val,other])'
-'SQL: select "tb_1279948_1751051793955_0".val as "val", "tb_1279948_1751051793955_0".other as "other" from leSchema.tb_1279948_1751051793955 as "tb_1279948_1751051793955_0"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_7616304_1751051794070}#;
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_9276618_1751219929504}#->extend(~grp->over(~id->descending()), ~other:{p, w, r|$p->rowNumber($r)})'
+'SQL: select "tb_9276618_1751219929504_0".id as "id", "tb_9276618_1751219929504_0".grp as "grp", "tb_9276618_1751219929504_0".name as "name", row_number() OVER (Partition By "tb_9276618_1751219929504_0".grp Order By "tb_9276618_1751219929504_0".id DESC) as "other" from leSchema.tb_9276618_1751219929504 as "tb_9276618_1751219929504_0"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_8835736_1751219929601}#->select(~[val,other])'
+'SQL: select "tb_8835736_1751219929601_0".val as "val", "tb_8835736_1751219929601_0".other as "other" from leSchema.tb_8835736_1751219929601 as "tb_8835736_1751219929601_0"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_4131165_1751219929668}#;
  $t->select(~[val,other]);
 '
-'SQL: WITH t AS (select "tb_7616304_1751051794070_0".val as "val", "tb_7616304_1751051794070_0".str as "str", "tb_7616304_1751051794070_0".other as "other" from leSchema.tb_7616304_1751051794070 as "tb_7616304_1751051794070_0") 
+'SQL: WITH t AS (select "tb_4131165_1751219929668_0".val as "val", "tb_4131165_1751219929668_0".str as "str", "tb_4131165_1751219929668_0".other as "other" from leSchema.tb_4131165_1751219929668 as "tb_4131165_1751219929668_0")
 select "root"."val", "root"."other" from t as "root"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_753111_1751051794184}#->select()'
-'SQL: select "tb_753111_1751051794184_0".val as "val", "tb_753111_1751051794184_0".str as "str", "tb_753111_1751051794184_0".other as "other" from leSchema.tb_753111_1751051794184 as "tb_753111_1751051794184_0"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_3685758_1751051794300}#;
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_3593938_1751219929741}#->select()'
+'SQL: select "tb_3593938_1751219929741_0".val as "val", "tb_3593938_1751219929741_0".str as "str", "tb_3593938_1751219929741_0".other as "other" from leSchema.tb_3593938_1751219929741 as "tb_3593938_1751219929741_0"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_3491463_1751219929803}#;
  $t->select();
 '
-'SQL: WITH t AS (select "tb_3685758_1751051794300_0".val as "val", "tb_3685758_1751051794300_0".str as "str", "tb_3685758_1751051794300_0".other as "other" from leSchema.tb_3685758_1751051794300 as "tb_3685758_1751051794300_0") 
+'SQL: WITH t AS (select "tb_3491463_1751219929803_0".val as "val", "tb_3491463_1751219929803_0".str as "str", "tb_3491463_1751219929803_0".other as "other" from leSchema.tb_3491463_1751219929803 as "tb_3491463_1751219929803_0")
 select "root"."val", "root"."str", "root"."other" from t as "root"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_4466253_1751051794413}#->select(~str)'
-'SQL: select "tb_4466253_1751051794413_0".str as "str" from leSchema.tb_4466253_1751051794413 as "tb_4466253_1751051794413_0"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_4023941_1751051794531}#;
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_5850922_1751219929866}#->select(~str)'
+'SQL: select "tb_5850922_1751219929866_0".str as "str" from leSchema.tb_5850922_1751219929866 as "tb_5850922_1751219929866_0"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_6131834_1751219929930}#;
  $t->select(~str);
 '
-'SQL: WITH t AS (select "tb_4023941_1751051794531_0".val as "val", "tb_4023941_1751051794531_0".str as "str", "tb_4023941_1751051794531_0".other as "other" from leSchema.tb_4023941_1751051794531 as "tb_4023941_1751051794531_0") 
+'SQL: WITH t AS (select "tb_6131834_1751219929930_0".val as "val", "tb_6131834_1751219929930_0".str as "str", "tb_6131834_1751219929930_0".other as "other" from leSchema.tb_6131834_1751219929930 as "tb_6131834_1751219929930_0")
 select "root"."str" from t as "root"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_488839_1751051794637}#->select(~'other kind')'
-'SQL: select "tb_488839_1751051794637_0"."other kind" as "other kind" from leSchema.tb_488839_1751051794637 as "tb_488839_1751051794637_0"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_1821306_1751051794750}#;
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_9724058_1751219929997}#->select(~'other kind')'
+'SQL: select "tb_9724058_1751219929997_0"."other kind" as "other kind" from leSchema.tb_9724058_1751219929997 as "tb_9724058_1751219929997_0"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_928432_1751219930052}#;
  $t->select(~'other kind');
 '
-'SQL: WITH t AS (select "tb_1821306_1751051794750_0".val as "val", "tb_1821306_1751051794750_0".str as "str", "tb_1821306_1751051794750_0"."other kind" as "other kind" from leSchema.tb_1821306_1751051794750 as "tb_1821306_1751051794750_0") 
+'SQL: WITH t AS (select "tb_928432_1751219930052_0".val as "val", "tb_928432_1751219930052_0".str as "str", "tb_928432_1751219930052_0"."other kind" as "other kind" from leSchema.tb_928432_1751219930052 as "tb_928432_1751219930052_0")
 select "root"."other kind" from t as "root"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_9827516_1751051794893}#->size() > 0'
-'SQL: select count("tb_9827516_1751051794893_0".val) > 0 from leSchema.tb_9827516_1751051794893 as "tb_9827516_1751051794893_0"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_2571056_1751051795036}#;
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_6545267_1751219930140}#->size() > 0'
+'SQL: select count("tb_6545267_1751219930140_0".val) > 0 from leSchema.tb_6545267_1751219930140 as "tb_6545267_1751219930140_0"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_7469725_1751219930230}#;
  let s = $t->size();
  $s > 0;
 '
-'SQL: WITH t AS (select "tb_2571056_1751051795036_0".val as "val", "tb_2571056_1751051795036_0".str as "str" from leSchema.tb_2571056_1751051795036 as "tb_2571056_1751051795036_0"), 
-s AS (select count("root"."val") as col_0 from t as "root") 
+'SQL: WITH t AS (select "tb_7469725_1751219930230_0".val as "val", "tb_7469725_1751219930230_0".str as "str" from leSchema.tb_7469725_1751219930230 as "tb_7469725_1751219930230_0"),
+s AS (select count("root"."val") as col_0 from t as "root")
 select "root".col_0 > 0 from s as "root"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_3191730_1751051795152}#->groupBy(~[grp], ~[newCol:x|$x.name:y|$y->joinStrings(''),YoCol:x|$x.id:y|$y->plus()])->size()'
-'SQL: select count("subselect"."grp") from (select "tb_3191730_1751051795152_1".grp as "grp", string_agg("tb_3191730_1751051795152_1".name,'') as "newCol", sum("tb_3191730_1751051795152_1".id) as "YoCol" from leSchema.tb_3191730_1751051795152 as "tb_3191730_1751051795152_1" group by "grp") as "subselect"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_5728179_1751051795281}#;
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_5413222_1751219930294}#->groupBy(~[grp], ~[newCol:x|$x.name:y|$y->joinStrings(''),YoCol:x|$x.id:y|$y->plus()])->size()'
+'SQL: select count("subselect"."grp") from (select "tb_5413222_1751219930294_1".grp as "grp", listagg("tb_5413222_1751219930294_1".name, '') as "newCol", sum("tb_5413222_1751219930294_1".id) as "YoCol" from leSchema.tb_5413222_1751219930294 as "tb_5413222_1751219930294_1" group by "grp") as "subselect"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_7900461_1751219930372}#;
  let t2 = $t->groupBy(~[grp], ~[newCol:x|$x.name:y|$y->joinStrings(''),YoCol:x|$x.id:y|$y->plus()]);
  $t2->size();
 '
-'SQL: WITH t AS (select "tb_5728179_1751051795281_0".id as "id", "tb_5728179_1751051795281_0".grp as "grp", "tb_5728179_1751051795281_0".name as "name" from leSchema.tb_5728179_1751051795281 as "tb_5728179_1751051795281_0"), 
-t2 AS (select "root"."grp" as "grp", string_agg("root"."name",'') as "newCol", sum("root"."id") as "YoCol" from t as "root" group by "grp") 
+'SQL: WITH t AS (select "tb_7900461_1751219930372_0".id as "id", "tb_7900461_1751219930372_0".grp as "grp", "tb_7900461_1751219930372_0".name as "name" from leSchema.tb_7900461_1751219930372 as "tb_7900461_1751219930372_0"),
+t2 AS (select "root"."grp" as "grp", listagg("root"."name", '') as "newCol", sum("root"."id") as "YoCol" from t as "root" group by "grp")
 select count("root"."grp") from t2 as "root"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_5563826_1751051795405}#->size()'
-'SQL: select count("tb_5563826_1751051795405_0".val) from leSchema.tb_5563826_1751051795405 as "tb_5563826_1751051795405_0"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_5682286_1751051795511}#;
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_4142858_1751219930447}#->size()'
+'SQL: select count("tb_4142858_1751219930447_0".val) from leSchema.tb_4142858_1751219930447 as "tb_4142858_1751219930447_0"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_340540_1751219930515}#;
  $t->size();
 '
-'SQL: WITH t AS (select "tb_5682286_1751051795511_0".val as "val", "tb_5682286_1751051795511_0".str as "str" from leSchema.tb_5682286_1751051795511 as "tb_5682286_1751051795511_0") 
+'SQL: WITH t AS (select "tb_340540_1751219930515_0".val as "val", "tb_340540_1751219930515_0".str as "str" from leSchema.tb_340540_1751219930515 as "tb_340540_1751219930515_0")
 select count("root"."val") from t as "root"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_1740872_1751051795623}#->groupBy(~grp, ~newCol:x|$x.employeeNumber:y|$y->size())'
-'SQL: select "tb_1740872_1751051795623_0".grp as "grp", count("tb_1740872_1751051795623_0".employeeNumber) as "newCol" from leSchema.tb_1740872_1751051795623 as "tb_1740872_1751051795623_0" group by "grp"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_7259173_1751051795768}#->extend(~grp->over(), ~newCol:{p, w, r|$r.id}:y|$y->size())'
-'SQL: select "tb_7259173_1751051795768_0".id as "id", "tb_7259173_1751051795768_0".grp as "grp", "tb_7259173_1751051795768_0".name as "name", count("tb_7259173_1751051795768_0".id) OVER (Partition By "tb_7259173_1751051795768_0".grp ) as "newCol" from leSchema.tb_7259173_1751051795768 as "tb_7259173_1751051795768_0"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_6433325_1751051795907}#->extend(~grp->over(), ~newCol:{p, w, r|$r.id}:y|$y->plus())->size()'
-'SQL: select count("tb_6433325_1751051795907_0".id) from leSchema.tb_6433325_1751051795907 as "tb_6433325_1751051795907_0"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_1138115_1751051796032}#->sort(~val->ascending())->slice(1, 3)'
-'SQL: select "tb_1138115_1751051796032_0".val as "val", "tb_1138115_1751051796032_0".str as "str" from leSchema.tb_1138115_1751051796032 as "tb_1138115_1751051796032_0" order by "val" offset 1 limit 2'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_1790990_1751051796153}#;
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_705113_1751219930575}#->groupBy(~grp, ~newCol:x|$x.employeeNumber:y|$y->size())'
+'SQL: select "tb_705113_1751219930575_0".grp as "grp", count("tb_705113_1751219930575_0".employeeNumber) as "newCol" from leSchema.tb_705113_1751219930575 as "tb_705113_1751219930575_0" group by "grp"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_700707_1751219930650}#->extend(~grp->over(), ~newCol:{p, w, r|$r.id}:y|$y->size())'
+'SQL: select "tb_700707_1751219930650_0".id as "id", "tb_700707_1751219930650_0".grp as "grp", "tb_700707_1751219930650_0".name as "name", count("tb_700707_1751219930650_0".id) OVER (Partition By "tb_700707_1751219930650_0".grp ) as "newCol" from leSchema.tb_700707_1751219930650 as "tb_700707_1751219930650_0"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_1471788_1751219930713}#->extend(~grp->over(), ~newCol:{p, w, r|$r.id}:y|$y->plus())->size()'
+'SQL: select count("tb_1471788_1751219930713_0".id) from leSchema.tb_1471788_1751219930713 as "tb_1471788_1751219930713_0"'
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_812360_1751219930800}#->sort(~val->ascending())->slice(1, 3)'
+'SQL: select "tb_812360_1751219930800_0".val as "val", "tb_812360_1751219930800_0".str as "str" from leSchema.tb_812360_1751219930800 as "tb_812360_1751219930800_0" order by "val" limit 2 offset 1'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_1826001_1751219930882}#;
  let t2 = $t->slice(1, 4);
  $t2->slice(0, 2);
 '
-'SQL: WITH t AS (select "tb_1790990_1751051796153_0".val as "val", "tb_1790990_1751051796153_0".str as "str" from leSchema.tb_1790990_1751051796153 as "tb_1790990_1751051796153_0"), 
-t2 AS (select "root"."val", "root"."str" from t as "root" offset 1 limit 3) 
+'SQL: WITH t AS (select "tb_1826001_1751219930882_0".val as "val", "tb_1826001_1751219930882_0".str as "str" from leSchema.tb_1826001_1751219930882 as "tb_1826001_1751219930882_0"),
+t2 AS (select "root"."val", "root"."str" from t as "root" limit 3 offset 1)
 select "subselect"."val" as "val", "subselect"."str" as "str" from (select "root"."val", "root"."str" from t2 as "root" limit 2) as "subselect"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_2046457_1751051796272}#->sort(~id->ascending())'
-'SQL: select "tb_2046457_1751051796272_0".id as "id", "tb_2046457_1751051796272_0".name as "name" from leSchema.tb_2046457_1751051796272 as "tb_2046457_1751051796272_0" order by "id"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_5087928_1751051796389}#->sort([~id->ascending(), ~name->ascending()])'
-'SQL: select "tb_5087928_1751051796389_0".id as "id", "tb_5087928_1751051796389_0".name as "name" from leSchema.tb_5087928_1751051796389 as "tb_5087928_1751051796389_0" order by "id","name"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_6486570_1751051796502}#->sort([~id->descending(), ~name->ascending()])'
-'SQL: select "tb_6486570_1751051796502_0".id as "id", "tb_6486570_1751051796502_0".name as "name" from leSchema.tb_6486570_1751051796502 as "tb_6486570_1751051796502_0" order by "id" desc,"name"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_9881347_1751051796624}#;
+
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_8792870_1751219930966}#->sort(~id->ascending())'
+'SQL: select "tb_8792870_1751219930966_0".id as "id", "tb_8792870_1751219930966_0".name as "name" from leSchema.tb_8792870_1751219930966 as "tb_8792870_1751219930966_0" order by "id"'
+
+'EXAMPLE'
+'EXPRESSION: |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_7140831_1751219931028}#;
  $t->sort(~id->ascending());
 '
-'SQL: WITH t AS (select "tb_9881347_1751051796624_0".id as "id", "tb_9881347_1751051796624_0".name as "name" from leSchema.tb_9881347_1751051796624 as "tb_9881347_1751051796624_0") 
+'SQL: WITH t AS (select "tb_7140831_1751219931028_0".id as "id", "tb_7140831_1751219931028_0".name as "name" from leSchema.tb_7140831_1751219931028 as "tb_7140831_1751219931028_0")
 select "root"."id", "root"."name" from t as "root" order by "id"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_5628491_1751051796766}#;
- $t->sort([~id->ascending(), ~name->ascending()]);
-'
-'SQL: WITH t AS (select "tb_5628491_1751051796766_0".id as "id", "tb_5628491_1751051796766_0".name as "name" from leSchema.tb_5628491_1751051796766 as "tb_5628491_1751051796766_0") 
-select "root"."id", "root"."name" from t as "root" order by "id","name"'
-EXAMPLE: 
-EXPRESSION:' |let t = #>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_568792_1751051796880}#;
- $t->sort([~id->descending(), ~name->ascending()]);
-'
-'SQL: WITH t AS (select "tb_568792_1751051796880_0".id as "id", "tb_568792_1751051796880_0".name as "name" from leSchema.tb_568792_1751051796880 as "tb_568792_1751051796880_0") 
-select "root"."id", "root"."name" from t as "root" order by "id" desc,"name"'
-EXAMPLE: 
-EXPRESSION:' |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_9159963_1751051797050}#->select()->write(#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_3148460_1751051797054}#)'
 
-
+'EXAMPLE'
+'EXPRESSION: |#>{meta::relational::tests::pct::process::MyDatabase.leSchema.tb_4020496_1751287288253}#->extend(~grp->over([~name->ascending(), ~height->ascending()]), ~[newCol:{p, w, r|$p->lead($r).id->isNotEmpty()->if(|$p->lead($r).id, |$r.grp)},other:{p, w, r|$p->first($w, $r).name}])'
+'SQL: select "tb_4020496_1751287288253_0".id as "id", "tb_4020496_1751287288253_0".grp as "grp", "tb_4020496_1751287288253_0".name as "name", "tb_4020496_1751287288253_0".height as "height", case when lead("tb_4020496_1751287288253_0".id) OVER (Partition By "tb_4020496_1751287288253_0".grp Order By "tb_4020496_1751287288253_0".name ASC, "tb_4020496_1751287288253_0".height ASC) is not null then lead("tb_4020496_1751287288253_0".id) OVER (Partition By "tb_4020496_1751287288253_0".grp Order By "tb_4020496_1751287288253_0".name ASC, "tb_4020496_1751287288253_0".height ASC) else "tb_4020496_1751287288253_0".grp end as "newCol", first_value("tb_4020496_1751287288253_0".name) OVER (Partition By "tb_4020496_1751287288253_0".grp Order By "tb_4020496_1751287288253_0".name ASC, "tb_4020496_1751287288253_0".height ASC) as "other" from leSchema.tb_4020496_1751287288253 as "tb_4020496_1751287288253_0"'
