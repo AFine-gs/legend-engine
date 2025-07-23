@@ -12,6 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import meta::pure::router::platform::metamodel::clustering::*;
+import meta::pure::router::externalFormat::metamodel::clustering::*;
+import meta::pure::router::utils::*;
+import meta::pure::runtime::*;
+import meta::pure::router::store::metamodel::clustering::*;
+import meta::pure::router::metamodel::clustering::*;
 import meta::relational::postProcessor::*;
 import meta::pure::store::set::*;
 import meta::pure::extension::*;
@@ -167,21 +173,54 @@ function meta::analytics::lineage::getLineageInputFromFunctionDefinition(f:Funct
     funcBody = $funcBody
   );
 }
+function meta::analytics::lineage::computeRoutedLineage(f:FunctionDefinition<Any>[1], m:Mapping[0..1], r:Runtime[0..1], extensions:meta::pure::extension::Extension[*], config: FunctionAnalyticsConfig[1]):FunctionAnalytics[1]
+{ 
+  let map =  if($m->isEmpty(),|^Mapping(),|$m->toOne());
+  let rt =  if($r->isEmpty(),|^Runtime(),|$r->toOne());
+   let routedFunction = $f->meta::pure::router::routeFunction($map, $rt, ^ExecutionContext(), $extensions, noDebug());
+   let clusters = $routedFunction.expressionSequence->evaluateAndDeactivate()->cast(@ClusteredValueSpecification);
+   let openVars = $f->openVariableValues();
+   let functionParameters = $f->stubFuncParameters();
+   let inScopeVars = $functionParameters->map(ep|pair($ep.name, ^List<Any>(values=$ep)))->newMap()->putAll($openVars);
+
+  let FA = $clusters->map(c|$c->processRoutedValueSpecificationLineage($config,$extensions));
+   $FA->at(0);//  merge
+
+}
+
+function meta::analytics::lineage::processRoutedValueSpecificationLineage(cluster:ClusteredValueSpecification[1],  config: FunctionAnalyticsConfig[1] , extensions:Extension[*]):FunctionAnalytics[*]  //probably will take an extension
+{
+  let vs = $cluster.val->byPassValueSpecificationWrapper();
+
+  $cluster->match([
+      sc:StoreMappingClusteredValueSpecification[1] | $sc->meta::analytics::lineage::processStoreMappingRoutedValueSpecification($config,$extensions); 
+      sc:StoreClusteredValueSpecification[1] | [];
+      ef:ExternalFormatClusteredValueSpecification[1] | [];
+      pl:PlatformClusteredValueSpecification[1] | $pl->println();  [];
+  ]);
 
 
-
-function meta::analytics::lineage::computeLineage(f:FunctionDefinition<Any>[1], m:Mapping[0..1], r:Runtime[0..1], extensions:meta::pure::extension::Extension[*], config: FunctionAnalyticsConfig[1]):FunctionAnalytics[1]
+}
+function meta::analytics::lineage::processStoreMappingRoutedValueSpecification(storeMappingVS:StoreMappingClusteredValueSpecification[1],config: FunctionAnalyticsConfig[1] , extensions:Extension[*]):FunctionAnalytics[1]  
+{
+   // let updatedState = ^$state(mapping = $storeMappingVS.mapping, classMappingByClass=$storeMappingVS.val->cast(@StoreMappingRoutedValueSpecification).routingStrategy->cast(@StoreMappingRoutingStrategy).classMappingsByClass);
+    let fn = $storeMappingVS->deepByPassRouterInfo()->cast(@FunctionDefinition<Any>);
+    meta::analytics::lineage::computeLineage($fn, $storeMappingVS.mapping, $storeMappingVS.runtime, $extensions, $config);
+ 
+}
+function meta::analytics::lineage::computeLineage(f:FunctionDefinition<Any>[1], m:Mapping[0..1], runtime:Runtime[0..1], extensions:meta::pure::extension::Extension[*], config: FunctionAnalyticsConfig[1]):FunctionAnalytics[1]
 {
   let lineageExtensions =  meta::analytics::lineage::getLineageExtension($extensions);
-  let lineageInputFromFuncDef = $f->meta::analytics::lineage::getLineageInputFromFunctionDefinition($extensions);
+  let lineageInputFromFuncDef = $f;
 
-  let runtimes = $lineageInputFromFuncDef.runtime->concatenate($r)->removeDuplicates();
-  let runtime = if($runtimes->isEmpty(), |[], |$runtimes->at(0)); //TODO: handle more than one runtime, currently runtime from func def takes priority
+  // let lineageInputFromFuncDef = $f->meta::analytics::lineage::getLineageInputFromFunctionDefinition($extensions);
+  // let runtimes = $lineageInputFromFuncDef.runtime->concatenate($r)->removeDuplicates();
+  // let runtime = if($runtimes->isEmpty(), |[], |$runtimes->at(0)); //TODO: handle more than one runtime, currently runtime from func def takes priority
 
   let mappingsFromRuntime = if($runtime->isEmpty(), |[], |getMappingsFromRuntime($runtime->toOne()));
-  let mappings = $lineageInputFromFuncDef.mapping->concatenate($m)->concatenate($mappingsFromRuntime)->removeDuplicates(); //mapping from func def takes priority
+  let mappings = $m->concatenate($mappingsFromRuntime)->removeDuplicates(); //mapping from func def takes priority
 
-  let funcBody = $lineageInputFromFuncDef.funcBody;
+  let funcBody = $f.expressionSequence->evaluateAndDeactivate();
 
    let updatedFuncBody = $funcBody->map(e|$e->meta::pure::lineage::analytics::inlineQualifiedProperties(newMap([]->cast(@Pair<VariableExpression, ValueSpecification>), VariableExpression->classPropertyByName('name')->cast(@Property<VariableExpression,String|1>)), $f->openVariableValues(), $extensions));
 
@@ -291,7 +330,7 @@ function meta::analytics::lineage::buildReportLineage(funcBody:ValueSpecificatio
 function meta::analytics::lineage::buildReportLineage(funcBody:ValueSpecification[1], mapping:Mapping[1], vars:Pair<String, List<Any>>[*]):ReportLineage[1]
 {
    let varMap =  if($vars->isEmpty(),|^Map<String, List<Any>>(),|$vars->newMap());
-   let project = $funcBody->meta::pure::lineage::scanProject::scanProject($varMap);
+   let project = $funcBody->meta::pure::lineage::scanProject::scanProject($varMap);  //update the result of this to carry the StoreMappingRoutedValueSpecification from the project parameter and get the mapping for scanColumns from here
    let groupedProject = $project.columns->groupBy(c| $c.first);
 
    let colPropertyTreePair = $groupedProject->keys()->map(gp|let propertiesPaths = $groupedProject->get($gp).values->map(c| $c.second.expressionSequence->at(0)->scanProperties(^List<PropertyPathNode>(), [], [], noDebug()))->removeDuplicates();
@@ -456,12 +495,7 @@ function meta::analytics::lineage::flowDatabase::toFlowDatabase(p:PropertyPathTr
 
 function meta::analytics::lineage::flowDatabase::toFlowDatabase2(f:FunctionDefinition<Any>[1], mappings:Mapping[*], propertyTree:PropertyPathTree[1], runtime:Runtime[0..1], extensions:Extension[*]):Flow[1]
 {
-   let databaseConnection = if($runtime->isNotEmpty(),
-                          | let connections = $runtime->toOne().connectionStores.connection->filter(c | $c->instanceOf(meta::external::store::relational::runtime::DatabaseConnection));
-                            if($connections->size() == 1,
-                               | $connections->toOne()->cast(@meta::external::store::relational::runtime::DatabaseConnection),
-                               | []);,
-                          | []);
+
    $mappings->map(m| let flowDB =  $propertyTree->toFlowStore($m, [], false, [],$extensions);
                         if($flowDB->isEmpty(),|^Flow(  functions = $f ),
 
@@ -555,7 +589,7 @@ function meta::analytics::lineage::flowDatabase::toFlowStore(p:PropertyPathTree[
                    ]);
 }
 
-function <<access.private>> meta::analytics::lineage::flowDatabase::manageQualifiers(children:PropertyPathTree[*], extraChildren:PropertyPathTree[*]):PropertyPathTree[*]
+function  meta::analytics::lineage::flowDatabase::manageQualifiers(children:PropertyPathTree[*], extraChildren:PropertyPathTree[*]):PropertyPathTree[*]
 {
    if ($children->isEmpty() ||
        ($children->size()==1 &&
@@ -577,7 +611,7 @@ Class meta::analytics::lineage::flowDatabase::FlowRelationalStore extends meta::
 
 
 
-function <<access.private>> meta::analytics::lineage::flowDatabase::processNonDataTypeProperty(p:PropertyPathTree[1], pm: PropertyMapping[1], possiblePropertyTargetClasses: Class<Any>[*], m:Mapping[1], extraChildren:PropertyPathTree[*], extension:Extension[*]): FlowStore[*]
+function meta::analytics::lineage::flowDatabase::processNonDataTypeProperty(p:PropertyPathTree[1], pm: PropertyMapping[1], possiblePropertyTargetClasses: Class<Any>[*], m:Mapping[1], extraChildren:PropertyPathTree[*], extension:Extension[*]): FlowStore[*]
 {
    let targetSetImplementationId = $pm->match([
       i: InlineEmbeddedRelationalInstanceSetImplementation[1]|
@@ -591,9 +625,8 @@ function <<access.private>> meta::analytics::lineage::flowDatabase::processNonDa
    ]);
 
    let potentialTablesFromJoin = $pm->match([
-      r:RelationalPropertyMapping[1]|
-         if($targetSetImplementationId->contains($r.targetSetImplementationId),
-            | ^FlowRelationalStore(relation=$r->meta::analytics::lineage::flowDatabase::getTables()),
+      r:RelationalPropertyMapping[1]|   if($targetSetImplementationId->contains($r.targetSetImplementationId),
+                                          | ^FlowRelationalStore(relation=$r->meta::analytics::lineage::flowDatabase::getTables()),
             | []),
       a:Any[1]|[]
    ]);
