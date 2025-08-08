@@ -12,7 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import meta::analytics::lineage::property::scanner::*;
+import meta::analytics::lineage::property::*;
 import meta::analytics::lineage::*;
+import meta::pure::lineage::relation::scanRelations::*;
+import meta::pure::mapping::*;
+import meta::pure::lineage::relation::scanRelations::*;
 import meta::pure::extension::*;
 import meta::relational::metamodel::relation::*;
 import meta::pure::store::*;
@@ -20,15 +25,31 @@ import meta::pure::lineage::scanProperties::*;
 import meta::pure::router::metamodel::*;
 import meta::pure::metamodel::serialization::grammar::*;
 import meta::pure::metamodel::relation::*;
-import meta::analytics::lineage::scanRelationAccessor::*;
+import meta::pure::lineage::relation::scanRelations::*; 
 import meta::pure::lineage::scanProperties::propertyTree::*;
+import meta::pure::lineage::relation::scanRelations::*;
 
 
-function meta::analytics::lineage::scanRelationAccessor::extractRelationElementAccessor(vs: ValueSpecification[*], debug:DebugContext[1]):RelationElementAccessor<Any>[*]
+
+Class meta::pure::lineage::relation::scanRelations::NamedTransform
+{
+  name:String[1];
+  function:LambdaFunction<Any>[1];
+}
+
+
+
+Class meta::pure::lineage::relation::scanRelations::Query
+{
+   columns : LineageProperty[*];
+}
+
+
+function meta::pure::lineage::relation::scanRelations::extractRelationElementAccessor(vs: Any[*], debug:DebugContext[1]):RelationElementAccessor<Any>[*]
 {
   print(if($debug.debug,|$debug.space+'>>> extractRelationElementAccessor: ' + ' \n',|''));
   let res = $vs->map( v | $v ->match([
-                fe: FunctionExpression[1]                | $fe.parametersValues->evaluateAndDeactivate()->at(0)->cast(@ValueSpecification)->extractRelationElementAccessor($debug);,
+                fe: FunctionExpression[1]                |$fe.parametersValues->evaluateAndDeactivate()->map(p|$p->extractRelationElementAccessor($debug));,
                 i:  InstanceValue[1]                     | $i.values->evaluateAndDeactivate()->map( v |
                                                                 $v->match([
                                                                     r: RelationElementAccessor<Any>[1] | $r,
@@ -39,12 +60,11 @@ function meta::analytics::lineage::scanRelationAccessor::extractRelationElementA
   $res;
 }
 
-function meta::pure::lineage::scanRelationAccessor::propertyTree::buildRelationAccessorPropertyTreeLineageColumn(columns:meta::analytics::lineage::Column[*]):PropertyPathTree[1]
+function meta::pure::lineage::scanRelationAccessor::propertyTree::buildRelationAccessorPropertyTreeLineageColumn(columns:meta::analytics::lineage::property::LineageProperty[*]):PropertyPathTree[1]
 {
-   let filteredColumnLists = $columns->filter(c|$c->isNotEmpty());
    let propertyTree = ^PropertyPathTree(display='root',
                                         value='root',
-                                        children = $filteredColumnLists->map(c | ^PropertyPathTree(display=$c.name->toOne(), value=$c))
+                                        children = $columns->map(c | ^PropertyPathTree(display=$c.name->toOne(), value=$c))
                                        );
 }
 
@@ -57,7 +77,337 @@ function meta::pure::lineage::scanRelationAccessor::propertyTree::buildRelationA
                                        );
 }
 
-function meta::analytics::lineage::scanRelationAccessor::scanRelationAccessorColumns(vs: Any[1], r: RelationElementAccessor<Any>[*]):meta::relational::metamodel::Column[*]
+
+
+
+function meta::pure::lineage::relation::scanRelations::accessorToLineageProperty(r :RelationElementAccessor<Any>[1], column:meta::pure::metamodel::relation::Column<Nil,Any|*>[1], extension:LineageExtension[*] ): LineageProperty[*]
+{
+    $r->match( $extension.accessorToColumn2->map(a|$a->eval($column,$r))->concatenate(
+              rea:RelationElementAccessor<Any>[*]| $r.sourceElement->cast(@Table).columns->cast(@meta::relational::metamodel::Column)->filter(rac|$rac.name==$column.name)->map(c|$c->lineagePropertyColumn()))->toOneMany());
+                                                    //needs to work with Views
+  } 
+
+
+function <<access.private>> meta::pure::lineage::relation::scanRelations::extractColSpecColumns(vs:Any[1],vars:Map<String, List<Any>>[1]):String[*]
+{ 
+ $vs->match(
+          [
+            i:InstanceValue[1] |  $i.values->at(0)->extractColSpecColumns($vars),
+            s:SimpleFunctionExpression[1] |  $s->reactivate($vars)->map(a|$a->extractColSpecColumns($vars)),
+            f:ColSpecArray<Any>[1] |  $f.names,
+            f:ColSpec<Any>[1] | $f.name
+          //  a:Any[*]|   [] ;
+          ]
+      );
+}
+
+function <<access.private>> meta::pure::lineage::relation::scanRelations::extractTransforms(vs:Any[1],vars:Map<String, List<Any>>[1]):NamedTransform[*]
+{ 
+ $vs->match(
+          [
+            i:InstanceValue[1] |  $i.values->at(0)->extractTransforms($vars),
+            s:SimpleFunctionExpression[1] |  $s->reactivate($vars)->map(a|$a->extractTransforms($vars)),
+            f:FuncColSpecArray<Any,Any>[1] |  $f.funcSpecs->map(f|$f->extractTransforms($vars)),
+            a:AggColSpecArray<Any,Any,Any>[1] | $a.aggSpecs->map(f|$f->extractTransforms($vars)),
+            f:FuncColSpec<Any,Any>[1] |  ^NamedTransform(name=$f.name,function=$f.function->cast(@LambdaFunction<Any>)),
+            a:AggColSpec<Any,Any,Any>[1] | ^NamedTransform(name=$a.name,function=$a.map->cast(@LambdaFunction<Any>))
+           // a:Any[*]| [] ;
+          ]
+      );
+}
+
+
+
+function meta::pure::lineage::relation::scanRelations::extractRelationColumns(vs: Any[1]):meta::pure::metamodel::relation::Column<Nil,Any|*>[*]
+{
+  
+  $vs->match([
+              f:FunctionDefinition<Any>[1]             | $f.expressionSequence->evaluateAndDeactivate()->map(e|$e->extractRelationColumns()),
+              fe:FunctionExpression[1]                 |$fe.func->evaluateAndDeactivate()->extractRelationColumns()  ->concatenate( $fe.parametersValues->map(p |$p->extractRelationColumns())),
+              i:InstanceValue[1]                       | $i.values->evaluateAndDeactivate()->map(a|$a->extractRelationColumns()),
+              c:meta::pure::metamodel::relation::Column<Nil,Any|*>[1]  |$c,
+              a:Any[*]                                 |  [];
+            ]);
+}
+
+
+
+
+
+function meta::pure::lineage::relation::scanRelations::extractColumnsAndAccessor(vs: Any[1], state:ScannerState[1], extension:LineageExtension[*]):ScannerState[1]
+{  
+  $vs->match([
+              f:FunctionDefinition<Any>[1]  | $f.expressionSequence->evaluateAndDeactivate()->fold({a,b|$a->extractColumnsAndAccessor($b,$extension)}, $state),
+              fe:FunctionExpression[1]      | let dispatch = [pair( 'meta::pure::functions::relation::join_Relation_1__Relation_1__JoinKind_1__Function_1__Relation_1_',
+                                                                   {| 
+                                                                
+                                                                     let states = concatenate($fe.parametersValues->at(0)->evaluateAndDeactivate()->extractColumnsAndAccessor($state,$extension),
+                                                                                  $fe.parametersValues->at(1)->evaluateAndDeactivate()->extractColumnsAndAccessor($state,$extension));
+                                                                     ^$state(lineageColumn=$states.lineageColumn);                
+                                                                   }
+                                                                    ),
+                                                               pair( 'meta::pure::functions::relation::asOfJoin_Relation_1__Relation_1__Function_1__Function_1__Relation_1_',
+                                                                   {| 
+                                                                
+                                                                     let states = concatenate($fe.parametersValues->at(0)->evaluateAndDeactivate()->extractColumnsAndAccessor($state,$extension),
+                                                                                  $fe.parametersValues->at(1)->evaluateAndDeactivate()->extractColumnsAndAccessor($state,$extension));
+                                                                     ^$state(lineageColumn=$states.lineageColumn);                
+                                                                   }
+                                                                    ),
+                                                         pair( 'meta::pure::functions::relation::asOfJoin_Relation_1__Relation_1__Function_1__Relation_1_',
+                                                                   {| 
+                                                                
+                                                                     let states = concatenate($fe.parametersValues->at(0)->evaluateAndDeactivate()->extractColumnsAndAccessor($state,$extension),
+                                                                                  $fe.parametersValues->at(1)->evaluateAndDeactivate()->extractColumnsAndAccessor($state,$extension));
+                                                                     ^$state(lineageColumn=$states.lineageColumn);                
+                                                                   }
+                                                                    ),
+
+                                                          pair( 'meta::pure::functions::relation::concatenate_Relation_1__Relation_1__Relation_1_',
+                                                                   {| 
+                                                                
+                                                                     let set1 =$fe.parametersValues->at(0)->evaluateAndDeactivate()->extractColumnsAndAccessor($state,$extension).lineageColumn;
+                                                                     let set2 = $fe.parametersValues->at(1)->evaluateAndDeactivate()->extractColumnsAndAccessor($state,$extension).lineageColumn->groupBy(c|$c.name);
+                                                                     let combined =   $set1->map( s |   ^$s(sourceProperties+= $set2->get($s.name).values->at(0).sourceProperties));
+                                                                     ^$state(lineageColumn=$combined);                
+                                                                   }
+                                                                    ),
+
+                                                             pair('meta::pure::functions::relation::rename_Relation_1__ColSpec_1__ColSpec_1__Relation_1_',
+                                                                  {|let incomingState = $fe.parametersValues->at(0)->evaluateAndDeactivate()->extractColumnsAndAccessor($state,$extension);
+                                                                    let oldName = $fe.parametersValues->at(1)->extractColSpecColumns($incomingState.vars)->toOne();
+                                                                    let newName = $fe.parametersValues->at(2)->extractColSpecColumns($incomingState.vars)->toOne();
+                                                                    let newColumns = $incomingState.lineageColumn->map( c|  if( $c.name==$oldName,| ^$c(name=$newName),|$c));
+                                                                    ^$incomingState(lineageColumn = $newColumns);
+                                                                  }   
+                                                             ),
+                                                             
+                                                            pair('meta::pure::functions::relation::select_Relation_1__ColSpecArray_1__Relation_1_',
+                                                                  {| let incomingState = $fe.parametersValues->at(0)->evaluateAndDeactivate()->extractColumnsAndAccessor($state,$extension); // this should have the right columns and accessors
+                                                                      let colSpec = $fe->colSpecQueryColumnsAtParameter(1,$incomingState);
+                                                                     ^$incomingState(lineageColumn=$colSpec);                                                                    
+                                                                  }),                                                                  
+                                                         pair('meta::pure::functions::relation::select_Relation_1__ColSpec_1__Relation_1_',
+                                                                  {| let incomingState = $fe.parametersValues->at(0)->evaluateAndDeactivate()->extractColumnsAndAccessor($state,$extension); // this should have the right columns and accessors
+                                                                     let colSpec = $fe->colSpecQueryColumnsAtParameter(1,$incomingState);
+                                                                    ^$incomingState(lineageColumn=$colSpec);                                                                    
+                                                                  }), 
+                                                           pair('meta::pure::functions::relation::extend_Relation_1__FuncColSpec_1__Relation_1_',
+                                                        {|
+                                                        let incomingState = $fe.parametersValues->at(0)->evaluateAndDeactivate()->extractColumnsAndAccessor($state,$extension);
+                                                        let cols = extractQueryColumnsAtParam($fe,1,$incomingState);
+                                                        ^$incomingState(lineageColumn+=$cols);
+                                                        }    
+                                                      ),
+
+                                                      pair('meta::pure::functions::relation::extend_Relation_1__FuncColSpecArray_1__Relation_1_',
+                                                        {|
+                                                        let incomingState = $fe.parametersValues->at(0)->evaluateAndDeactivate()->extractColumnsAndAccessor($state,$extension);
+                                                        let cols = extractQueryColumnsAtParam($fe,1,$incomingState);
+                                                        ^$incomingState(lineageColumn+=$cols);
+                                                        }),
+                        
+                                                    pair('meta::pure::functions::relation::project_Relation_1__FuncColSpecArray_1__Relation_1_',
+                                                         {| let incomingState = $fe.parametersValues->at(0)->evaluateAndDeactivate()->extractColumnsAndAccessor($state,$extension);
+                                                            let cols = extractQueryColumnsAtParam($fe,1,$incomingState);
+                                                           ^$incomingState(lineageColumn=$cols);
+                                                        }),
+                                                    pair('meta::pure::functions::relation::project_Relation_1__FuncColSpec_1__Relation_1_',
+                                                         {| let incomingState = $fe.parametersValues->at(0)->evaluateAndDeactivate()->extractColumnsAndAccessor($state,$extension);
+                                                            let cols = extractQueryColumnsAtParam($fe,1,$incomingState);
+                                                           ^$incomingState(lineageColumn=$cols);
+                                                        }),
+                                                    pair('meta::pure::functions::relation::groupBy_Relation_1__ColSpec_1__AggColSpec_1__Relation_1_',
+                                                         {| let incomingState = $fe.parametersValues->at(0)->evaluateAndDeactivate()->extractColumnsAndAccessor($state,$extension);
+                                                            let colSpec = $fe->colSpecQueryColumnsAtParameter(1,$incomingState);
+                                                            let agColumns = $fe->extractQueryColumnsAtParam(2,$incomingState);
+                                                            let updatedColumns = $colSpec->concatenate($agColumns);
+                                                           ^$incomingState(lineageColumn=$updatedColumns);
+                                                        }),
+                                                pair('meta::pure::functions::relation::groupBy_Relation_1__ColSpec_1__AggColSpecArray_1__Relation_1_',
+                                                         {| let incomingState = $fe.parametersValues->at(0)->evaluateAndDeactivate()->extractColumnsAndAccessor($state,$extension);
+                                                            let colSpec = $fe->colSpecQueryColumnsAtParameter(1,$incomingState);
+                                                            let agColumns = $fe->extractQueryColumnsAtParam(2,$incomingState);
+                                                            let updatedColumns = $colSpec->concatenate($agColumns);
+                                                           ^$incomingState(lineageColumn=$updatedColumns);
+                                                        }),
+
+                                                pair('meta::pure::functions::relation::groupBy_Relation_1__ColSpecArray_1__AggColSpecArray_1__Relation_1_',
+                                                         {| let incomingState = $fe.parametersValues->at(0)->evaluateAndDeactivate()->extractColumnsAndAccessor($state,$extension);
+                                                            let colSpec = $fe->colSpecQueryColumnsAtParameter(1,$incomingState);
+                                                            let agColumns = $fe->extractQueryColumnsAtParam(2,$incomingState);
+                                                            let updatedColumns = $colSpec->concatenate($agColumns);
+                                                           ^$incomingState(lineageColumn=$updatedColumns);
+                                                        }),   
+
+                                                pair('meta::pure::functions::relation::groupBy_Relation_1__ColSpecArray_1__AggColSpec_1__Relation_1_',
+                                                         {| let incomingState = $fe.parametersValues->at(0)->evaluateAndDeactivate()->extractColumnsAndAccessor($state,$extension);
+                                                            let colSpec = $fe->colSpecQueryColumnsAtParameter(1,$incomingState);
+                                                            let agColumns = $fe->extractQueryColumnsAtParam(2,$incomingState);
+                                                            let updatedColumns = $colSpec->concatenate($agColumns);
+                                                           ^$incomingState(lineageColumn=$updatedColumns);
+                                                        })   ,
+                                               pair('meta::pure::functions::relation::extend_Relation_1__AggColSpec_1__Relation_1_',
+                                                         {| let incomingState = $fe.parametersValues->at(0)->evaluateAndDeactivate()->extractColumnsAndAccessor($state,$extension);
+                                                            let agColumns = $fe->extractQueryColumnsAtParam(1,$incomingState);
+                                                           ^$incomingState(lineageColumn+=$agColumns);
+                                                        }),                                         
+                                                pair('meta::pure::functions::relation::extend_Relation_1__AggColSpecArray_1__Relation_1_',
+                                                         {| let incomingState = $fe.parametersValues->at(0)->evaluateAndDeactivate()->extractColumnsAndAccessor($state,$extension);
+                                                            let agColumns = $fe->extractQueryColumnsAtParam(1,$incomingState);
+                                                           ^$incomingState(lineageColumn+=$agColumns);
+                                                        }),    
+                                                pair('meta::pure::functions::relation::extend_Relation_1___Window_1__AggColSpec_1__Relation_1_',
+                                                         {| let incomingState = $fe.parametersValues->at(0)->evaluateAndDeactivate()->extractColumnsAndAccessor($state,$extension);
+                                                            let agColumns = $fe->extractQueryColumnsAtParam(2,$incomingState); 
+                                                           ^$incomingState(lineageColumn+=$agColumns);
+                                                        }),
+                                                 pair('meta::pure::functions::relation::extend_Relation_1___Window_1__AggColSpecArray_1__Relation_1_',
+                                                         {| let incomingState = $fe.parametersValues->at(0)->evaluateAndDeactivate()->extractColumnsAndAccessor($state,$extension);
+                                                            let agColumns = $fe->extractQueryColumnsAtParam(2,$incomingState); 
+                                                           ^$incomingState(lineageColumn+=$agColumns);
+                                                        })    ,                       
+
+                                                pair('meta::pure::functions::relation::pivot_Relation_1__ColSpecArray_1__AggColSpecArray_1__Relation_1_',
+                                                         {| let incomingState = $fe.parametersValues->at(0)->evaluateAndDeactivate()->extractColumnsAndAccessor($state,$extension);
+                                                           pivotLineageColumns($fe,$incomingState);
+                                                        }),   
+                                                 
+                                              pair('meta::pure::functions::relation::pivot_Relation_1__ColSpecArray_1__AggColSpec_1__Relation_1_',
+                                                         {| let incomingState = $fe.parametersValues->at(0)->evaluateAndDeactivate()->extractColumnsAndAccessor($state,$extension);
+                                                           pivotLineageColumns($fe,$incomingState);
+                                                        }) ,      
+                                              pair('meta::pure::functions::relation::pivot_Relation_1__ColSpec_1__AggColSpecArray_1__Relation_1_',
+                                                         {| let incomingState = $fe.parametersValues->at(0)->evaluateAndDeactivate()->extractColumnsAndAccessor($state,$extension);
+                                                           pivotLineageColumns($fe,$incomingState);
+                                                        })  ,    
+                                               pair('meta::pure::functions::relation::pivot_Relation_1__ColSpec_1__AggColSpec_1__Relation_1_',
+                                                         {| let incomingState = $fe.parametersValues->at(0)->evaluateAndDeactivate()->extractColumnsAndAccessor($state,$extension);
+                                                           pivotLineageColumns($fe,$incomingState);
+                                                        }),
+                                                 pair('meta::pure::functions::relation::project_C_MANY__FuncColSpecArray_1__Relation_1_',
+                                                         {|  let propfns = $fe.parametersValues->at(1)->meta::pure::lineage::relation::scanRelations::extractTransforms($state.vars);
+                                                             let ownerNode = ^MappedClassOwner(_class=   $fe.parametersValues->at(0).genericType.rawType->toOne()->cast(@Class<Any>), mapping=$state.mapping);
+                                                             let props =  $propfns->map(transform|let propertiesPaths = $transform.function.expressionSequence->at(0)->evaluateAndDeactivate()->scanProperties(^List<PropertyPathNode>(), [], [], noDebug())->removeDuplicates();
+                                                                                                    ^LineageModelProperty(propertyType=PropertyType.MODEL, dataType=$transform.function->functionReturnType().rawType.name->toOne(), name=$transform.name, owner = $ownerNode, propertyTree=$propertiesPaths.result->buildPropertyTree()););
+                                                                                                                                                                                                   
+                                                             let updatedNode =  $ownerNode->mutateAdd('properties',$props);  
+                                                             let incomingState= $updatedNode->meta::analytics::lineage::property::calculateSourceNode($state,$extension);
+                                                             let queryProps = $props->map( p |    let sourceCol = $incomingState.lineageColumn->filter(c|$c.name->in($p.name))->toOne();
+                                                                                          let prop =  ^LineageProperty(owner=^meta::analytics::lineage::property::Query(),dataType=$sourceCol.dataType, propertyType=PropertyType.RELATION, name=$sourceCol.name, scope= 'IDENTITY',sourceProperties=$sourceCol);
+                                                                                          let link = ^PropertyLink(source=$p,target=$prop   );
+                                                                                          pair($prop,$link);
+                                                                                          );
+                                                              let rootNode =  ^meta::analytics::lineage::property::Query(properties=$queryProps.first);
+                                                             let root =  ^PropertyLineageReport(propertyLink=$queryProps.second ,
+                                                                                                propertyOwner= $updatedNode->concatenate($rootNode) ,
+                                                                                                ownerLink = ^OwnerLink(source=$updatedNode, target = $rootNode )
+                                                                                                  );
+                                                              
+
+                                                              ^$incomingState(sourcePropertyReport+= $root,   lineageColumn=$queryProps.first   );
+                                                                                                                          
+                                                          //  ^PropertyLineageReport(propertyOwner=^RelationalPropertyOwner(namedRelation= $r.sourceElement->cast(@NamedRelation), properties=$props,ownerID=$r.store->elementToPath()));      
+                                            //       let set= $state.mapping->meta::pure::mapping::rootClassMappingByClass($cl)->last()->meta::pure::router::routing::resolveOperation($state.mapping);
+
+                                            //      let result = $colPropertyTreePair->fold({p,state| //The type of setImplementation willDrive the function we use 
+                                            //                                                         let res= $p.second->scanColumns($mapping, $state.classToSets, $state.idToSet);
+                                            //       ^ReportColumnsWithState(columns=$state.columns->concatenate(^ReportColumn(name = $p.first, propertyTree = $p.second, columns = $res.colRes.columns->removeDuplicates())),
+                                            //                   idToSet = $res.idToSet->map(n|$n->keyValues())->newMap(),
+                                            //                   classToSets = $res.classToSets->map(n|$n->keyValues())->newMap());},
+                                            // ^ReportColumnsWithState(idToSet=^Map<String, List<SetImplementation>>(), classToSets=^Map<Class<Any>, List<InstanceSetImplementation>>()));
+
+                                     
+
+
+
+                                                        })       
+                   
+                                               
+                                                           ]->newMap();
+                                                   let fn = $dispatch->get($fe.func->elementToPath());
+                                                   if($fn->isNotEmpty(),
+                                                         |$fn->toOne()->eval();,
+                                                         | $fe.func->elementToPath()->println();   $fe.parametersValues->evaluateAndDeactivate()->at(0)->extractColumnsAndAccessor($state,$extension););,  //skips any function not specified on the list
+              i:InstanceValue[1]              |     if($i.values->size()>1,
+                                                                  |  $i.values->evaluateAndDeactivate()->fold({a,b|$a->extractColumnsAndAccessor($b,$extension)}, $state);,  //TODO: When do wen need this?
+                                                                  |  $i.values->evaluateAndDeactivate()->at(0)->extractColumnsAndAccessor($state,$extension)
+                                                                       ),
+                                                                   
+
+              r:RelationElementAccessor<Any>[1] |  let columns =  $r.classifierGenericType.typeArguments.rawType->cast(@RelationType<Any>).columns;
+                                                   let sourceColumns  = $columns->map(c| queryColumn( $c ,  'Accessor',accessorToLineageProperty($r,$c,$extension))) ;
+                                                   
+                                                    let sourceNodes = $r->meta::analytics::lineage::property::buildAccessorPropertyNode($state, $extension);
+
+                                                               ^$state(sourcePropertyReport=$sourceNodes,
+                                                                             lineageColumn=$sourceColumns
+                                                                             );,//should always be a leaf                          
+              a:Any[*]                                 |   [];
+            ])->toOne();
+}
+
+
+
+function meta::pure::lineage::relation::scanRelations::pivotLineageColumns(fe:FunctionExpression[1], incomingState:ScannerState[1] ):ScannerState[1]
+{
+   let colSpec = $fe.parametersValues->at(1)->extractColSpecColumns($incomingState.vars);
+   let agColumns = $fe->extractQueryColumnsAtParam(2,$incomingState);
+   let pCols = $incomingState.lineageColumn->filter(c|!$c.name->in($colSpec) && !$c.name->in($agColumns.sourceProperties.name))->map(l|^$l(scope=$fe.func.name));
+   let resultAgg= $agColumns->map(c |^$c(name=$c.name+'_PIVOT',  sourceProperties+= $incomingState.lineageColumn->filter(lc|$lc.name->in($colSpec)).sourceProperties) ); 
+  ^$incomingState(lineageColumn=$resultAgg->concatenate($pCols));
+
+}
+
+function meta::pure::lineage::relation::scanRelations::extractQueryColumnsAtParam(fe:FunctionExpression[1], param:Integer[1],incomingState:ScannerState[1]):LineageProperty[*]
+ {
+      let cols = $fe.parametersValues->at($param)->evaluateAndDeactivate();
+      $cols->map(c| $c->meta::pure::lineage::relation::scanRelations::extractTransforms($incomingState.vars))
+                              ->map( funcCol|let sourceCol = $funcCol.function->extractRelationColumns(); // get columns  used in func
+                                      let sources = $incomingState.lineageColumn->filter(c|$c.name->in($sourceCol.name));
+                                      ^LineageProperty(owner=^RootQuery(),dataType=$funcCol.function->functionReturnType().rawType.name->toOne(), propertyType=PropertyType.RELATION, name=$funcCol.name, scope= $fe.func.name,sourceProperties=$sources.sourceProperties););
+
+ }
+
+ function meta::pure::lineage::relation::scanRelations::colSpecQueryColumnsAtParameter(fe:FunctionExpression[1], param:Integer[1],incomingState:ScannerState[1]):LineageProperty[*]
+ {
+      let colSpec = $fe.parametersValues->at($param)->extractColSpecColumns($incomingState.vars);
+      $incomingState.lineageColumn->filter(c|$c.name->in($colSpec))->map(l|^$l(scope=$fe.func.name));
+
+ }
+
+
+function meta::pure::lineage::relation::scanRelations::lineagePropertyColumn(c:meta::relational::metamodel::Column[1]):LineageProperty[1]
+{
+        ^LineageProperty
+        (
+            dataType = $c.type->toString(),
+            sourceInfo = $c->sourceInformation(),
+            propertyType = PropertyType.RELATIONAL,
+            owner= ^RelationalPropertyOwner(namedRelation= $c.owner->toOne()->cast(@NamedRelation)),
+            name = $c.name
+        )
+
+}
+
+
+function meta::pure::lineage::relation::scanRelations::queryColumn(column:meta::pure::metamodel::relation::Column<Any, Any|*>[1], scope:String[0..1],  sourceColumns:LineageProperty[*]  ):LineageProperty[*]
+{
+
+  ^LineageProperty(owner=^RootQuery(),name=$column.name->toOne(),dataType= '',  propertyType = PropertyType.RELATION,   scope=$scope,   sourceProperties=$sourceColumns);
+}
+
+function  meta::pure::lineage::relation::scanRelations::scanRelationColumns(val:Any[1],extension:LineageExtension[*]):meta::pure::lineage::relation::scanRelations::Query[*]
+{
+ ^meta::pure::lineage::relation::scanRelations::Query();
+ 
+ // scanRelationColumnsRecursive($val, [], [],^Map<String, List<Any>>(),$extension);
+}
+
+
+
+//TODO:Remove = used on old extension properties
+function meta::pure::lineage::relation::scanRelations::scanRelationAccessorColumns(vs: Any[1], r: RelationElementAccessor<Any>[*]):meta::relational::metamodel::Column[*]
 {
   
   $vs->match([
@@ -69,31 +419,22 @@ function meta::analytics::lineage::scanRelationAccessor::scanRelationAccessorCol
             ]);
 }
 
-function meta::analytics::lineage::scanRelationAccessor::scanRelationAccessorColumns(vs: Any[1], r: RelationElementAccessor<Any>[1], extension:LineageExtension[*]):meta::analytics::lineage::Column[*]
-{
+
+function meta::pure::lineage::relation::scanRelations::scanRelationAccessorColumns(vs: Any[1],r: RelationElementAccessor<Any>[1],  extension:LineageExtension[*]):meta::analytics::lineage::Column[*]
+{  
   $vs->match([
               f:FunctionDefinition<Any>[1]             | $f.expressionSequence->evaluateAndDeactivate()->map(e|$e->scanRelationAccessorColumns($r,$extension)),
-              fe:FunctionExpression[1]                 | $fe.func->evaluateAndDeactivate()->scanRelationAccessorColumns($r,$extension),
+              fe:FunctionExpression[1]                 | $fe.func->scanRelationAccessorColumns($r,$extension)->concatenate($fe.parametersValues->evaluateAndDeactivate()->map(e|$e->scanRelationAccessorColumns($r,$extension))),
               i:InstanceValue[1]                       | $i.values->evaluateAndDeactivate()->map(a|$a->scanRelationAccessorColumns($r,$extension)),
               p:meta::pure::metamodel::relation::Column<Nil,Any|*>[1]  |   $r->match( $extension.accessorToColumn->map(a|$a->eval($p,$r)
                                                                         )->concatenate(rea:RelationElementAccessor<Any>[*]| $r.sourceElement->cast(@Table).columns->cast(@meta::relational::metamodel::Column)->filter(rac|$rac.name == $p.name)->map(c|$c->lineageColumn()))->toOneMany()),
-              a:Any[*]                                 |   [];
-            ]);
-}
 
-function meta::analytics::lineage::scanRelationAccessor::relationColumns(vs: Any[1]):meta::pure::metamodel::relation::Column<Nil,Any|*>[*]
-{
-  $vs->match([
-              f:FunctionDefinition<Any>[1]             | $f.expressionSequence->evaluateAndDeactivate()->map(e|$e->relationColumns()),
-              fe:FunctionExpression[1]                 | $fe.func->evaluateAndDeactivate()->relationColumns(),
-              i:InstanceValue[1]                       | $i.values->evaluateAndDeactivate()->map(a|$a->relationColumns()),
-              p:meta::pure::metamodel::relation::Column<Nil,Any|*>[*]  |  $p,
               a:Any[*]                                 |   [];
             ]);
 }
 
 
-function meta::analytics::lineage::scanRelationAccessor::lineageColumn(c:meta::relational::metamodel::Column[1]):meta::analytics::lineage::Column[1]
+function meta::pure::lineage::relation::scanRelations::lineageColumn(c:meta::relational::metamodel::Column[1]):meta::analytics::lineage::Column[1]
 {
         ^meta::analytics::lineage::Column
         (
@@ -104,5 +445,3 @@ function meta::analytics::lineage::scanRelationAccessor::lineageColumn(c:meta::r
         )
 
 }
-
-

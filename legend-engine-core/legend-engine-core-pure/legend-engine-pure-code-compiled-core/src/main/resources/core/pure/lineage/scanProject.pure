@@ -24,6 +24,9 @@ Class meta::pure::lineage::scanProject::Project
    columns : Pair<String, FunctionDefinition<Any>>[*];
 }
 
+
+
+
 function meta::pure::lineage::scanProject::scanProject(f:ValueSpecification[1]):Project[*]
 {
    $f->scanProjectRecursive([],[],^Map<String, List<Any>>());
@@ -57,10 +60,47 @@ function <<access.private>> meta::pure::lineage::scanProject::scanProjectRecursi
                                                       pair('meta::pure::tds::project_T_MANY__ColumnSpecification_MANY__TabularDataSet_1_',
                                                            |let cols = $fe.parametersValues->at(1)->evaluateAndDeactivate();
                                                             let columns =  $cols->map(c|$c->meta::pure::lineage::scanProject::extractCol($vars));
+
                                                             ^Project(projectfuncEntryPoint = $fe,
                                                                      columns = zip($columns.name, $columns.func->cast(@FunctionDefinition<Any>)));
                                                       ),
-                                                      pair('meta::pure::functions::relation::project_C_MANY__FuncColSpecArray_1__Relation_1_',
+                                                   pair('meta::pure::functions::relation::project_C_MANY__FuncColSpecArray_1__Relation_1_',
+                                                        |
+                                                          let cols = $fe.parametersValues->at(1)->evaluateAndDeactivate();
+                                                          let columns =  $cols->map(c|$c->meta::pure::lineage::scanProject::extractFuncCol($vars));
+                                                          ^Project(projectfuncEntryPoint = $fe,
+                                                                   columns = zip($columns.name, $columns.function->cast(@FunctionDefinition<Any>)));
+                                                      ),
+                                                      // pair('meta::pure::functions::relation::select_Relation_1__ColSpecArray_1__Relation_1_',
+                                                      //   |
+                                         
+                                                      //     let cols = $fe.parametersValues->at(1)->evaluateAndDeactivate();
+                                                      //     let columns =  $cols->map(c|$c->meta::pure::lineage::scanProject::extractColSpecColumns($vars));
+                                                      //     ^Project(projectfuncEntryPoint = $fe,
+                                                      //              columns = zip($columns.name, $columns.function->cast(@FunctionDefinition<Any>)));
+                                                      // ),
+                                                    pair('meta::pure::functions::relation::select_Relation_1__ColSpecArray_1__Relation_1_',
+                                                        |
+                                         
+                                                      //    $fe.genericType.typeArguments.rawType->cast(@RelationType<Any>).columns->filter(c|c.name= ->println();  []->toOne();
+                                                          let cols = $fe.parametersValues->at(1)->evaluateAndDeactivate();
+                                                          let columns =  $cols->map(c|$c->meta::pure::lineage::scanProject::extractColSpecColumns($vars))
+                                                              ->map(c| let col = $fe.genericType.typeArguments.rawType->cast(@RelationType<Any>).columns->filter(col|$col.name==$c);
+                                                                        pair($c,{|[]} ); )  ;
+                                                          ^Project(projectfuncEntryPoint = $fe,
+                                                                   columns = $columns
+                                                                   );
+                                                      ),
+                                                      pair('meta::pure::functions::relation::extend_Relation_1__FuncColSpec_1__Relation_1_',
+                                                        |
+                                                          let input = $fe.parametersValues->at(0)->evaluateAndDeactivate()->scanProjectRecursive([],$processed,$vars);
+                                                          let cols = $fe.parametersValues->at(1)->evaluateAndDeactivate();
+                                                          let columns =  $cols->map(c|$c->meta::pure::lineage::scanProject::extractFuncCol($vars));
+                                                          $input->concatenate(
+                                                          ^Project(projectfuncEntryPoint = $fe,
+                                                                   columns = zip($columns.name, $columns.function->cast(@FunctionDefinition<Any>))));
+                                                      ),
+                                                       pair('meta::pure::functions::relation::extend_Relation_1__FuncColSpecArray_1__Relation_1_',
                                                         |
                                                           let cols = $fe.parametersValues->at(1)->evaluateAndDeactivate();
                                                           let columns =  $cols->map(c|$c->meta::pure::lineage::scanProject::extractFuncCol($vars));
@@ -71,6 +111,8 @@ function <<access.private>> meta::pure::lineage::scanProject::scanProjectRecursi
                                                         |
                                                           let cols = $fe.parametersValues->at(1)->evaluateAndDeactivate();
                                                           let columns =  $cols->map(c|$c->meta::pure::lineage::scanProject::extractFuncCol($vars));
+                                                                                                                                                        
+
                                                           ^Project(projectfuncEntryPoint = $fe,
                                                                    columns = zip($columns.name, $columns.function->cast(@FunctionDefinition<Any>)));
                                                       ),
@@ -94,6 +136,26 @@ function <<access.private>> meta::pure::lineage::scanProject::scanProjectRecursi
                                                           let tree = $fe.parametersValues->at(1)->match([s:InstanceValue[1]|$s.values, a:Any[*]|^Unknown()]);
                                                           ^Project(projectfuncEntryPoint = $fe, columns = scanRootGraphFetchTree($tree->toOne()->getRootTree()));
                                                       )
+                                                      // 'meta::pure::functions::relation::extend_Relation_1__AggColSpecArray_1__Relation_1_'
+                                                      // 'meta::pure::functions::relation::extend_Relation_1__AggColSpec_1__Relation_1_'
+                                                      // 'meta::pure::functions::relation::extend_Relation_1__FuncColSpecArray_1__Relation_1_'
+                                                      // 'meta::pure::functions::relation::extend_Relation_1__FuncColSpec_1__Relation_1_'
+                                                      // 'meta::pure::functions::relation::extend_Relation_1___Window_1__AggColSpec_1__Relation_1_'
+                                                      // 'meta::pure::functions::relation::extend_Relation_1___Window_1__AggColSpecArray_1__Relation_1_'
+                                                      // 'meta::pure::functions::relation::extend_Relation_1___Window_1__FuncColSpecArray_1__Relation_1_'
+                                                      // 'meta::pure::functions::relation::extend_Relation_1___Window_1__FuncColSpec_1__Relation_1_'
+                                                      // 'meta::pure::functions::relation::groupBy_Relation_1__ColSpecArray_1__AggColSpecArray_1__Relation_1_'
+                                                      // 'meta::pure::functions::relation::groupBy_Relation_1__ColSpecArray_1__AggColSpecArray_1__Relation_1_'
+                                                      // 'meta::pure::functions::relation::groupBy_Relation_1__ColSpec_1__AggColSpecArray_1__Relation_1_'
+                                                      // 'meta::pure::functions::relation::groupBy_Relation_1__ColSpec_1__AggColSpec_1__Relation_1_'
+                                                      // 'meta::pure::functions::relation::pivot_Relation_1__ColSpecArray_1__AggColSpecArray_1__Relation_1_'
+                                                      // 'meta::pure::functions::relation::pivot_Relation_1__ColSpecArray_1__AggColSpec_1__Relation_1_'
+                                                      // 'meta::pure::functions::relation::pivot_Relation_1__ColSpec_1__AggColSpecArray_1__Relation_1_'
+                                                      // 'meta::pure::functions::relation::pivot_Relation_1__ColSpec_1__AggColSpec_1__Relation_1_'
+                                                      // 'meta::pure::functions::relation::select_Relation_1__ColSpecArray_1__Relation_1_'
+                                                      // 'meta::pure::functions::relation::select_Relation_1__ColSpec_1__Relation_1_'
+                                                      // 'meta::pure::functions::relation::select_Relation_1__Relation_1_'
+                                                      //'meta::pure::functions::relation::rename_Relation_1__ColSpec_1__ColSpec_1__Relation_1_'
                                                     ];
                                      let funcFullPath = $fe.func->toOne()->elementToPath();
                                      let res = $dispatch->filter(d|$funcFullPath == $d.first);
@@ -144,9 +206,23 @@ function <<access.private>> meta::pure::lineage::scanProject::extractFuncCol(vs:
  $vs->match(
           [
             i:InstanceValue[1] |  $i.values->at(0)->extractFuncCol($vars),
-            s:SimpleFunctionExpression[1] |  $s->reactivate($vars)->cast(@FuncColSpecArray<Any,Any>).funcSpecs->map(f | $f->cast(@FuncColSpec<Any,Any>));,
+            s:SimpleFunctionExpression[1] |  $s->reactivate($vars)->map(a|$a->extractFuncCol($vars)),
             f:FuncColSpecArray<Any,Any>[1] |  $f.funcSpecs->cast(@FuncColSpec<Any,Any>),
-            a:Any[*]| [] ;
+            f:FuncColSpec<Any,Any>[1] | $f
+         //   a:Any[*]| [] ;
+          ]
+      );
+}
+
+function <<access.private>> meta::pure::lineage::scanProject::extractColSpecColumns(vs:Any[1],vars:Map<String, List<Any>>[1]):String[*]
+{ 
+ $vs->match(
+          [
+            i:InstanceValue[1] |  $i.values->at(0)->extractColSpecColumns($vars),
+            s:SimpleFunctionExpression[1] |  $s->reactivate($vars)->map(a|$a->extractColSpecColumns($vars)),
+            f:ColSpecArray<Any>[1] |  $f.names,
+            f:ColSpec<Any>[1] | $f.name
+          //  a:Any[*]|   [] ;
           ]
       );
 }

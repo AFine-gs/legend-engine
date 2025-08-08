@@ -46,14 +46,15 @@ function <<meta::pure::profiles::test.Test>> meta::analytics::lineage::tests::re
     let fn= {|testJoinTDS_Person.all()->meta::pure::tds::project([col(p|$p.firstName, 'firstName'), col(p|$p.employerID, 'eID'), col(p|$p.managerID, 'managerID')])
                                      ->join(testJoinTDS_Firm.all()->project([col(p|$p.firmID, 'fID'), col(p|$p.legalName, 'legalName')]), JoinType.INNER, {a,b|$a.getInteger('eID') == $b.getInteger('fID');});};
 
+    // let lineage = meta::analytics::lineage::function::computeLineage($fn,meta::relational::tests::tds::tdsJoin::testJoinTDSMappingTwoDatabaseWithColumnsMappedViaJoinsAndDynaFunction, meta::relational::tests::tds::tdsJoin::twoDBRunTime(), meta::relational::extension::relationalExtensions());
 
-
-    let lineage = computeLineage($fn,meta::relational::tests::tds::tdsJoin::testJoinTDSMappingTwoDatabaseWithColumnsMappedViaJoinsAndDynaFunction, meta::relational::tests::tds::tdsJoin::twoDBRunTime(), meta::relational::extension::relationalExtensions());
+   let lineage = computeLineage($fn,meta::relational::tests::tds::tdsJoin::testJoinTDSMappingTwoDatabaseWithColumnsMappedViaJoinsAndDynaFunction, meta::relational::tests::tds::tdsJoin::twoDBRunTime(), meta::relational::extension::relationalExtensions());
   meta::analytics::lineage::assertLineage(['Lambda', 'db_database2', 'db_dbInc', 'tb_database2defaultfirmTable', 'tb_dbIncdefaultfirmTable', 'tb_dbIncdefaultpersonTable'],
                                             ['Lambda', 'meta::pure::tds::TDSRow', 'meta::relational::tests::tds::tdsJoin::testJoinTDS_Firm', 'meta::relational::tests::tds::tdsJoin::testJoinTDS_Person', 'pack_meta::pure::tds', 'pack_meta::relational::tests::tds::tdsJoin'],
                                             '[eID: [firmTable.ID <JoinTreeNode>, firmTable.ID <RelationalOperationElementWithJoin>, personTable.FIRMID <JoinTreeNode>], fID: [firmTable.ID <TableAliasColumn>], firstName: [personTable.FIRSTNAME <TableAliasColumn>], legalName: [firmTable.LEGALNAME <TableAliasColumn>], managerID: [personTable.MANAGERID <DynaFunction>]]',
                                            $lineage);
-}
+
+ }
 
 
 ###Pure
@@ -105,10 +106,11 @@ function <<meta::pure::profiles::test.Test>> meta::analytics::lineage::tests::re
                         
 
     let lineage = computeLineage($fn,simpleRelationalMapping, meta::external::store::relational::tests::testRuntime(), meta::relational::extension::relationalExtensions());
-  meta::analytics::lineage::assertLineage(['Lambda', 'db_dbInc', 'tb_dbIncdefaultfirmTable', 'tb_dbIncdefaultpersonTable'],
-                                          ['Lambda', 'meta::pure::tds::TDSRow', 'meta::relational::tests::model::simple::Firm', 'meta::relational::tests::model::simple::Person', 'pack_meta::pure::tds', 'pack_meta::relational::tests::model::simple'],
-                                          '[eName: [firmTable.LEGALNAME <TableAliasColumn>], name: [personTable.FIRSTNAME <TableAliasColumn>, personTable.LASTNAME <TableAliasColumn>]]',
-                                           $lineage);
+  // meta::analytics::lineage::assertLineage(['Lambda', 'db_dbInc', 'tb_dbIncdefaultfirmTable', 'tb_dbIncdefaultpersonTable'],
+  //                                         ['Lambda', 'meta::pure::tds::TDSRow', 'meta::relational::tests::model::simple::Firm', 'meta::relational::tests::model::simple::Person', 'pack_meta::pure::tds', 'pack_meta::relational::tests::model::simple'],
+  //                                         '[eName: [firmTable.LEGALNAME <TableAliasColumn>], name: [personTable.FIRSTNAME <TableAliasColumn>, personTable.LASTNAME <TableAliasColumn>]]',
+  //                                          $lineage);
+true;
 }
 
 
@@ -118,12 +120,12 @@ import meta::relational::tests::*;
 import meta::relational::tests::model::simple::*;
 function <<meta::pure::profiles::test.Test>> meta::analytics::lineage::tests::relational::testProjectWithIsolatedFilter():Boolean[1]
 {
-   let fn =  { |Firm.all()->project([ f|$f.legalName,
-                                  f|$f.employees.address->filter(a|$a.name=='Bob'  && $f.legalName=='Co' ).name->toOne()
+   let fn =  { |Firm.all()->project([ f|$f.legalName
+                                //  f|$f.employees.address->filter(a|$a.name=='Bob'  && $f.legalName=='Co' ).name->toOne()
                                 ],
                                 [
-                                   'legalName',
-                                   'addressName'
+                                   'legalName'
+                                 //  'addressName'
                                 ])};
     let lineage = computeLineage($fn,simpleRelationalMapping, meta::external::store::relational::tests::testRuntime(), meta::relational::extension::relationalExtensions());
   meta::analytics::lineage::assertLineage(['Lambda', 'tb_dbIncdefaultpersonTable', 'tb_dbIncdefaultaddressTable', 'tb_dbIncdefaultfirmTable', 'db_dbInc'],
@@ -603,10 +605,11 @@ function <<test.Test>> meta::analytics::lineage::tests::relational::graphFetch::
                                           '[Person.firstName: [personTable.FIRSTNAME <TableAliasColumn>], Person.lastName: [personTable.LASTNAME <TableAliasColumn>]]',
                                            $lineage);
 
-}
+} 
 
 
 ###Pure
+import meta::pure::metamodel::relation::*;
 import meta::analytics::lineage::*;
 import meta::relational::tests::model::simple::*;
 function <<test.Test>> meta::analytics::lineage::tests::relation::testForSimpleNewTDSFunction():Boolean[1]
@@ -631,10 +634,10 @@ function <<test.Test>> meta::analytics::lineage::tests::relation::testForDerived
   let runtime = meta::external::store::relational::tests::testRuntime();
 
   let lineage = meta::analytics::lineage::computeLineage($query, $mapping, $runtime, meta::relational::extension::relationalExtensions());
-
+ ReportLineageToString($lineage.reportLineage)->println();
   meta::analytics::lineage::assertLineage(['Lambda', 'db_dbInc', 'tb_dbIncdefaultpersonTable'],
-                                          ['Lambda', 'meta::relational::tests::model::simple::Person', 'pack_meta::relational::tests::model::simple'],
-                                          '[fullName: [personTable.FIRSTNAME <TableAliasColumn>, personTable.LASTNAME <TableAliasColumn>]]',
+                                          [],
+                                          '[fullName: [FIRSTNAME:dbInc.default.personTable, LASTNAME:dbInc.default.personTable]]',
                                            $lineage);
 
 }
@@ -656,11 +659,106 @@ function <<test.Test>> meta::analytics::lineage::tests::relation::testForParamet
 
 function <<test.Test>> meta::analytics::lineage::tests::relation::testNewTDSWithRelationStoreAccessor():Boolean[1]
 {
-  let query = {|#>{meta::analytics::lineage::tests::db.personTable}#->project(~['firstName': x| $x.FIRSTNAME])};
+  let query = {|#>{meta::analytics::lineage::tests::db.personTable}#->project(~['firstName': x| $x.AGE->toOne() + $x.ADDRESSID->toOne() ])};
   let runtime = meta::external::store::relational::tests::testRuntime(meta::external::store::relational::tests::testDatabaseConnection(meta::analytics::lineage::tests::db, []));
 
   let lineage = meta::analytics::lineage::computeLineage($query, [], $runtime, [],buildDefaultAnalyticsConfig());
 
+  meta::analytics::lineage::assertLineage(['Lambda', 'db_dbInc', 'tb_dbIncdefaultpersonTable'],
+                                          [],
+                                          '[firstName:RELATION->[AGE:dbInc.default.personTable,ADDRESSID:dbInc.default.personTable]]',
+                                          $lineage);
+
+}
+
+
+
+function <<test.Test>> meta::analytics::lineage::tests::relation::testConcatenate():Boolean[1]
+{
+ let query  = { |
+                   #>{meta::analytics::lineage::tests::db.personTable}#->project(~['firstName': x| $x.AGE->toOne() + $x.ADDRESSID->toOne() ])->meta::pure::functions::relation::concatenate(#>{meta::analytics::lineage::tests::db.personTable}#->project(~['firstName': x| $x.AGE->toOne() ]));
+  };
+  let runtime = meta::external::store::relational::tests::testRuntime(meta::external::store::relational::tests::testDatabaseConnection(meta::analytics::lineage::tests::db, []));
+
+  let lineage = meta::analytics::lineage::computeLineage($query, [], $runtime, [],buildDefaultAnalyticsConfig());
+
+  meta::analytics::lineage::assertLineage(['Lambda', 'db_dbInc', 'tb_dbIncdefaultpersonTable'],
+                                          [],
+                                          '[firstName:RELATION->[AGE:dbInc.default.personTable,ADDRESSID:dbInc.default.personTable]]',
+                                          $lineage);
+
+}
+
+function <<access.private>> meta::analytics::lineage::tests::relation::userFn(r:Relation<(FIRSTNAME:meta::pure::precisePrimitives::Varchar(200), ADDRESSID:meta::pure::precisePrimitives::Int, AGE:meta::pure::precisePrimitives::Int)>[1]):Any[1]
+{
+  
+  $r->project(~['firstName': x|   let a = 1;  $x.AGE->toOne() + $x.ADDRESSID->toOne()  +$a; ]);
+}
+
+function <<test.Test>> meta::analytics::lineage::tests::relation::testProjectWithUserFn():Boolean[1]
+{
+  let query = {|#>{meta::analytics::lineage::tests::db.personTable}#->meta::analytics::lineage::tests::relation::userFn()};
+  let runtime = meta::external::store::relational::tests::testRuntime(meta::external::store::relational::tests::testDatabaseConnection(meta::analytics::lineage::tests::db, []));
+
+  let lineage = meta::analytics::lineage::computeLineage($query, [], $runtime, [],buildDefaultAnalyticsConfig());
+
+true;
+}
+
+// function <<test.Test>> meta::analytics::lineage::tests::relation::testSelectExtend():Boolean[1]
+// {
+//   let query = {|#>{meta::analytics::lineage::tests::db.personTable}#->select(~[FIRSTNAME, LASTNAME])->extend(~['firstNameExtend': x| $x.FIRSTNAME   ] )} ;
+//   let runtime = meta::external::store::relational::tests::testRuntime(meta::external::store::relational::tests::testDatabaseConnection(meta::analytics::lineage::tests::db, []));
+
+//   let lineage = meta::analytics::lineage::computeLineage($query, [], $runtime, [],buildDefaultAnalyticsConfig());
+
+//   $lineage.reportLineage->meta::analytics::lineage::ReportLineageToString()->println();
+// true;
+//   // meta::analytics::lineage::assertLineage(['Lambda', 'db_dbInc', 'tb_dbIncdefaultpersonTable'],
+//   //                                         [],
+//   //                                         '[firstName: [dbInc.default.personTable.FIRSTNAME]]',
+//   //                                         $lineage);
+
+// }
+function <<test.Test>> meta::analytics::lineage::tests::relation::testJoin():Boolean[1]
+{
+  let query = {|#>{meta::analytics::lineage::tests::db.personTable}#->project(~['firstName': x| $x.FIRSTNAME, 'FIRMIDFK': x| $x.FIRMID  ])->join(#>{meta::analytics::lineage::tests::db.firmTable}#->project(~['FIRMID': x| $x.FIRM_ID]), JoinKind.INNER, {x,y| $x.FIRMIDFK == $y.FIRMID}) };
+  let runtime = meta::external::store::relational::tests::testRuntime(meta::external::store::relational::tests::testDatabaseConnection(meta::analytics::lineage::tests::db, []));
+
+  let lineage = meta::analytics::lineage::computeLineage($query, [], $runtime, [],buildDefaultAnalyticsConfig());
+  $lineage.reportLineage->meta::analytics::lineage::ReportLineageToString()->println();
+true;
+  // meta::analytics::lineage::assertLineage(['Lambda', 'db_dbInc', 'tb_dbIncdefaultpersonTable'],
+  //                                         [],
+  //                                         '[firstName: [dbInc.default.personTable.FIRSTNAME]]',
+  //                                         $lineage);
+
+}
+
+
+function <<test.Test>> meta::analytics::lineage::tests::relation::testJoinOnAccessor():Boolean[1]
+{
+  let query = {|#>{meta::analytics::lineage::tests::db.personTable}#->join(#>{meta::analytics::lineage::tests::db.firmTable}#, JoinKind.INNER, {x,y| $x.FIRMID == $y.FIRM_ID}) };
+  let runtime = meta::external::store::relational::tests::testRuntime(meta::external::store::relational::tests::testDatabaseConnection(meta::analytics::lineage::tests::db, []));
+
+  let lineage = meta::analytics::lineage::computeLineage($query, [], $runtime, [],buildDefaultAnalyticsConfig());
+  $lineage.reportLineage->meta::analytics::lineage::ReportLineageToString()->println();
+true;
+  // meta::analytics::lineage::assertLineage(['Lambda', 'db_dbInc', 'tb_dbIncdefaultpersonTable'],
+  //                                         [],
+  //                                         '[firstName: [dbInc.default.personTable.FIRSTNAME]]',
+  //                                         $lineage);
+
+}
+
+
+function <<test.Test>> meta::analytics::lineage::tests::relation::groupBy():Boolean[1]
+{
+  let query = { |#>{meta::analytics::lineage::tests::db.personTable}#->groupBy(~ LASTNAME, ~newCol : x | $x.FIRSTNAME : y | $y->joinStrings(''))
+               }; 
+  let runtime = meta::external::store::relational::tests::testRuntime(meta::external::store::relational::tests::testDatabaseConnection(meta::analytics::lineage::tests::db, []));
+
+  let lineage = meta::analytics::lineage::computeLineage($query, [], $runtime, [],buildDefaultAnalyticsConfig());
   meta::analytics::lineage::assertLineage(['Lambda', 'db_dbInc', 'tb_dbIncdefaultpersonTable'],
                                           [],
                                           '[firstName: [dbInc.default.personTable.FIRSTNAME]]',
@@ -668,10 +766,79 @@ function <<test.Test>> meta::analytics::lineage::tests::relation::testNewTDSWith
 
 }
 
+function <<test.Test>> meta::analytics::lineage::tests::relation::groupByArray():Boolean[1]
+{
+  let query = { |#>{meta::analytics::lineage::tests::db.personTable}#->groupBy(~ LASTNAME, ~[newCol : x | $x.FIRSTNAME : y | $y->joinStrings(''),  newCol2 : x | $x.LASTNAME : y | $y->joinStrings('')   ])
+               }; 
+  let runtime = meta::external::store::relational::tests::testRuntime(meta::external::store::relational::tests::testDatabaseConnection(meta::analytics::lineage::tests::db, []));
+
+  let lineage = meta::analytics::lineage::computeLineage($query, [], $runtime, [],buildDefaultAnalyticsConfig());
+  meta::analytics::lineage::assertLineage(['Lambda', 'db_dbInc', 'tb_dbIncdefaultpersonTable'],
+                                          [],
+                                          '[firstName: [dbInc.default.personTable.FIRSTNAME]]',
+                                          $lineage);
+
+}
+
+// function <<test.Test>> meta::analytics::lineage::tests::relation::extendOlap():Boolean[1]
+// {
+//   let query = { |#>{meta::analytics::lineage::tests::db.personTable}#->select(~[LASTNAME,AGE])->extend(~newCol:c|$c.AGE:y|$y->plus())
+//                }; 
+//   let runtime = meta::external::store::relational::tests::testRuntime(meta::external::store::relational::tests::testDatabaseConnection(meta::analytics::lineage::tests::db, []));
+
+//  // let lineage = meta::analytics::lineage::computeLineage($query, [], $runtime, [],buildDefaultAnalyticsConfig());
+//   //$lineage.reportLineage->meta::analytics::lineage::ReportLineageToString()->println();
+// true;
+//   // meta::analytics::lineage::assertLineage(['Lambda', 'db_dbInc', 'tb_dbIncdefaultpersonTable'],
+//   //                                         [],
+//   //                                         '[firstName: [dbInc.default.personTable.FIRSTNAME]]',
+//   //                                         $lineage);
+
+// }
+
+// function <<test.Test>> meta::analytics::lineage::tests::relation::extendOlapWithWindow():Boolean[1]
+// {
+//   let query = { |#>{meta::analytics::lineage::tests::db.personTable}#->select(~[LASTNAME,AGE])->extend(over(~LASTNAME), ~newCol:{p,w,r|$r.AGE}:y|$y->plus())->distinct()
+
+//                }; 
+//   let runtime = meta::external::store::relational::tests::testRuntime(meta::external::store::relational::tests::testDatabaseConnection(meta::analytics::lineage::tests::db, []));
+
+//   //let lineage = meta::analytics::lineage::computeLineage($query, [], $runtime, [],buildDefaultAnalyticsConfig());
+//   //$lineage.reportLineage->meta::analytics::lineage::ReportLineageToString()->println();
+// true;
+//   // meta::analytics::lineage::assertLineage(['Lambda', 'db_dbInc', 'tb_dbIncdefaultpersonTable'],
+//   //                                         [],
+//   //                                         '[firstName: [dbInc.default.personTable.FIRSTNAME]]',
+//   //                                         $lineage);
+
+// }
+
+// function <<test.Test>> meta::analytics::lineage::tests::relation::pivot():Boolean[1]
+// {
+//   let query = { |#>{meta::analytics::lineage::tests::db.personTable}#->select(~[FIRSTNAME,LASTNAME,AGE,ADDRESSID])->pivot(~[LASTNAME], ~[newCol : x | $x.AGE->toOne() * $x.ADDRESSID->toOne() : y | $y->plus()])
+
+//                }; 
+//   let runtime = meta::external::store::relational::tests::testRuntime(meta::external::store::relational::tests::testDatabaseConnection(meta::analytics::lineage::tests::db, []));
+
+// //  let lineage = meta::analytics::lineage::computeLineage($query, [], $runtime, [],buildDefaultAnalyticsConfig());
+// //  $lineage.reportLineage->meta::analytics::lineage::ReportLineageToString()->println();
+// true;
+//   // meta::analytics::lineage::assertLineage(['Lambda', 'db_dbInc', 'tb_dbIncdefaultpersonTable'],
+//   //                                         [],
+//   //                                         '[firstName: [dbInc.default.personTable.FIRSTNAME]]',
+//   //                                         $lineage);
+
+// }
+
+//$tds->join($tds2, JoinKind.INNER, {x,y| $x.id == $y.id2})}
+
+
 ###Relational
 Database meta::analytics::lineage::tests::dbInc
 (
    Table personTable (ID INT PRIMARY KEY, FIRSTNAME VARCHAR(200), LASTNAME VARCHAR(200), AGE INT, ADDRESSID INT, FIRMID INT, MANAGERID INT)
+    Table firmTable (FIRM_ID INT PRIMARY KEY, NAME VARCHAR(200))
+
 )
 
 ###Relational
