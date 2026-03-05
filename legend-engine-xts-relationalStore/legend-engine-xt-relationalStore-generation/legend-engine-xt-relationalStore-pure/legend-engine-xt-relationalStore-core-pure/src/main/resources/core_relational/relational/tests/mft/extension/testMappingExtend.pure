@@ -156,6 +156,55 @@ Mapping meta::relational::tests::mapping::extension::model::mapping::mft::extens
 ###Mapping
 import meta::pure::mft::tests::collection::*;
 import meta::relational::tests::mapping::extension::model::mapping::mft::store::*;
+Mapping meta::relational::tests::mapping::extension::model::mapping::mft::extensionWithInlineTestMapping
+(
+
+
+    EntityWithAddress[address] : Relational
+    {
+       scope([MFTtestDB]TEST.PERSON)
+       (
+          address(
+            street:STREET,
+             type: EnumerationMapping AddressTypeMapping: ADDRESS_TYPE  
+
+          )  
+
+      )      
+       
+    }
+    
+
+    Person extends [address]: Relational 
+    {
+       scope([MFTtestDB]TEST.PERSON)
+       (
+          firstName: FIRSTNAME,
+          lastName : LASTNAME,
+          birthDate: BIRTHDATE
+        
+       ),
+       firm: [MFTtestDB]@personFirm
+    }
+
+
+    Firm: Relational
+    {
+       legalName: [MFTtestDB]TEST.FIRM.LEGAL_NAME,
+       optionalDescription: [MFTtestDB]TEST.FIRM.OPTIONAL_DESCRIPTION,
+       employees: [MFTtestDB]@personFirm
+    }
+
+       AddressType: EnumerationMapping AddressTypeMapping
+  {
+    PRIMARY: ['PRIMARY'],
+    SECONDARY: ['SECONDARY']
+  }
+)
+
+###Mapping
+import meta::pure::mft::tests::collection::*;
+import meta::relational::tests::mapping::extension::model::mapping::mft::store::*;
 Mapping meta::relational::tests::mapping::extension::model::mapping::mft::extensionUnonTestMapping
 (
     

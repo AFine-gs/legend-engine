@@ -1344,10 +1344,10 @@ function meta::relational::functions::pureToSqlQuery::getNewColumnNameWithAlias(
 
 function meta::relational::functions::pureToSqlQuery::processColumnsInRelationalOperationElements(z:RelationalOperationElement[1], state:State[1], srcOperation:SelectWithCursor[1], nodeId:String[1], aggFromMap:List<ColumnGroup>[1], cancelJoinOnUnion:Boolean[1], context:DebugContext[1], extensions:Extension[*]):SelectWithCursor[1]
 {
-   $srcOperation->validate([], $extensions);
+   $srcOperation->validate([], $extensions);  
    let result = $z->match(
                [
-                  t:TableAliasColumn[1] |
+                  t:TableAliasColumn[1] | 
                               let currentTreeNode = $srcOperation.currentTreeNode->toOne();
 
                               let alias = $currentTreeNode.alias;
@@ -1434,7 +1434,7 @@ function meta::relational::functions::pureToSqlQuery::processColumnsInRelational
                               let col = $r->extractElement();
                               let currentData = $srcOperation.select.data->toOne();
                               let isDynaFunction = $col->instanceOf(DynaFunction);
-                              let joinTreeNode = $r.joinTreeNode->toOne();
+                              let joinTreeNode = $r.joinTreeNode->toOne(); 
                               let opWithCol = if ($isDynaFunction,
                                  |
                                     let dynaFunction = $col->cast(@DynaFunction);
@@ -1806,7 +1806,7 @@ function meta::relational::functions::pureToSqlQuery::processRelationalOperation
                       |^$srcOperation(select = ^$sel(filteringOperation+=$newColumn)),
                       |^$srcOperation(select = ^$sel(columns+=$newColumn))
                   );,
-                | // Process the property mapping...
+                | // Process the property mapping... 
                   let srcOperationWithMilestoneProcessingState=$srcOperation->updateMilestoningContextProcessingStateForProperties(MilestoningProcessingState.DATATYPE_PROPERTY);
                   $mappingImpl->processColumnsInRelationalOperationElements($state, $srcOperationWithMilestoneProcessingState, $nodeId, $aggFromMap, true, $context, $extensions);
               );
@@ -1828,7 +1828,7 @@ function meta::relational::functions::pureToSqlQuery::processRelationFunctionPro
 function meta::relational::functions::pureToSqlQuery::processRelationalPropertyMapping(OrigrelationalPropertyMappings:RelationalPropertyMapping[*], property:AbstractProperty<Any>[1], propertyOwnerClass:Class<Any>[1], oldSrcOperation:SelectWithCursor[1], state:State[1], joinType:JoinType[1], nodeId:String[1], aggFromMap:List<ColumnGroup>[1], context:DebugContext[1], extensions:Extension[*]):RelationalOperationElement[1]
 {
   let propertyReturnType = $property->cast(@Property<Nil,Any|*>).genericType.rawType->toOne();
-  let relationalPropertyMappings = $OrigrelationalPropertyMappings->map(p|$p->buildPossibleEnumMappingPushDown($state));
+  let relationalPropertyMappings = $OrigrelationalPropertyMappings->map(p|$p->buildPossibleEnumMappingPushDown($state)); 
   let firstStep = $propertyReturnType->match(
                                  [
                                     p:DataType[1] | let currentTreeNode = $oldSrcOperation.currentTreeNode->toOne();
@@ -1842,7 +1842,6 @@ function meta::relational::functions::pureToSqlQuery::processRelationalPropertyM
 
                                                     let firstStep = processRelationalOperationElementOfPropertyMapping($relationalPropertyMappings, $property, $propName, $srcOperation, $propertyOwnerClass, $state, $joinType, $nodeId, $aggFromMap, $context, $extensions);
                                                     let sel = $firstStep.select;
-
                                                     let secondStep = $mappingImpl->match([
                                                                                          r : RelationalOperationElementWithJoin[1] | $firstStep;,
                                                                                          a : Any[*]                                | ^$firstStep(positionBeforeLastApplyJoinTreeNode = if($srcOperation.positionBeforeLastApplyJoinTreeNode->isEmpty(),|[],|$srcOperation.positionBeforeLastApplyJoinTreeNode->toOne()->findNode($srcOperation.select.data->toOne(), $sel.data->toOne())->first()),
@@ -1861,7 +1860,7 @@ function meta::relational::functions::pureToSqlQuery::processRelationalPropertyM
                                                         )
                                                     );
                                                     ,
-                                    c:Class<Any>[1] |let srcOperation = $oldSrcOperation;
+                                    c:Class<Any>[1] |let srcOperation = $oldSrcOperation;  
 
                                                       let currentTreeNodeElement = $srcOperation.currentTreeNode.alias.relationalElement->toOne();
                                                       let extractParentMappingId = {rpm: RelationalPropertyMapping[1] |

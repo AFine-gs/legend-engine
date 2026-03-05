@@ -1228,6 +1228,44 @@ function <<test.Test>> meta::relational::tests::milestoning::businessdate::testF
   );
 }
 
+
+function <<test.Test>> meta::relational::tests::milestoning::businessdate::testJoinOnView():Boolean[1]
+{
+  let query = {|meta::relational::tests::milestoning::TradePnl.all(%2017-6-10).supportContactName};
+  let result = meta::pure::router::execute($query,meta::relational::tests::milestoning::milestonedJoinWithViewRoot,meta::external::store::relational::tests::testRuntime(),meta::relational::extension::relationalExtensions(),noDebug());
+  assertEqualsH2Compatible(
+    'select distinct "stockproductview_0".id as "Id" from ProductTable as "root" left outer join (select "root".id as id, \'2017-06-10\' as "k_businessDate" from StockProductTable as "root" where ("root".id > 152 or "root".id < 123) and "root".from_z <= \'2017-06-10\' and "root".thru_z > \'2017-06-10\') as "stockproductview_0" on ("stockproductview_0".id = "root".id) where not "stockproductview_0".id is null and "root".from_z <= \'2017-06-10\' and "root".thru_z > \'2017-06-10\'',
+    'select distinct "stockproductview_0".id as "Id" from ProductTable as "root" left outer join (select "root".id as id, \'2017-06-10\' as "k_businessDate" from StockProductTable as "root" where ("root".id > 152 or "root".id < 123) and "root".from_z <= DATE\'2017-06-10\' and "root".thru_z > DATE\'2017-06-10\') as "stockproductview_0" on ("stockproductview_0".id = "root".id) where not "stockproductview_0".id is null and "root".from_z <= DATE\'2017-06-10\' and "root".thru_z > DATE\'2017-06-10\'',
+    $result->meta::relational::mapping::sqlRemoveFormatting()
+  );
+}
+
+function <<test.Test>> meta::relational::tests::milestoning::businessdate::testJoinOnViewVIEW():Boolean[1]
+{
+  let query = {|meta::relational::tests::milestoning::TradePnl.all(%2017-6-10).supportContactName};
+  let result = meta::pure::router::execute($query,meta::relational::tests::milestoning::milestonedJoinWithViewRootVIEW,meta::external::store::relational::tests::testRuntime(),meta::relational::extension::relationalExtensions(),noDebug());
+  assertEqualsH2Compatible(
+    'select distinct "stockproductview_0".id as "Id" from ProductTable as "root" left outer join (select "root".id as id, \'2017-06-10\' as "k_businessDate" from StockProductTable as "root" where ("root".id > 152 or "root".id < 123) and "root".from_z <= \'2017-06-10\' and "root".thru_z > \'2017-06-10\') as "stockproductview_0" on ("stockproductview_0".id = "root".id) where not "stockproductview_0".id is null and "root".from_z <= \'2017-06-10\' and "root".thru_z > \'2017-06-10\'',
+    'select distinct "stockproductview_0".id as "Id" from ProductTable as "root" left outer join (select "root".id as id, \'2017-06-10\' as "k_businessDate" from StockProductTable as "root" where ("root".id > 152 or "root".id < 123) and "root".from_z <= DATE\'2017-06-10\' and "root".thru_z > DATE\'2017-06-10\') as "stockproductview_0" on ("stockproductview_0".id = "root".id) where not "stockproductview_0".id is null and "root".from_z <= DATE\'2017-06-10\' and "root".thru_z > DATE\'2017-06-10\'',
+    $result->meta::relational::mapping::sqlRemoveFormatting()
+  );
+}
+
+
+function <<test.Test>> meta::relational::tests::milestoning::businessdate::testOnViewRoot():Boolean[1]
+{
+  let query = {|meta::relational::tests::milestoning::Product.all(%2017-6-10).id};
+  let result = meta::pure::router::execute($query,meta::relational::tests::milestoning::milestonedJoinWithViewRootVIEW,meta::external::store::relational::tests::testRuntime(),meta::relational::extension::relationalExtensions(),debug());
+  assertEqualsH2Compatible(
+    'select distinct "stockproductview_0".id as "Id" from ProductTable as "root" left outer join (select "root".id as id, \'2017-06-10\' as "k_businessDate" from StockProductTable as "root" where ("root".id > 152 or "root".id < 123) and "root".from_z <= \'2017-06-10\' and "root".thru_z > \'2017-06-10\') as "stockproductview_0" on ("stockproductview_0".id = "root".id) where not "stockproductview_0".id is null and "root".from_z <= \'2017-06-10\' and "root".thru_z > \'2017-06-10\'',
+    'select distinct "stockproductview_0".id as "Id" from ProductTable as "root" left outer join (select "root".id as id, \'2017-06-10\' as "k_businessDate" from StockProductTable as "root" where ("root".id > 152 or "root".id < 123) and "root".from_z <= DATE\'2017-06-10\' and "root".thru_z > DATE\'2017-06-10\') as "stockproductview_0" on ("stockproductview_0".id = "root".id) where not "stockproductview_0".id is null and "root".from_z <= DATE\'2017-06-10\' and "root".thru_z > DATE\'2017-06-10\'',
+    $result->meta::relational::mapping::sqlRemoveFormatting()
+  );
+}
+
+
+
+
 function <<test.Test, test.ToFix>> meta::relational::tests::milestoning::businessdate::testMilestoningFilterPropagationThroughProject():Boolean[1]
 {
    let result = execute(|Product.all(%2015-8-15)->project([p|$p.name, p|$p.orders->filter(o | $o.id == 1)->isNotEmpty()],['name', 'check']), milestoningmap, meta::external::store::relational::tests::testRuntime(), meta::relational::extension::relationalExtensions());

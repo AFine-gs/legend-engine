@@ -640,6 +640,45 @@ Mapping meta::relational::tests::milestoning::milestoningmapwithconstraints
    }
 )
 
+
+###Mapping
+import meta::relational::tests::milestoning::*;
+Mapping meta::relational::tests::milestoning::milestonedJoinWithViewRoot
+(
+  //  TradePnl : Relational{
+  //     pnl : [db]tradeView.TRADE_ID,
+  //     supportContactName : [db]tradeView.supportContact
+  //  }
+     
+     
+      TradePnl : Relational{
+     
+      pnl : [db]tradeTable.ID,
+      supportContactName : [db] @Trade_SalesPerson | salesPersonTable.NAME
+   }
+
+
+
+)
+
+###Mapping
+import meta::relational::tests::milestoning::*;
+Mapping meta::relational::tests::milestoning::milestonedJoinWithViewRootVIEW
+(
+   TradePnl : Relational{
+      pnl : [db]tradeView.TRADE_ID,
+      supportContactName : [db]tradeView.supportContact
+   }
+     
+     
+      meta::relational::tests::milestoning::Product[product] : Relational{
+      id : [db]ProductView.id
+   }
+
+
+
+)
+
 ###Mapping
 import meta::relational::tests::milestoning::*;
 
@@ -2144,6 +2183,14 @@ Database meta::relational::tests::milestoning::db(
        supportContact : @TradePnlTableNoMilestoning_Trade > @Trade_SalesPerson | salesPersonTable.NAME
     )
 
+   View tradeView
+    (
+        TRADE_ID: tradeTable.ID PRIMARY KEY,
+        supportContact :  @Trade_SalesPerson | salesPersonTable.NAME
+    )
+
+    
+
     View salesPersonView
     (
        ACCOUNT_ID: salesPersonTable.ACCOUNT_ID,
@@ -2157,6 +2204,12 @@ Database meta::relational::tests::milestoning::db(
        pnl: tradePnlTable.pnl,
        supportContactViaView : @TradePnlTable_Trade > @Trade_SalesPerson > @SalesPersonTable_SalesPersonView | salesPersonView.SALES_PERSON_NAME
     )
+
+        View ProductView
+    (
+       id: ProductTable.id PRIMARY KEY
+    )
+
 
     View tradePnlIntermediateView
     (

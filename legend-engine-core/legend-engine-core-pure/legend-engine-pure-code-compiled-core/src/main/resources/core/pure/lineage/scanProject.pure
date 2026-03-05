@@ -121,7 +121,7 @@ function <<access.private>> meta::pure::lineage::scanProject::scanProjectRecursi
    ]
   );
 }
-function <<access.private>> meta::pure::lineage::scanProject::getRootTree(a:Any[1]):RootGraphFetchTree<Any>[1]
+function  meta::pure::lineage::scanProject::getRootTree(a:Any[1]):RootGraphFetchTree<Any>[1]
 {
   $a->match([ a:StoreMappingClusteredGraphFetchTree[1] | $a.tree,
               r:RootGraphFetchTree<Any>[1]| $r ])->cast(@RootGraphFetchTree<Any>);
@@ -151,7 +151,7 @@ function <<access.private>> meta::pure::lineage::scanProject::extractFuncCol(vs:
       );
 }
 
-function <<access.private>> meta::pure::lineage::scanProject::scanRootGraphFetchTree(root:meta::pure::graphFetch::RootGraphFetchTree<Any>[1]):Pair<String, FunctionDefinition<Any>>[*]
+function  meta::pure::lineage::scanProject::scanRootGraphFetchTree(root:meta::pure::graphFetch::RootGraphFetchTree<Any>[1]):Pair<String, FunctionDefinition<Any>>[*]
 {
   let rootGetAllExpression = meta::pure::lineage::scanProject::createGetAllApplicationForRootGraphFetchTree($root);
   $root.subTrees->map(x | $x->cast(@PropertyGraphFetchTree)->recurseForPropertyGraphFetchTree($rootGetAllExpression,$root.class.name->toOne()));

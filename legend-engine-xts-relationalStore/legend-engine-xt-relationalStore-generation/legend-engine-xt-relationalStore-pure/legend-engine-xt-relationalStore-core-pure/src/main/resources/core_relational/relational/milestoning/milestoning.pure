@@ -99,12 +99,12 @@ function meta::relational::milestoning::getTemporalDateAlias(temporalStrategy:Si
                                                                                                                                                                                                             ,| if($temporalDate->toOne()->isLatestDate() ,| [] 
                                                                                                                                                                                                                                                          ,| $temporalDate->match([l:Literal[1]| $l.value->match([d:Date[1]|^Literal(value=$d->toString()), v:VarPlaceHolder[1]|$l]), 
                                                                                                                                                                                                                                                                                   d:DynaFunction[1] | $d])));
-                                          );
-   if ($temporalDateRelationalElement->isNotEmpty(),| ^Alias(name = '\"'+temporalColumnAliasProperties($temporalStrategy).second+'\"', relationalElement = $temporalDateRelationalElement->toOne()),| []);
+                                          ); 
+   if ($temporalDateRelationalElement->isNotEmpty(),|   ^Alias(name = '\"'+temporalColumnAliasProperties($temporalStrategy).second+'\"', relationalElement = $temporalDateRelationalElement->toOne()),| []);
 }
 
 function meta::relational::milestoning::applyMilestoningFilters(e:RelationalOperationElement[1], tableToFilterOp: meta::pure::metamodel::function::Function<{TableAlias[1]->Operation[0..1]}>[1],tableToTable : meta::pure::metamodel::function::Function<{Table[1]->Table[1]}>[1], shouldProcessViewSubSelect:Boolean[1], extensions:Extension[*]):RelationalOperationElement[1]
-{
+{ 
     $e->match([     v:VarSetPlaceHolder[1] | $v,
                     pl:VarPlaceHolder[1]|$pl,
                     c:CommonTableExpressionReference[1] | $c,
@@ -155,7 +155,7 @@ function meta::relational::milestoning::applyMilestoningFilters(e:RelationalOper
 }
 
 function meta::relational::milestoning::applyMilestoningFilters(j:RelationalTreeNode[1], tableToFilterOp: meta::pure::metamodel::function::Function<{TableAlias[1]->Operation[0..1]}>[1],tableToTable : meta::pure::metamodel::function::Function<{Table[1]->Table[1]}>[1], shouldProcessViewSubSelect:Boolean[1], extensions:Extension[*]):RelationalTreeNode[1]
-{
+{  
     $j->match([
                jtn:JoinTreeNode[1] | let join = $jtn.join;
                                      let targetTable = $jtn.alias;
@@ -200,7 +200,7 @@ function meta::relational::milestoning::getProcessingDateAliasLiteral():String[1
 }
 
 function meta::relational::milestoning::getBusinessDateAliasLiteral():String[1]
-{
+{  
    'k_businessDate';
 }
 
@@ -210,7 +210,7 @@ function meta::relational::milestoning::isBiTemporalMilestoningTopLevelAnd(miles
 }
 
 function meta::relational::milestoning::getAllMilestonedTableFilter( t:TemporalStrategy[1], query:SelectSQLQuery[1], milestoningContext:TemporalMilestoningContext[1] , inScopeVars:Map<String, List<Any>>[1], extensions:Extension[*]):meta::pure::metamodel::function::Function<{TableAlias[1]->Operation[0..1]}>[1]
-{
+{ []->toOne();
    {ta:TableAlias[1]| let isMilestonedTable = $ta.relationalElement->relationalElementIsMilestoned();
                       if ($isMilestonedTable,
                           | $t->expandToSingleTemporalStrategies()->map(s| if ($s->relationalElementCanSupportStrategy($ta.relationalElement),
@@ -223,7 +223,7 @@ function meta::relational::milestoning::getAllMilestonedTableFilter( t:TemporalS
 }
 
 function meta::relational::milestoning::getEqualityMilestonedFiltering(t:TemporalStrategy[1], sourceSelect: SelectSQLQuery[1], eqLhs:ValueSpecification[1], tableAlias :TableAlias[1], milestoningContext:TemporalMilestoningContext[1], processMilestoningParams:meta::pure::metamodel::function::Function<{->SelectSQLQuery[1]}>[1], state:State[1], extensions:Extension[*]):SelectSQLQuery[1]
-{
+{ []->toOne();
    if($t->instanceOf(BiTemporal),| let internalMilestoningProperty = $eqLhs->byPassRouterInfo()->cast(@FunctionExpression).func->cast(@Property<Nil,Any|*>);
                                    let biTemporalSubStrategy = if($internalMilestoningProperty.name->toOne() == 'processingDate',| ^ProcessingTemporal(),| if($internalMilestoningProperty.name->toOne() == 'businessDate',| ^BusinessTemporal() ,|[]))->toOne();
                                    $biTemporalSubStrategy->getEqualityMilestonedFilteringSelect($sourceSelect, $tableAlias, $milestoningContext, $processMilestoningParams, $state, $extensions);
@@ -231,7 +231,7 @@ function meta::relational::milestoning::getEqualityMilestonedFiltering(t:Tempora
 }
 
 function meta::relational::milestoning::getEqualityMilestonedFilteringSelect(t:TemporalStrategy[1], sourceSelect : SelectSQLQuery[1], tableAlias :TableAlias[1], milestoningContext:TemporalMilestoningContext[1], processMilestoningParams:meta::pure::metamodel::function::Function<{->SelectSQLQuery[1]}>[1], state:State[0..1], extensions:Extension[*]):SelectSQLQuery[1]
-{
+{ []->toOne();
     assert($t->instanceOf(ProcessingTemporal) || $t->instanceOf(BusinessTemporal),| 'temporal equality processing should only consider single temporal strategies, found:'+$t->type().name->toOne());
     $t->map(s| if ($s->relationalElementCanSupportStrategy($tableAlias.relationalElement),
                    | if ($milestoningContext.isAllVersionsInRange(),
@@ -289,7 +289,7 @@ function meta::relational::milestoning::getMilestonedFilteringOperation(t:Tempor
 }
 
 function meta::relational::milestoning::getTemporalTableFilter(table:Table[1], milestoningStrategy:TemporalStrategy[1], tableAlias:TableAlias[1], temporalDate: RelationalOperationElement[1]):Operation[1]
-{
+{  
   if($table->hasSupportedSnapshotMilestoning($milestoningStrategy),
     | $table->getSnapshotMilestoneTableFilter($tableAlias, $milestoningStrategy, $temporalDate),
     | $table->getTemporalMilestoneTableFilter($tableAlias, $milestoningStrategy, $temporalDate)
@@ -536,8 +536,10 @@ function meta::relational::milestoning::getAppliedJoinMilestoningFilters(milesto
    let inUnionChainedJoin = {|$state.inUnionChainedJoin == true};
    let inIntermediateJoinForClassProperty = {|($milestoningContext->toOne().currentProcessingStateIsMilestonedClassProperty()->toOne() || $milestoningContext.currentProcessingState == MilestoningProcessingState.NON_MILESTONED_CLASS_PROPERTY) && !$joinTreeNode->children()->isEmpty()};
    let inDataTypeProperty = {|$milestoningContext.currentProcessingState == MilestoningProcessingState.DATATYPE_PROPERTY };
-
-   if($milestoningContextIsAvailable && ($inUnionChainedJoin->eval() || $inIntermediateJoinForClassProperty->eval() || $inDataTypeProperty->eval()) ,| $milestoningContext.currentMilestoningStrategy->toOne()->getMilestoneFilters([$appliedJoinTreeNode.alias],$milestoningContext->toOne())->map(f|pair($appliedJoinTreeNode, $f)),|[]);
+    $milestoningContextIsAvailable->println();
+   if($milestoningContextIsAvailable && ($inUnionChainedJoin->eval() || $inIntermediateJoinForClassProperty->eval() || $inDataTypeProperty->eval()) ,
+   | $milestoningContext.currentMilestoningStrategy->toOne()->getMilestoneFilters([$appliedJoinTreeNode.alias],$milestoningContext->toOne())->map(f|pair($appliedJoinTreeNode, $f)),
+   |  [];);
 }
 
 function meta::relational::milestoning::manageMilestoningContextPropogationForQualifiedProperties(op: OperationWithParentPropertyMapping[1], milestoningContext : TemporalMilestoningContext[0..1]): OperationWithParentPropertyMapping[1]{
